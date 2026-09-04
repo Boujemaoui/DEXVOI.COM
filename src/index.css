@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-mono: 'Space Mono', monospace;
+    --font-sans: 'Inter', sans-serif;
+  }
+  
+  html {
+    font-family: var(--font-sans);
+    scroll-behavior: smooth;
+  }
+}
+
+.font-mono {
+  font-family: 'Space Mono', monospace;
+}
+
+.grid-bg {
+  background-image: 
+    linear-gradient(rgba(30, 41, 59, 0.25) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(30, 41, 59, 0.25) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.glass-panel {
+  background: rgba(30, 41, 59, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.12);
+}
+
+.metallic-btn {
+  background: linear-gradient(180deg, #ffd78a 0%, #f5a623 100%);
+  color: #0A0F1F;
+  font-weight: 700;
+  box-shadow: 0 4px 20px rgba(245, 166, 35, 0.25);
+  transition: all 0.2s ease-in-out;
+}
+
+.metallic-btn:hover {
+  background: linear-gradient(180deg, #ffe0a3 0%, #ffb955 100%);
+  box-shadow: 0 6px 25px rgba(245, 166, 35, 0.4);
+  transform: translateY(-1px);
+}
+
+.metallic-btn:active {
+  transform: translateY(0);
+}
+
+.security-glow {
+  box-shadow: 0 0 20px rgba(0, 102, 255, 0.25);
+  border-color: rgba(0, 102, 255, 0.6);
+}
+
+.security-glow-amber {
+  box-shadow: 0 0 20px rgba(245, 166, 35, 0.25);
+  border-color: rgba(245, 166, 35, 0.6);
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(0.98); }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 4s ease-in-out infinite;
+}
