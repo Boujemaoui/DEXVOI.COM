@@ -10,13 +10,14 @@ import { TestimonialsSection } from './components/TestimonialsSection';
 import { ScannerSection } from './components/ScannerSection';
 import { OsintSecurityAuditor } from './components/OsintSecurityAuditor';
 import { ContactCTASection } from './components/ContactCTASection';
+import { PricingSection } from './components/PricingSection';
 import { Footer } from './components/Footer';
 import { AuditModal } from './components/AuditModal';
 import { PdfReportModal } from './components/PdfReportModal';
 import { OsintPurchaseModal } from './components/OsintPurchaseModal';
 import { VirtualAssistantChat } from './components/VirtualAssistantChat';
 import { OsintSecurityAuditResult } from './types';
-import { Home, Grid, Shield, Mail, Zap } from 'lucide-react';
+import { Home, Grid, Shield, Mail, Zap, CreditCard } from 'lucide-react';
 
 export default function App() {
   const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
@@ -27,9 +28,9 @@ export default function App() {
   const [osintAuditResult, setOsintAuditResult] = useState<OsintSecurityAuditResult | null>(null);
   const [selectedUrlForAudit, setSelectedUrlForAudit] = useState('');
   const [selectedFindings, setSelectedFindings] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState<'inicio' | 'servicios' | 'scanner' | 'contacto'>('inicio');
+  const [activeTab, setActiveTab] = useState<'inicio' | 'servicios' | 'scanner' | 'precios' | 'contacto'>('inicio');
 
-  const scrollToSection = (id: string, tabName: 'inicio' | 'servicios' | 'scanner' | 'contacto') => {
+  const scrollToSection = (id: string, tabName: 'inicio' | 'servicios' | 'scanner' | 'precios' | 'contacto') => {
     setActiveTab(tabName);
     const element = document.getElementById(id);
     if (element) {
@@ -103,7 +104,16 @@ export default function App() {
           }}
         />
 
-        {/* Section 8: Final CTA & Contact Form */}
+        {/* Section 8: Planes de Pago & Auditoría (19€, 49€, 99€ con Stripe Oficial) */}
+        <PricingSection
+          onOpenPdfModal={(tier) => {
+            setPdfModalTier(tier);
+            setIsPdfModalOpen(true);
+          }}
+          onOpenAuditModal={() => setIsAuditModalOpen(true)}
+        />
+
+        {/* Section 9: Final CTA & Contact Form */}
         <ContactCTASection
           initialUrl={selectedUrlForAudit}
           initialFindings={selectedFindings}
@@ -176,6 +186,16 @@ export default function App() {
         >
           <Zap className="w-5 h-5 mb-0.5 text-[#F5A623]" />
           <span className="text-[#F5A623]">Escáner</span>
+        </button>
+
+        <button
+          onClick={() => scrollToSection('precios', 'precios')}
+          className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all ${
+            activeTab === 'precios' ? 'text-[#635BFF] font-bold' : 'text-gray-400 hover:text-gray-200'
+          }`}
+        >
+          <CreditCard className="w-5 h-5 mb-0.5" />
+          <span>Precios</span>
         </button>
 
         <button

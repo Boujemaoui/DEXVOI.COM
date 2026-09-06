@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Menu, X, Terminal, ArrowRight, Zap, Lock, Calendar } from 'lucide-react';
+import { Shield, Menu, X, Terminal, ArrowRight, Zap, Lock, Calendar, CreditCard } from 'lucide-react';
 
 interface NavbarProps {
   onOpenAuditModal: () => void;
@@ -103,9 +103,19 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
             className="text-[#F5A623] hover:text-[#ffd78a] transition-colors flex items-center gap-1.5 py-1 font-mono font-bold text-xs"
           >
             <Shield className="w-3.5 h-3.5" />
-            <span>OSINT & Cabeceras</span>
+            <span>OSINT</span>
             <span className="ml-1 px-1.5 py-0.5 rounded bg-[#F5A623]/20 border border-[#F5A623]/40 text-[#F5A623] text-[9px] font-extrabold tracking-wider">
-              29€ ÚNICO
+              29€
+            </span>
+          </button>
+          <button
+            onClick={() => scrollToSection('precios')}
+            className="text-white hover:text-[#38BDF8] transition-colors flex items-center gap-1.5 py-1 font-mono font-bold text-xs px-2.5 py-1 rounded bg-[#635BFF]/20 border border-[#635BFF]/50"
+          >
+            <CreditCard className="w-3.5 h-3.5 text-[#635BFF]" />
+            <span>Planes de Pago</span>
+            <span className="ml-1 px-1.5 py-0.5 rounded bg-[#635BFF] text-white text-[9px] font-extrabold tracking-wider">
+              19€ / 49€ / 99€
             </span>
           </button>
         </nav>
@@ -213,6 +223,18 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
               <span>08. OSINT & Blindaje Cabeceras</span>
               <span className="px-2 py-0.5 rounded bg-[#F5A623]/20 border border-[#F5A623]/40 text-[#F5A623] text-[10px]">
                 29€ ÚNICO
+              </span>
+            </button>
+            <button
+              onClick={() => scrollToSection('precios')}
+              className="text-left py-2.5 px-3 rounded-lg bg-[#635BFF]/20 border border-[#635BFF]/50 text-white font-bold flex items-center justify-between"
+            >
+              <div className="flex items-center gap-2">
+                <CreditCard className="w-4 h-4 text-[#635BFF]" />
+                <span>09. Planes de Pago (Stripe)</span>
+              </div>
+              <span className="px-2 py-0.5 rounded bg-[#635BFF] text-white text-[10px] font-mono">
+                19€ / 49€ / 99€
               </span>
             </button>
           </div>
