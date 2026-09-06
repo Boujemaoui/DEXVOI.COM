@@ -17,13 +17,29 @@ export const AuditModal: React.FC<AuditModalProps> = ({ isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => {
+
+    try {
+      await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: name,
+          email,
+          phone,
+          businessType,
+          websiteUrl: website,
+          type: 'Auditoría Gratuita 5 Puntos',
+        }),
+      });
+    } catch {
+      // Graceful fallback
+    } finally {
       setIsSubmitting(false);
       setIsDone(true);
-    }, 1000);
+    }
   };
 
   const handleResetAndClose = () => {

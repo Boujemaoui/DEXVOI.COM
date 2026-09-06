@@ -26,13 +26,36 @@ export const OsintPurchaseModal: React.FC<OsintPurchaseModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handlePayment = (e: React.FormEvent) => {
+  const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
-    setTimeout(() => {
-      setIsProcessing(false);
-      setIsPaid(true);
-    }, 1200);
+
+    try {
+      await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: 'Cliente Auditoría OSINT & Seguridad',
+          email,
+          phone: '',
+          businessType: 'Auditoría OSINT & Blindaje',
+          websiteUrl: domainInput,
+          primaryConcern: 'Compra de Auditoría Técnica & Seguridad',
+          type: 'Stripe Checkout (49€)',
+        }),
+      });
+    } catch {
+      // Continue anyway
+    }
+
+    let targetStripeUrl = 'https://buy.stripe.com/9B66oI862eUc8Um92NdAk01';
+    if (email) {
+      targetStripeUrl += `?prefilled_email=${encodeURIComponent(email)}`;
+    }
+    window.open(targetStripeUrl, '_blank', 'noopener,noreferrer');
+
+    setIsProcessing(false);
+    setIsPaid(true);
   };
 
   const domain = domainInput || 'tu-sitio-web.com';
@@ -211,51 +234,28 @@ Garantía Oficial Dexvoi - Blindaje Certificado.
                 </div>
               </div>
 
-              {/* Payment Card Simulator (Stripe Standard) */}
-              <div className="p-4 rounded-xl bg-[#080D1A] border border-gray-800 space-y-3">
-                <div className="flex items-center justify-between text-xs font-mono text-gray-400">
-                  <span className="flex items-center gap-1.5 text-white">
-                    <CreditCard className="w-4 h-4 text-[#0066FF]" />
-                    Pasarela Segura (Cifrado AES-256)
+              {/* Official Stripe Checkout presentation */}
+              <div className="p-4 rounded-xl bg-[#080D1A] border border-[#635BFF]/30 space-y-3">
+                <div className="flex items-center justify-between text-xs font-mono">
+                  <span className="flex items-center gap-1.5 text-white font-bold">
+                    <CreditCard className="w-4 h-4 text-[#635BFF]" />
+                    Pasarela Oficial Stripe Checkout
                   </span>
-                  <span className="text-[11px] text-gray-500">Stripe Checkout Simulator</span>
+                  <span className="text-[11px] text-emerald-400 font-mono flex items-center gap-1">
+                    <Lock className="w-3 h-3" />
+                    Cifrado SSL 256-bit
+                  </span>
                 </div>
 
-                <div>
-                  <label className="block text-[11px] font-mono text-gray-400 mb-1">
-                    Número de Tarjeta:
-                  </label>
-                  <input
-                    type="text"
-                    value={cardNumber}
-                    onChange={(e) => setCardNumber(e.target.value)}
-                    className="w-full bg-[#131B33] border border-gray-700 rounded-lg px-3 py-2 text-white font-mono text-xs focus:outline-none focus:border-[#0066FF]"
-                  />
-                </div>
+                <p className="text-xs text-gray-400 leading-relaxed font-sans">
+                  Serás redirigido a la pasarela segura oficial de Stripe para procesar la auditoría forense con tarjeta, Apple Pay o Google Pay de forma instantánea.
+                </p>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-[11px] font-mono text-gray-400 mb-1">
-                      Fecha Expiración:
-                    </label>
-                    <input
-                      type="text"
-                      value={expiry}
-                      onChange={(e) => setExpiry(e.target.value)}
-                      className="w-full bg-[#131B33] border border-gray-700 rounded-lg px-3 py-2 text-white font-mono text-xs focus:outline-none focus:border-[#0066FF]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-mono text-gray-400 mb-1">
-                      CVC / Código de Seguridad:
-                    </label>
-                    <input
-                      type="text"
-                      value={cvc}
-                      onChange={(e) => setCvc(e.target.value)}
-                      className="w-full bg-[#131B33] border border-gray-700 rounded-lg px-3 py-2 text-white font-mono text-xs focus:outline-none focus:border-[#0066FF]"
-                    />
-                  </div>
+                <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-gray-800 text-[10px] font-mono text-gray-400">
+                  <span className="px-2 py-0.5 rounded bg-[#131B33] border border-gray-700 text-white">Apple Pay</span>
+                  <span className="px-2 py-0.5 rounded bg-[#131B33] border border-gray-700 text-white">Google Pay</span>
+                  <span className="px-2 py-0.5 rounded bg-[#131B33] border border-gray-700 text-white">Visa / Mastercard</span>
+                  <span className="px-2 py-0.5 rounded bg-[#131B33] border border-gray-700 text-white">American Express</span>
                 </div>
               </div>
             </div>
@@ -264,24 +264,35 @@ Garantía Oficial Dexvoi - Blindaje Certificado.
             <div className="space-y-2">
               <button
                 type="submit"
-                disabled={isProcessing || !email.trim() || !domainInput.trim()}
-                className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-[#0066FF] to-[#0047b3] hover:from-[#0055d4] hover:to-[#003d99] text-white font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg disabled:opacity-50 transition-all cursor-pointer"
+                disabled={isProcessing}
+                className="w-full py-3.5 px-6 rounded-xl bg-[#635BFF] hover:bg-[#5349e0] text-white font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-[#635BFF]/25 disabled:opacity-50 transition-all cursor-pointer"
               >
                 {isProcessing ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>Procesando Auditoría y Generando Scripts...</span>
+                    <span>Conectando con Stripe Checkout...</span>
                   </>
                 ) : (
                   <>
-                    <Lock className="w-4 h-4 text-[#F5A623]" />
-                    <span>Adquirir Auditoría OSINT & Blindaje por 29€</span>
+                    <Lock className="w-4 h-4 text-white" />
+                    <span>Pagar Auditoría en Stripe Oficial (49€)</span>
                   </>
                 )}
               </button>
 
-              <div className="flex items-center justify-between text-[10px] font-mono text-gray-500 px-1">
-                <span>✓ Pago único · Sin costes ocultos ni suscripciones</span>
+              <div className="text-center pt-1">
+                <a
+                  href="https://buy.stripe.com/9B66oI862eUc8Um92NdAk01"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[11px] font-mono text-[#38BDF8] hover:underline inline-flex items-center gap-1"
+                >
+                  <span>Abrir enlace directo de Stripe Checkout ↗</span>
+                </a>
+              </div>
+
+              <div className="flex items-center justify-between text-[10px] font-mono text-gray-500 px-1 pt-1">
+                <span>✓ Pago único oficial en Stripe · Sin suscripciones</span>
                 <span>Garantía de Satisfacción DEXVOI</span>
               </div>
             </div>

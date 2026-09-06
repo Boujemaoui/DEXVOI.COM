@@ -3,6 +3,7 @@ import path from 'path';
 import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI } from '@google/genai';
 import dotenv from 'dotenv';
+import { Resend } from 'resend';
 import { runRealSecurityAudit } from './server/securityAudit';
 
 dotenv.config();
@@ -425,6 +426,83 @@ async function startServer() {
       status: 'ok',
       service: 'Dexvoi Virtual Assistant',
       hasGeminiKey: !!process.env.GEMINI_API_KEY,
+      hasResendKey: !!process.env.RESEND_API_KEY,
+    });
+  });
+
+  // Contact & Free Audit Lead Submission endpoint with Resend
+  app.post('/api/lead', async (req, res) => {
+    const { fullName, email, phone, businessType, websiteUrl, primaryConcern, type, ticketId } = req.body;
+
+    if (!email && !phone && !fullName) {
+      return res.status(400).json({ error: 'Faltan datos de contacto del cliente.' });
+    }
+
+    const leadTicket = ticketId || `DEXVOI-LEAD-${Math.floor(100000 + Math.random() * 900000)}`;
+    const destinationEmail = process.env.NOTIFICATION_EMAIL || 'saidsahar2013@gmail.com';
+
+    let emailSent = false;
+    let emailError: string | null = null;
+
+    if (process.env.RESEND_API_KEY) {
+      try {
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        const subject = `⚡ [Nuevo Lead Dexvoi] ${type || 'Auditoría'}: ${fullName || 'Cliente'} (${businessType || 'Negocio'})`;
+        const html = `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0A0F1F; color: #FFFFFF; padding: 28px; border-radius: 12px; border: 1px solid #0066FF;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid #1E293B; padding-bottom: 16px;">
+              <h2 style="color: #0066FF; margin: 0; font-size: 22px;">⚡ Dexvoi - Nuevo Lead Recibido</h2>
+            </div>
+            <p style="color: #94A3B8; font-size: 14px; margin-top: 0;">
+              <strong>Expediente Técnico:</strong> <span style="color: #F5A623; font-weight: bold;">${leadTicket}</span>
+            </p>
+            <div style="background: #131B33; border: 1px solid #1E293B; border-radius: 8px; padding: 18px; margin: 20px 0; font-size: 15px; line-height: 1.7;">
+              <p style="margin: 6px 0;"><strong>👤 Nombre Completo:</strong> ${fullName || 'No especificado'}</p>
+              <p style="margin: 6px 0;"><strong>📧 Email Profesional:</strong> <a href="mailto:${email}" style="color: #38BDF8; text-decoration: none;">${email || 'No especificado'}</a></p>
+              <p style="margin: 6px 0;"><strong>📱 Teléfono / WhatsApp:</strong> <a href="tel:${phone}" style="color: #10B981; text-decoration: none; font-weight: bold;">${phone || 'No especificado'}</a></p>
+              <p style="margin: 6px 0;"><strong>🏢 Sector / Tipo de Negocio:</strong> ${businessType || 'No especificado'}</p>
+              <p style="margin: 6px 0;"><strong>🌐 Web o Negocio a Auditar:</strong> ${websiteUrl ? `<a href="${websiteUrl.startsWith('http') ? websiteUrl : 'https://' + websiteUrl}" style="color: #38BDF8;" target="_blank">${websiteUrl}</a>` : 'No indicada'}</p>
+              ${primaryConcern ? `<p style="margin: 6px 0;"><strong>🎯 Objetivo o Preocupación:</strong> ${primaryConcern}</p>` : ''}
+              <p style="margin: 6px 0; color: #94A3B8; font-size: 13px;"><strong>📋 Origen:</strong> ${type || 'Formulario Web'}</p>
+            </div>
+            <div style="text-align: center; margin-top: 24px;">
+              ${phone ? `<a href="https://wa.me/${phone.replace(/[^0-9]/g, '')}" style="background: #10B981; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; display: inline-block; margin-right: 10px;">Contactar por WhatsApp</a>` : ''}
+              ${email ? `<a href="mailto:${email}" style="background: #0066FF; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; display: inline-block;">Responder por Email</a>` : ''}
+            </div>
+            <hr style="border: 0; border-top: 1px solid #1E293B; margin: 24px 0 16px 0;" />
+            <p style="font-size: 12px; color: #64748B; margin: 0; text-align: center;">Notificación generada automáticamente por la plataforma dexvoi.com</p>
+          </div>
+        `;
+
+        await resend.emails.send({
+          from: 'Dexvoi Leads <onboarding@resend.dev>',
+          to: destinationEmail,
+          subject,
+          html,
+        });
+
+        emailSent = true;
+        console.log(`[Resend] Lead email successfully sent to ${destinationEmail}`);
+      } catch (err: any) {
+        console.error('[Resend] Error sending lead notification:', err);
+        emailError = err?.message || 'Error al enviar email';
+      }
+    } else {
+      console.log(`[Dexvoi Lead] RESEND_API_KEY no configurada aún. Lead registrado localmente:`, {
+        ticketId: leadTicket,
+        fullName,
+        email,
+        phone,
+        websiteUrl,
+      });
+    }
+
+    return res.json({
+      success: true,
+      ticketId: leadTicket,
+      emailSent,
+      hasResendKey: Boolean(process.env.RESEND_API_KEY),
+      error: emailError,
     });
   });
 

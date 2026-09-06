@@ -14,7 +14,8 @@ import {
   ChevronDown,
   Minimize2,
   Maximize2,
-  FileText
+  FileText,
+  CreditCard
 } from 'lucide-react';
 import { ChatMessage } from '../types';
 
@@ -841,11 +842,24 @@ Is this correct? Reply YES for my system to launch the automated analysis.`,
                             {(hasPdfOffer || hasDiagnosticReport) && onOpenPdfModal && (
                               <button
                                 onClick={() => onOpenPdfModal('complete')}
-                                className="px-2.5 py-1 rounded bg-[#0066FF]/20 border border-[#0066FF]/50 text-[#0066FF] hover:bg-[#0066FF] hover:text-white font-mono text-[10px] font-bold uppercase transition-all inline-flex items-center gap-1.5"
+                                className="px-2.5 py-1 rounded bg-[#635BFF]/20 border border-[#635BFF]/50 text-[#A5B4FC] hover:bg-[#635BFF] hover:text-white font-mono text-[10px] font-bold uppercase transition-all inline-flex items-center gap-1.5"
                               >
-                                <FileText className="w-3 h-3" />
-                                <span>Rapport PDF (19€ / 49€ / 99€)</span>
+                                <CreditCard className="w-3 h-3" />
+                                <span>Stripe Checkout (19€ / 49€ / 99€)</span>
                               </button>
+                            )}
+
+                            {/* Direct Fast Stripe Checkout Link for 49€ Most Popular */}
+                            {hasPdfOffer && (
+                              <a
+                                href="https://buy.stripe.com/9B66oI862eUc8Um92NdAk01"
+                                target="_blank"
+                                rel="noreferrer"
+                                className="px-2.5 py-1 rounded bg-[#635BFF] text-white hover:bg-[#5349e0] font-mono text-[10px] font-bold uppercase transition-all inline-flex items-center gap-1 shadow-sm"
+                              >
+                                <span>Pagar 49€ (Stripe)</span>
+                                <ExternalLink className="w-2.5 h-2.5" />
+                              </a>
                             )}
 
                             {/* WhatsApp Direct Contact */}

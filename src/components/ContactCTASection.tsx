@@ -28,15 +28,32 @@ export const ContactCTASection: React.FC<ContactCTASectionProps> = ({ initialUrl
     }
   }, [initialUrl]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    setTimeout(() => {
+    try {
+      const res = await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+          businessType: formData.businessType,
+          websiteUrl: formData.websiteUrl,
+          primaryConcern: formData.primaryConcern,
+          type: 'Sesión Estratégica & Auditoría',
+        }),
+      });
+      const data = await res.json();
+      setTicketId(data.ticketId || `DEXVOI-AUDIT-${Math.floor(100000 + Math.random() * 900000)}`);
+    } catch {
+      setTicketId(`DEXVOI-AUDIT-${Math.floor(100000 + Math.random() * 900000)}`);
+    } finally {
       setIsSubmitting(false);
       setIsSubmitted(true);
-      setTicketId(`DEXVOI-AUDIT-${Math.floor(100000 + Math.random() * 900000)}`);
-    }, 1200);
+    }
   };
 
   return (

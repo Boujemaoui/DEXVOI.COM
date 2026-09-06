@@ -11,6 +11,7 @@ interface ReportTier {
   name: string;
   pages: string;
   price: string;
+  stripeUrl: string;
   badge?: string;
   features: string[];
 }
@@ -23,9 +24,6 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
   const [selectedTier, setSelectedTier] = useState<'basic' | 'complete' | 'premium'>(defaultTier);
   const [email, setEmail] = useState('');
   const [website, setWebsite] = useState('');
-  const [cardNumber, setCardNumber] = useState('4242 •••• •••• 4242');
-  const [expiry, setExpiry] = useState('12/28');
-  const [cvc, setCvc] = useState('999');
   const [isProcessing, setIsProcessing] = useState(false);
   const [isPaid, setIsPaid] = useState(false);
 
@@ -33,20 +31,23 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
 
   const tiers: Record<'basic' | 'complete' | 'premium', ReportTier> = {
     basic: {
-      name: 'Informe Básico / Rapport Basique',
+      name: 'Starter Audit Report (5 Pages)',
       pages: '5 páginas',
       price: '19€',
+      stripeUrl: 'https://buy.stripe.com/aFa00kaea4fy0nQ6UFdAk00',
       features: [
         'Análisis de velocidad de carga Core Web Vitals',
         'Verificación de certificado SSL y headers HTTP',
-        'Detección de presencia básica en Google Maps'
+        'Detección de presencia básica en Google Maps',
+        'Checklist de optimización técnica prioritaria'
       ]
     },
     complete: {
-      name: 'Informe Completo / Rapport Complet',
+      name: 'Comprehensive Technical Audit (20+ Pages)',
       pages: '20+ páginas',
       price: '49€',
       badge: 'MÁS POPULAR / RECOMMANDÉ',
+      stripeUrl: 'https://buy.stripe.com/9B66oI862eUc8Um92NdAk01',
       features: [
         'Auditoría técnica exhaustiva de más de 20 páginas',
         'Análisis de vulnerabilidades web (blindaje & ethical hacking)',
@@ -56,10 +57,11 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
       ]
     },
     premium: {
-      name: 'Auditoría Premium con Consultoría',
+      name: 'Premium Audit + 1-on-1 Strategic Consulting',
       pages: '25+ páginas + Llamada 1-a-1',
       price: '99€',
-      badge: 'ÉLITE',
+      badge: 'ÉLITE VIP',
+      stripeUrl: 'https://buy.stripe.com/14A5kE0DA7rKgmO4MxdAk02',
       features: [
         'Todo lo del informe completo de 20+ páginas',
         'Sesión estratégica 1-a-1 de 45 minutos con Arquitecto Digital',
@@ -69,13 +71,42 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
     }
   };
 
-  const handleCheckout = (e: React.FormEvent) => {
+  const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
-    setTimeout(() => {
-      setIsProcessing(false);
-      setIsPaid(true);
-    }, 1500);
+
+    const currentTier = tiers[selectedTier];
+
+    // Register lead in backend so you receive instant notification via Resend
+    try {
+      await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: 'Cliente Checkout Stripe',
+          email,
+          phone: '',
+          businessType: currentTier.name,
+          websiteUrl: website,
+          primaryConcern: `Inició pago Stripe: ${currentTier.price}`,
+          type: `Stripe Checkout (${currentTier.price})`,
+        }),
+      });
+    } catch {
+      // Continue to Stripe even if background notice fails
+    }
+
+    // Build Stripe Checkout URL with optional prefilled email
+    let targetStripeUrl = currentTier.stripeUrl;
+    if (email) {
+      targetStripeUrl += (targetStripeUrl.includes('?') ? '&' : '?') + `prefilled_email=${encodeURIComponent(email)}`;
+    }
+
+    // Open Stripe Checkout in secure new tab
+    window.open(targetStripeUrl, '_blank', 'noopener,noreferrer');
+
+    setIsProcessing(false);
+    setIsPaid(true);
   };
 
   const handleDownloadSample = () => {
@@ -278,67 +309,62 @@ Contacto de Arquitectura: info@dexvoi.com | WhatsApp: +212 600-000000`;
                 </div>
               </div>
 
-              {/* Simulated Stripe Card Input */}
-              <div className="p-3.5 bg-[#0A0F1F] border border-gray-700 rounded-lg space-y-2">
-                <div className="flex items-center justify-between text-[11px] font-mono text-gray-400">
-                  <span className="flex items-center gap-1.5">
-                    <CreditCard className="w-3.5 h-3.5 text-[#0066FF]" />
-                    <span>Pago Seguro con Tarjeta (Stripe Checkout)</span>
+              {/* Official Stripe Checkout Information */}
+              <div className="p-4 bg-[#0A0F1F] border border-[#635BFF]/30 rounded-xl space-y-3">
+                <div className="flex items-center justify-between text-[11px] font-mono">
+                  <span className="flex items-center gap-1.5 text-white font-bold">
+                    <CreditCard className="w-4 h-4 text-[#635BFF]" />
+                    <span>Pasarela Oficial Stripe Checkout</span>
                   </span>
                   <span className="flex items-center gap-1 text-emerald-400">
                     <Lock className="w-3 h-3" />
-                    <span>SSL 256-bit</span>
+                    <span>Cifrado SSL 256-bit</span>
                   </span>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2">
-                  <div className="col-span-2">
-                    <input
-                      type="text"
-                      value={cardNumber}
-                      onChange={(e) => setCardNumber(e.target.value)}
-                      placeholder="Número de Tarjeta"
-                      className="w-full bg-[#131B33] border border-gray-800 rounded px-2.5 py-1.5 text-xs text-white font-mono"
-                    />
-                  </div>
-                  <div className="flex gap-1.5">
-                    <input
-                      type="text"
-                      value={expiry}
-                      onChange={(e) => setExpiry(e.target.value)}
-                      placeholder="MM/AA"
-                      className="w-1/2 bg-[#131B33] border border-gray-800 rounded px-1.5 py-1.5 text-xs text-white font-mono text-center"
-                    />
-                    <input
-                      type="text"
-                      value={cvc}
-                      onChange={(e) => setCvc(e.target.value)}
-                      placeholder="CVC"
-                      className="w-1/2 bg-[#131B33] border border-gray-800 rounded px-1.5 py-1.5 text-xs text-white font-mono text-center"
-                    />
-                  </div>
+                <p className="text-[11px] text-gray-400 leading-relaxed">
+                  Serás redirigido a la pasarela segura oficial de Stripe para completar el pago con tarjeta, Apple Pay o Google Pay. Sin comisiones ocultas ni suscripciones.
+                </p>
+
+                <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-gray-800 text-[10px] font-mono text-gray-400">
+                  <span className="px-2 py-0.5 rounded bg-[#131B33] border border-gray-700 text-white">Apple Pay</span>
+                  <span className="px-2 py-0.5 rounded bg-[#131B33] border border-gray-700 text-white">Google Pay</span>
+                  <span className="px-2 py-0.5 rounded bg-[#131B33] border border-gray-700 text-white">Visa / Mastercard</span>
+                  <span className="px-2 py-0.5 rounded bg-[#131B33] border border-gray-700 text-white">American Express</span>
                 </div>
               </div>
 
               <button
                 type="submit"
-                disabled={isProcessing || !email || !website}
-                className="w-full metallic-btn py-3.5 rounded-lg font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 font-bold disabled:opacity-50"
+                disabled={isProcessing}
+                className="w-full bg-[#635BFF] hover:bg-[#5349e0] text-white py-3.5 rounded-lg font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 font-bold transition-all shadow-lg shadow-[#635BFF]/25 disabled:opacity-50"
               >
                 {isProcessing ? (
-                  <span>Procesando pago seguro en Stripe...</span>
+                  <span>Conectando con Stripe Checkout...</span>
                 ) : (
                   <>
-                    <Lock className="w-4 h-4 text-[#0A0F1F]" />
-                    <span>Pagar {tiers[selectedTier].price} y Recibir Informe en 5 Min</span>
-                    <ArrowRight className="w-4 h-4 text-[#0A0F1F]" />
+                    <Lock className="w-4 h-4 text-white" />
+                    <span>Pagar {tiers[selectedTier].price} en Stripe Oficial</span>
+                    <ArrowRight className="w-4 h-4 text-white" />
                   </>
                 )}
               </button>
 
-              <div className="flex items-center justify-between text-[10px] font-mono text-gray-500 px-1">
+              <div className="text-center pt-1">
+                <a
+                  href={tiers[selectedTier].stripeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[11px] font-mono text-[#38BDF8] hover:underline inline-flex items-center gap-1"
+                >
+                  <span>¿Prefieres abrir el enlace directo de Stripe? Haz clic aquí</span>
+                  <ArrowRight className="w-3 h-3" />
+                </a>
+              </div>
+
+              <div className="flex items-center justify-between text-[10px] font-mono text-gray-500 px-1 pt-1">
                 <span>Garantía de satisfacción DEXVOI</span>
-                <span>Entrega inmediata por email</span>
+                <span>Entrega inmediata tras confirmación</span>
               </div>
             </form>
           </div>
