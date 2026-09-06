@@ -1,7 +1,12 @@
 import React from 'react';
-import { Shield, Lock, Award, Terminal, ArrowUp } from 'lucide-react';
+import { Shield, Lock, Award, Terminal, ArrowUp, Cookie } from 'lucide-react';
+import { LegalTab } from './LegalModal';
 
-export const Footer: React.FC = () => {
+interface FooterProps {
+  onOpenLegalModal?: (tab: LegalTab) => void;
+}
+
+export const Footer: React.FC<FooterProps> = ({ onOpenLegalModal }) => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -80,13 +85,40 @@ export const Footer: React.FC = () => {
             <span>© {new Date().getFullYear()} DEXVOI. SEGURIDAD Y ESTRATEGIA CERTIFICADA.</span>
           </div>
 
-          <div className="flex items-center gap-6">
-            <a href="#contacto" className="hover:text-white transition-colors">Privacidad & Protocolos</a>
-            <a href="#contacto" className="hover:text-white transition-colors">Términos de Servicio</a>
-            <a href="#contacto" className="hover:text-white transition-colors">Auditoría Ética</a>
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+            <button
+              onClick={() => onOpenLegalModal ? onOpenLegalModal('privacy') : null}
+              className="hover:text-white transition-colors cursor-pointer"
+            >
+              Privacidad & Protocolos
+            </button>
+            <button
+              onClick={() => onOpenLegalModal ? onOpenLegalModal('terms') : null}
+              className="hover:text-white transition-colors cursor-pointer"
+            >
+              Términos de Servicio
+            </button>
+            <button
+              onClick={() => onOpenLegalModal ? onOpenLegalModal('cookies') : null}
+              className="hover:text-white transition-colors cursor-pointer"
+            >
+              Cookies
+            </button>
+            <button
+              onClick={() => onOpenLegalModal ? onOpenLegalModal('legal') : null}
+              className="hover:text-white transition-colors cursor-pointer"
+            >
+              Aviso Legal
+            </button>
+            <button
+              onClick={() => onOpenLegalModal ? onOpenLegalModal('security') : null}
+              className="hover:text-white transition-colors cursor-pointer text-[#F5A623]"
+            >
+              Auditoría Ética
+            </button>
             <button
               onClick={scrollToTop}
-              className="p-2 rounded bg-[#1E293B] border border-gray-800 text-gray-400 hover:text-white transition-colors"
+              className="p-2 rounded bg-[#1E293B] border border-gray-800 text-gray-400 hover:text-white transition-colors ml-2"
               aria-label="Volver arriba"
             >
               <ArrowUp className="w-4 h-4" />

@@ -1,0 +1,421 @@
+import React, { useState } from 'react';
+import { X, Shield, Lock, FileText, CheckCircle, Scale, AlertCircle, Cookie, ChevronRight } from 'lucide-react';
+
+export type LegalTab = 'privacy' | 'terms' | 'legal' | 'cookies' | 'security';
+
+interface LegalModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  initialTab?: LegalTab;
+}
+
+export const LegalModal: React.FC<LegalModalProps> = ({
+  isOpen,
+  onClose,
+  initialTab = 'privacy',
+}) => {
+  const [activeTab, setActiveTab] = useState<LegalTab>(initialTab);
+
+  React.useEffect(() => {
+    if (isOpen && initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [isOpen, initialTab]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-black/80 backdrop-blur-md overflow-y-auto">
+      <div 
+        className="relative w-full max-w-4xl bg-[#0D1326] border border-[#1E293B] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] my-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Modal Header */}
+        <div className="px-6 py-5 border-b border-gray-800 bg-[#0A0F1F] flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#131B33] border border-[#0066FF]/40 flex items-center justify-center">
+              <Shield className="w-5 h-5 text-[#38BDF8]" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-white font-mono flex items-center gap-2">
+                <span>Centro Legal & Protocolos de Cumplimiento</span>
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                  RGPD / LOPDGDD
+                </span>
+              </h3>
+              <p className="text-xs text-gray-400 font-sans">
+                DEXVOI · Seguridad, Transparencia y Protección de Datos Confidenciales
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-[#1E293B] transition-colors"
+            aria-label="Cerrar modal legal"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="flex border-b border-gray-800 bg-[#080D1A] overflow-x-auto scrollbar-none px-4 sm:px-6">
+          <button
+            onClick={() => setActiveTab('privacy')}
+            className={`flex items-center gap-2 py-3.5 px-4 font-mono text-xs font-bold whitespace-nowrap border-b-2 transition-all ${
+              activeTab === 'privacy'
+                ? 'border-[#0066FF] text-[#38BDF8] bg-[#0066FF]/10'
+                : 'border-transparent text-gray-400 hover:text-gray-200'
+            }`}
+          >
+            <Lock className="w-4 h-4" />
+            <span>Política de Privacidad</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('terms')}
+            className={`flex items-center gap-2 py-3.5 px-4 font-mono text-xs font-bold whitespace-nowrap border-b-2 transition-all ${
+              activeTab === 'terms'
+                ? 'border-[#0066FF] text-[#38BDF8] bg-[#0066FF]/10'
+                : 'border-transparent text-gray-400 hover:text-gray-200'
+            }`}
+          >
+            <Scale className="w-4 h-4" />
+            <span>Términos y Condiciones</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('cookies')}
+            className={`flex items-center gap-2 py-3.5 px-4 font-mono text-xs font-bold whitespace-nowrap border-b-2 transition-all ${
+              activeTab === 'cookies'
+                ? 'border-[#0066FF] text-[#38BDF8] bg-[#0066FF]/10'
+                : 'border-transparent text-gray-400 hover:text-gray-200'
+            }`}
+          >
+            <Cookie className="w-4 h-4" />
+            <span>Política de Cookies</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('legal')}
+            className={`flex items-center gap-2 py-3.5 px-4 font-mono text-xs font-bold whitespace-nowrap border-b-2 transition-all ${
+              activeTab === 'legal'
+                ? 'border-[#0066FF] text-[#38BDF8] bg-[#0066FF]/10'
+                : 'border-transparent text-gray-400 hover:text-gray-200'
+            }`}
+          >
+            <FileText className="w-4 h-4" />
+            <span>Aviso Legal</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('security')}
+            className={`flex items-center gap-2 py-3.5 px-4 font-mono text-xs font-bold whitespace-nowrap border-b-2 transition-all ${
+              activeTab === 'security'
+                ? 'border-[#0066FF] text-[#38BDF8] bg-[#0066FF]/10'
+                : 'border-transparent text-gray-400 hover:text-gray-200'
+            }`}
+          >
+            <Shield className="w-4 h-4 text-[#F5A623]" />
+            <span>Protocolos Éticos & OSINT</span>
+          </button>
+        </div>
+
+        {/* Tab Content Body */}
+        <div className="p-6 sm:p-8 overflow-y-auto font-sans text-sm text-gray-300 leading-relaxed space-y-6">
+          
+          {/* TAB 1: POLÍTICA DE PRIVACIDAD */}
+          {activeTab === 'privacy' && (
+            <div className="space-y-6 animate-fadeIn">
+              <div className="p-4 rounded-xl bg-[#131B33] border border-[#0066FF]/30 text-xs font-mono text-gray-300 flex items-center justify-between">
+                <div>
+                  <span className="text-[#38BDF8] font-bold">RESPONSABLE DEL TRATAMIENTO:</span> DEXVOI DIGITAL ARCHITECTS
+                  <span className="block text-gray-400">Contacto DPO / Delegado de Datos: info@dexvoi.com</span>
+                </div>
+                <div className="px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-400 font-bold text-[10px]">
+                  VIGENTE 2026
+                </div>
+              </div>
+
+              <section className="space-y-3">
+                <h4 className="text-base font-bold text-white font-mono flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-[#0066FF]" />
+                  1. Principios de Protección de Datos (RGPD)
+                </h4>
+                <p>
+                  En <strong>DEXVOI</strong> tratamos la información que nos facilita con el fin de prestarle el servicio solicitado de auditoría técnica, diagnóstico perimetral, emisión de informes forenses y emisión de facturación. Los datos proporcionados se conservarán mientras se mantenga la relación comercial o durante los años necesarios para cumplir con las obligaciones legales.
+                </p>
+                <p>
+                  Cumplimos rigurosamente con el <strong>Reglamento (UE) 2016/679 (RGPD)</strong> y la <strong>Ley Orgánica 3/2018 (LOPDGDD)</strong> relativa a la protección de las personas físicas en lo que respecta al tratamiento de sus datos personales.
+                </p>
+              </section>
+
+              <section className="space-y-3">
+                <h4 className="text-base font-bold text-white font-mono flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-[#0066FF]" />
+                  2. ¿Qué datos recopilamos y para qué?
+                </h4>
+                <ul className="list-disc pl-5 space-y-2 text-gray-300">
+                  <li><strong>Datos de contacto (Nombre, Email, Teléfono):</strong> Para responder a sus consultas, enviarle los informes en PDF contratados y notificarle el estado de sus auditorías.</li>
+                  <li><strong>URL o dominio web del negocio:</strong> Exclusivamente para realizar el análisis técnico pasivo no intrusivo y la auditoría solicitada por el titular o responsable.</li>
+                  <li><strong>Datos de facturación y pago:</strong> Gestionados de forma 100% segura y tokenizada mediante <strong>Stripe Inc.</strong> (PCI-DSS Nivel 1). DEXVOI nunca almacena los números completos de su tarjeta de crédito o débito.</li>
+                  <li><strong>Interacciones en el Asistente Virtual:</strong> Para brindar soporte guiado automatizado y procesar solicitudes prioritarias en tiempo real.</li>
+                </ul>
+              </section>
+
+              <section className="space-y-3">
+                <h4 className="text-base font-bold text-white font-mono flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-[#0066FF]" />
+                  3. Destinatarios y Encargados de Tratamiento
+                </h4>
+                <p>
+                  Los datos no se cederán a terceros ajenos a la prestación del servicio salvo obligación legal o mandato judicial. Para garantizar la máxima fiabilidad utilizamos proveedores de primer nivel bajo acuerdos de procesamiento de datos:
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
+                  <div className="p-3 rounded-lg bg-[#080D1A] border border-gray-800">
+                    <span className="text-[#38BDF8] font-bold">Stripe Payments Europe:</span> Procesamiento seguro de cobros y facturación.
+                  </div>
+                  <div className="p-3 rounded-lg bg-[#080D1A] border border-gray-800">
+                    <span className="text-[#38BDF8] font-bold">Resend / AWS Infrastructure:</span> Envío seguro de correos transaccionales e informes.
+                  </div>
+                  <div className="p-3 rounded-lg bg-[#080D1A] border border-gray-800">
+                    <span className="text-[#38BDF8] font-bold">Cloudflare Global Network:</span> Protección perimetral, firewall WAF y mitigación DDoS.
+                  </div>
+                  <div className="p-3 rounded-lg bg-[#080D1A] border border-gray-800">
+                    <span className="text-[#38BDF8] font-bold">Google Cloud Platform:</span> Alojamiento de modelos de asistencia y cómputo cifrado.
+                  </div>
+                </div>
+              </section>
+
+              <section className="space-y-3">
+                <h4 className="text-base font-bold text-white font-mono flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-[#0066FF]" />
+                  4. Ejercicio de Derechos (ARCO+)
+                </h4>
+                <p>
+                  Usted tiene derecho a obtener confirmación sobre si en DEXVOI estamos tratando sus datos personales. Por tanto, tiene derecho a ejercer sus derechos de:
+                </p>
+                <p className="text-xs font-mono text-emerald-400">
+                  [ Acceso ] · [ Rectificación ] · [ Supresión / Olvido ] · [ Limitación ] · [ Portabilidad ] · [ Oposición ]
+                </p>
+                <p>
+                  Para ejercerlos, simplemente remita un correo electrónico con su solicitud a <strong>info@dexvoi.com</strong> acreditando su identidad.
+                </p>
+              </section>
+            </div>
+          )}
+
+          {/* TAB 2: TÉRMINOS Y CONDICIONES */}
+          {activeTab === 'terms' && (
+            <div className="space-y-6 animate-fadeIn">
+              <div className="p-4 rounded-xl bg-[#131B33] border border-[#0066FF]/30 text-xs font-mono text-gray-300">
+                <span className="text-[#F5A623] font-bold">CONDICIONES DE CONTRATACIÓN Y SERVICIO:</span> Al solicitar auditorías gratuitas, adquirir informes en PDF (19€, 49€, 99€) o contratar desarrollos de blindaje con DEXVOI, usted acepta las presentes condiciones.
+              </div>
+
+              <section className="space-y-3">
+                <h4 className="text-base font-bold text-white font-mono flex items-center gap-2">
+                  <Scale className="w-4 h-4 text-[#0066FF]" />
+                  1. Objeto del Servicio
+                </h4>
+                <p>
+                  DEXVOI presta servicios de ingeniería de software, arquitectura digital de alta conversión, posicionamiento en buscadores, auditoría preventiva de ciberseguridad e inteligencia de fuentes abiertas (OSINT) para empresas y profesionales.
+                </p>
+              </section>
+
+              <section className="space-y-3">
+                <h4 className="text-base font-bold text-white font-mono flex items-center gap-2">
+                  <Scale className="w-4 h-4 text-[#0066FF]" />
+                  2. Planes de Auditoría Técnica y Pagos
+                </h4>
+                <ul className="list-disc pl-5 space-y-2 text-gray-300">
+                  <li><strong>Modalidad de pago:</strong> Los informes de auditoría (Starter 19€, Comprehensive 49€ y Premium 99€) son servicios profesionales de <strong>pago único</strong>. No conllevan suscripción ni cuotas recurrentes inadvertidas.</li>
+                  <li><strong>Plataforma de cobro:</strong> Los pagos se procesan directamente en la infraestructura oficial de Stripe Checkout con cifrado TLS 1.3 de 256 bits.</li>
+                  <li><strong>Entrega del producto digital:</strong> Los informes ejecutivos en PDF se generan y entregan de forma digital al correo electrónico facilitado en un plazo habitual de 1 a 24 horas hábiles.</li>
+                </ul>
+              </section>
+
+              <section className="space-y-3">
+                <h4 className="text-base font-bold text-white font-mono flex items-center gap-2">
+                  <Scale className="w-4 h-4 text-[#0066FF]" />
+                  3. Derecho de Desistimiento en Contenidos Digitales
+                </h4>
+                <p>
+                  Conforme a la normativa europea de consumidores y usuarios (Real Decreto Legislativo 1/2007, de 16 de noviembre, artículo 103), el derecho de desistimiento no es aplicable al suministro de contenido digital personalizado o informes técnicos forenses una vez que la ejecución o análisis ha comenzado con el consentimiento previo expreso del consumidor.
+                </p>
+                <p>
+                  No obstante, en DEXVOI garantizamos la máxima rigurosidad técnica en cada informe y ofrecemos soporte prioritario ante cualquier duda de implementación.
+                </p>
+              </section>
+
+              <section className="space-y-3">
+                <h4 className="text-base font-bold text-white font-mono flex items-center gap-2">
+                  <Scale className="w-4 h-4 text-[#0066FF]" />
+                  4. Limitación de Responsabilidad
+                </h4>
+                <p>
+                  Los diagnósticos técnicos y auditorías reflejan el estado perimetral observado en el momento del escaneo. DEXVOI no se hace responsable de fallos sobrevenidos por modificaciones del proveedor de hosting del cliente, ataques de terceros o configuraciones deficientes no gestionadas directamente por nuestro equipo.
+                </p>
+              </section>
+            </div>
+          )}
+
+          {/* TAB 3: POLÍTICA DE COOKIES */}
+          {activeTab === 'cookies' && (
+            <div className="space-y-6 animate-fadeIn">
+              <div className="p-4 rounded-xl bg-[#131B33] border border-[#0066FF]/30 text-xs font-mono text-gray-300">
+                <span className="text-[#38BDF8] font-bold">POLÍTICA DE COOKIES Y ALMACENAMIENTO LOCAL:</span> Cumplimiento del artículo 22.2 de la LSSI-CE y directrices de la Agencia Española de Protección de Datos (AEPD).
+              </div>
+
+              <section className="space-y-3">
+                <h4 className="text-base font-bold text-white font-mono flex items-center gap-2">
+                  <Cookie className="w-4 h-4 text-[#0066FF]" />
+                  1. ¿Qué son las Cookies?
+                </h4>
+                <p>
+                  Una cookie es un pequeño fichero que se descarga en su terminal para almacenar datos que podrán ser actualizados y recuperados por la entidad responsable de su instalación.
+                </p>
+              </section>
+
+              <section className="space-y-3">
+                <h4 className="text-base font-bold text-white font-mono flex items-center gap-2">
+                  <Cookie className="w-4 h-4 text-[#0066FF]" />
+                  2. Tipos de Cookies y Tecnologías Empleadas en DEXVOI
+                </h4>
+                <div className="space-y-3 text-xs">
+                  <div className="p-3.5 rounded-xl bg-[#080D1A] border border-gray-800">
+                    <span className="text-emerald-400 font-bold font-mono block mb-1">✓ Cookies Técnicas y Estrictamente Necesarias (Obligatorias)</span>
+                    <p className="text-gray-300">
+                      Permiten la navegación fluida, la seguridad de la conexión, el mantenimiento de sesiones en el asistente virtual y el almacenamiento de sus preferencias de privacidad (`dexvoi_consent`). No recopilan datos para fines comerciales.
+                    </p>
+                  </div>
+                  <div className="p-3.5 rounded-xl bg-[#080D1A] border border-gray-800">
+                    <span className="text-[#38BDF8] font-bold font-mono block mb-1">✓ Cookies de Seguridad y Prevención de Fraude (Stripe & Cloudflare)</span>
+                    <p className="text-gray-300">
+                      Garantizan la detección de robots maliciosos, protección DDoS en Cloudflare y verificación biométrica/antifraude al momento de pagar en Stripe.
+                    </p>
+                  </div>
+                  <div className="p-3.5 rounded-xl bg-[#080D1A] border border-gray-800">
+                    <span className="text-[#F5A623] font-bold font-mono block mb-1">✓ Cookies Analíticas Anónimas</span>
+                    <p className="text-gray-300">
+                      Miden de forma totalmente disociada y agregada la latencia de las páginas y la efectividad de las herramientas para mejorar la velocidad del sitio.
+                    </p>
+                  </div>
+                </div>
+              </section>
+
+              <section className="space-y-3">
+                <h4 className="text-base font-bold text-white font-mono flex items-center gap-2">
+                  <Cookie className="w-4 h-4 text-[#0066FF]" />
+                  3. Cómo Desactivar o Gestionar las Cookies
+                </h4>
+                <p>
+                  Usted puede revocar en cualquier momento su consentimiento haciendo clic en <em>"Gestionar Cookies"</em> en el pie de página o configurando las opciones de privacidad de su navegador web (Chrome, Safari, Firefox, Edge).
+                </p>
+              </section>
+            </div>
+          )}
+
+          {/* TAB 4: AVISO LEGAL */}
+          {activeTab === 'legal' && (
+            <div className="space-y-6 animate-fadeIn">
+              <div className="p-4 rounded-xl bg-[#131B33] border border-[#0066FF]/30 text-xs font-mono text-gray-300">
+                <span className="text-[#38BDF8] font-bold">INFORMACIÓN GENERAL (LSSI-CE):</span> Cumplimiento del artículo 10 de la Ley 34/2002, de 11 de julio, de servicios de la sociedad de la información y de comercio electrónico.
+              </div>
+
+              <section className="space-y-3">
+                <h4 className="text-base font-bold text-white font-mono flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-[#0066FF]" />
+                  1. Datos Identificativos del Titular
+                </h4>
+                <div className="p-4 rounded-xl bg-[#080D1A] border border-gray-800 space-y-2 text-xs font-mono">
+                  <p><strong className="text-white">Denominación Comercial:</strong> DEXVOI Business & Digital Architecture</p>
+                  <p><strong className="text-white">Email de Contacto Oficial:</strong> info@dexvoi.com</p>
+                  <p><strong className="text-white">Sitio Web:</strong> https://dexvoi.com</p>
+                  <p><strong className="text-white">Actividad:</strong> Consultoría de ingeniería informática, ciberseguridad preventiva, auditoría técnica web y arquitectura de software.</p>
+                </div>
+              </section>
+
+              <section className="space-y-3">
+                <h4 className="text-base font-bold text-white font-mono flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-[#0066FF]" />
+                  2. Propiedad Intelectual e Industrial
+                </h4>
+                <p>
+                  Todos los derechos de propiedad intelectual del sitio web dexvoi.com, su código fuente, diseño gráfico, logotipos, marcas comerciales, algoritmos de auditoría perimetral e informes técnicos pertenecen a DEXVOI o a sus respectivos licenciantes. Queda prohibida su reproducción o distribución sin autorización expresa.
+                </p>
+              </section>
+
+              <section className="space-y-3">
+                <h4 className="text-base font-bold text-white font-mono flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-[#0066FF]" />
+                  3. Legislación Aplicable y Jurisdicción
+                </h4>
+                <p>
+                  Para la resolución de cualquier controversia derivada del presente sitio web o de los servicios en él desarrollados, será de aplicación la legislación española, sometiéndose las partes a los Juzgados y Tribunales competentes.
+                </p>
+              </section>
+            </div>
+          )}
+
+          {/* TAB 5: PROTOCOLOS ÉTICOS & OSINT */}
+          {activeTab === 'security' && (
+            <div className="space-y-6 animate-fadeIn">
+              <div className="p-4 rounded-xl bg-[#131B33] border border-[#F5A623]/40 text-xs font-mono text-gray-300 flex items-center gap-3">
+                <Shield className="w-6 h-6 text-[#F5A623] shrink-0" />
+                <div>
+                  <span className="text-[#F5A623] font-bold">MANIFIESTO DE ETHICAL HACKING & OSINT:</span> Protocolo de diagnóstico pasivo no lesivo, confidencialidad estricta y divulgación responsable.
+                </div>
+              </div>
+
+              <section className="space-y-3">
+                <h4 className="text-base font-bold text-white font-mono flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-[#F5A623]" />
+                  1. Diagnóstico No Intrusivo (Passive Reconnaissance)
+                </h4>
+                <p>
+                  Las herramientas de diagnóstico de DEXVOI operan bajo metodología estrictamente <strong>pasiva y no intrusiva</strong>. Solo recopilan metadatos emitidos públicamente por los servidores web (como cabeceras HTTP, certificados SSL, latencias de respuesta DNS y registros SPF/DMARC) sin alterar bases de datos, sin inyectar payloads perjudiciales y sin degradar la disponibilidad del servicio auditado.
+                </p>
+              </section>
+
+              <section className="space-y-3">
+                <h4 className="text-base font-bold text-white font-mono flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-[#F5A623]" />
+                  2. Estricta Confidencialidad Comercial
+                </h4>
+                <p>
+                  Cualquier vulnerabilidad, fuga de cabeceras o punto débil detectado durante una auditoría se trata bajo secreto profesional y solo se comparte con el titular del dominio o el solicitante autorizado en su informe privado en PDF. DEXVOI jamás publica debilidades técnicas de sus clientes a terceros.
+                </p>
+              </section>
+
+              <section className="space-y-3">
+                <h4 className="text-base font-bold text-white font-mono flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-[#F5A623]" />
+                  3. Divulgación Responsable
+                </h4>
+                <p>
+                  Promovemos activamente las mejores prácticas del estándar <strong>OWASP Top 10</strong> y la comunidad de ciberseguridad internacional, orientadas a blindar a pequeñas y medianas empresas contra ataques masivos de ransomware y filtración de datos.
+                </p>
+              </section>
+            </div>
+          )}
+
+        </div>
+
+        {/* Modal Footer Actions */}
+        <div className="px-6 py-4 border-t border-gray-800 bg-[#0A0F1F] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono">
+          <div className="flex items-center gap-2 text-gray-400">
+            <Lock className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Última revisión legal auditada: Septiembre 2026</span>
+          </div>
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <button
+              onClick={onClose}
+              className="w-full sm:w-auto px-5 py-2 rounded-xl bg-[#0066FF] hover:bg-[#0052cc] text-white font-bold transition-all text-center"
+            >
+              Entendido y Aceptar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

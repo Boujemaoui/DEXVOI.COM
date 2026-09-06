@@ -16,6 +16,8 @@ import { AuditModal } from './components/AuditModal';
 import { PdfReportModal } from './components/PdfReportModal';
 import { OsintPurchaseModal } from './components/OsintPurchaseModal';
 import { VirtualAssistantChat } from './components/VirtualAssistantChat';
+import { LegalModal, LegalTab } from './components/LegalModal';
+import { ConsentBanner } from './components/ConsentBanner';
 import { OsintSecurityAuditResult } from './types';
 import { Home, Grid, Shield, Mail, Zap, CreditCard } from 'lucide-react';
 
@@ -29,6 +31,13 @@ export default function App() {
   const [selectedUrlForAudit, setSelectedUrlForAudit] = useState('');
   const [selectedFindings, setSelectedFindings] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<'inicio' | 'servicios' | 'scanner' | 'precios' | 'contacto'>('inicio');
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
+  const [legalModalTab, setLegalModalTab] = useState<LegalTab>('privacy');
+
+  const handleOpenLegalModal = (tab: LegalTab = 'privacy') => {
+    setLegalModalTab(tab);
+    setIsLegalModalOpen(true);
+  };
 
   const scrollToSection = (id: string, tabName: 'inicio' | 'servicios' | 'scanner' | 'precios' | 'contacto') => {
     setActiveTab(tabName);
@@ -121,7 +130,7 @@ export default function App() {
       </main>
 
       {/* Section 9: Footer & Trust Badge */}
-      <Footer />
+      <Footer onOpenLegalModal={handleOpenLegalModal} />
 
       {/* Global Audit Modal */}
       <AuditModal
@@ -142,6 +151,18 @@ export default function App() {
         onClose={() => setIsOsintModalOpen(false)}
         auditResult={osintAuditResult}
         targetDomain={osintTargetDomain}
+      />
+
+      {/* Full Legal Modal (Privacidad, Términos, Cookies, Aviso Legal, OSINT) */}
+      <LegalModal
+        isOpen={isLegalModalOpen}
+        onClose={() => setIsLegalModalOpen(false)}
+        initialTab={legalModalTab}
+      />
+
+      {/* RGPD / LOPDGDD Consent & Terms Acceptance Banner */}
+      <ConsentBanner
+        onOpenLegalModal={handleOpenLegalModal}
       />
 
       {/* Dexvoi Virtual Assistant Chatbot (FR / EN / ES) */}

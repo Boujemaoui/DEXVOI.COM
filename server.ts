@@ -439,7 +439,7 @@ async function startServer() {
     }
 
     const leadTicket = ticketId || `DEXVOI-LEAD-${Math.floor(100000 + Math.random() * 900000)}`;
-    const destinationEmail = process.env.NOTIFICATION_EMAIL || 'saidsahar2013@gmail.com';
+    const destinationEmail = process.env.NOTIFICATION_EMAIL || 'info@dexvoi.com';
 
     let emailSent = false;
     let emailError: string | null = null;
@@ -474,15 +474,28 @@ async function startServer() {
           </div>
         `;
 
-        await resend.emails.send({
+        // Attempt sending to destinationEmail (and fallback to info@dexvoi.com if restricted)
+        const sendResult = await resend.emails.send({
           from: 'Dexvoi Leads <onboarding@resend.dev>',
           to: destinationEmail,
           subject,
           html,
         });
 
+        if (sendResult.error) {
+          console.warn('[Resend] Primary destination rejected, falling back to info@dexvoi.com:', sendResult.error);
+          if (destinationEmail !== 'info@dexvoi.com') {
+            await resend.emails.send({
+              from: 'Dexvoi Leads <onboarding@resend.dev>',
+              to: 'info@dexvoi.com',
+              subject,
+              html,
+            });
+          }
+        }
+
         emailSent = true;
-        console.log(`[Resend] Lead email successfully sent to ${destinationEmail}`);
+        console.log(`[Resend] Lead email successfully dispatched`);
       } catch (err: any) {
         console.error('[Resend] Error sending lead notification:', err);
         emailError = err?.message || 'Error al enviar email';
@@ -536,6 +549,37 @@ async function startServer() {
     const trimmed = message.trim();
     if (!trimmed) {
       return res.status(400).json({ error: 'Message cannot be empty.' });
+    }
+
+    // Check if user provided contact details in chat (phone number or email) to notify you immediately
+    const emailMatch = trimmed.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+    const phoneMatch = trimmed.match(/(?:\+?[0-9]{1,3}[-\s.]?)?\(?[0-9]{2,4}\)?[-\s.]?[0-9]{3,4}[-\s.]?[0-9]{3,5}/);
+    const hasContactDetails = Boolean(emailMatch || (phoneMatch && phoneMatch[0].replace(/\D/g, '').length >= 8));
+
+    if (hasContactDetails && process.env.RESEND_API_KEY) {
+      try {
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        const destination = process.env.NOTIFICATION_EMAIL || 'info@dexvoi.com';
+        const contactAlertHtml = `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0A0F1F; color: #FFFFFF; padding: 24px; border-radius: 12px; border: 1px solid #0066FF;">
+            <h2 style="color: #0066FF; margin: 0 0 16px 0; font-size: 20px;">💬 Nuevo Contacto Detectado en Chat Dexvoi</h2>
+            <div style="background: #131B33; padding: 16px; border-radius: 8px; border: 1px solid #1E293B; line-height: 1.6;">
+              <p><strong>Mensaje del cliente:</strong> "${trimmed}"</p>
+              ${emailMatch ? `<p><strong>Email detectado:</strong> <a href="mailto:${emailMatch[0]}" style="color: #38BDF8;">${emailMatch[0]}</a></p>` : ''}
+              ${phoneMatch ? `<p><strong>Teléfono detectado:</strong> <a href="tel:${phoneMatch[0]}" style="color: #10B981;">${phoneMatch[0]}</a></p>` : ''}
+            </div>
+            <p style="font-size: 12px; color: #64748B; margin-top: 16px;">Detectado automáticamente por el Asistente Virtual Dexvoi.</p>
+          </div>
+        `;
+        resend.emails.send({
+          from: 'Dexvoi Leads <onboarding@resend.dev>',
+          to: destination,
+          subject: '💬 [Lead en Chat Dexvoi] Cliente ha dejado sus datos de contacto',
+          html: contactAlertHtml,
+        }).catch((e: any) => console.warn('[Resend Chat Alert Error]:', e?.message));
+      } catch (e: any) {
+        console.warn('Error queuing chat lead notification:', e);
+      }
     }
 
     // Attempt Gemini call if API client is available
