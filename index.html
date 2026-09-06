@@ -33,6 +33,35 @@
     <meta name="twitter:image" content="/og-image.png" />
     <meta name="twitter:image:alt" content="Dexvoi - Arquitectura Web, SEO y Blindaje Digital" />
 
+    <!-- Google tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KDJYZJ3WL2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      // Consent Mode v2 por defecto (RGPD / LOPDGDD compliant)
+      var savedConsent = null;
+      try {
+        savedConsent = JSON.parse(localStorage.getItem('dexvoi_legal_consent_v1') || '{}');
+      } catch (e) {}
+
+      var analyticsGranted = savedConsent && savedConsent.analytics === true;
+
+      gtag('consent', 'default', {
+        'analytics_storage': analyticsGranted ? 'granted' : 'denied',
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'wait_for_update': 500
+      });
+
+      gtag('config', 'G-KDJYZJ3WL2', {
+        send_page_view: true,
+        anonymize_ip: true
+      });
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">

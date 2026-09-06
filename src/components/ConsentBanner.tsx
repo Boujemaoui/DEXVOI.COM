@@ -28,6 +28,14 @@ export const ConsentBanner: React.FC<ConsentBannerProps> = ({ onOpenLegalModal }
       analytics: true,
       security: true,
     }));
+
+    // Actualizar consentimiento en Google Analytics inmediatamente
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('consent', 'update', {
+        'analytics_storage': 'granted',
+      });
+    }
+
     setIsVisible(false);
   };
 
@@ -38,6 +46,14 @@ export const ConsentBanner: React.FC<ConsentBannerProps> = ({ onOpenLegalModal }
       analytics: false,
       security: true,
     }));
+
+    // Restringir consentimiento analítico en Google Analytics
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('consent', 'update', {
+        'analytics_storage': 'denied',
+      });
+    }
+
     setIsVisible(false);
   };
 
