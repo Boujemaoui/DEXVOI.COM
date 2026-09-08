@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Shield, Menu, X, Terminal, ArrowRight, Zap, Lock, Calendar, CreditCard } from 'lucide-react';
+import { navigateTo } from '../utils/navigation';
 
 interface NavbarProps {
   onOpenAuditModal: () => void;
@@ -19,9 +20,27 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
 
   const scrollToSection = (id: string) => {
     setMobileMenuOpen(false);
+    if (window.location.pathname !== '/') {
+      navigateTo(`/#${id}`);
+      setTimeout(() => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+      return;
+    }
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleBrandClick = () => {
+    if (window.location.pathname !== '/') {
+      navigateTo('/');
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -36,7 +55,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Brand Logo */}
-        <div className="flex items-center gap-3 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+        <div className="flex items-center gap-3 cursor-pointer" onClick={handleBrandClick}>
           <div className="w-10 h-10 rounded bg-[#1E293B] border border-[#0066FF]/40 flex items-center justify-center relative overflow-hidden group shadow-[0_0_15px_rgba(0,102,255,0.2)]">
             <div className="absolute inset-0 bg-[#0066FF]/10 group-hover:bg-[#0066FF]/20 transition-colors"></div>
             <Shield className="w-5 h-5 text-[#F5A623] relative z-10" />
@@ -58,48 +77,42 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
         <nav className="hidden lg:flex items-center gap-8 text-sm font-medium text-gray-300">
           <button
             onClick={() => scrollToSection('problema')}
-            className="hover:text-white transition-colors flex items-center gap-1.5 py-1"
+            className="hover:text-white transition-colors flex items-center gap-1.5 py-1 cursor-pointer"
           >
             <span className="text-[#0066FF] font-mono text-xs">01.</span> Diagnóstico
           </button>
-          <button
-            onClick={() => scrollToSection('servicios')}
-            className="hover:text-white transition-colors flex items-center gap-1.5 py-1"
+          <a
+            href="/servicios"
+            onClick={(e) => {
+              if (!e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+                navigateTo('/servicios');
+              }
+            }}
+            className="hover:text-white transition-colors flex items-center gap-1.5 py-1 cursor-pointer"
           >
             <span className="text-[#0066FF] font-mono text-xs">02.</span> Servicios
-          </button>
+          </a>
           <button
             onClick={() => scrollToSection('sistemas-reservas')}
-            className="hover:text-white transition-colors flex items-center gap-1.5 py-1"
+            className="hover:text-white transition-colors flex items-center gap-1.5 py-1 cursor-pointer"
           >
             <span className="text-[#0066FF] font-mono text-xs">03.</span> Reservas
           </button>
           <button
             onClick={() => scrollToSection('agentes-ia')}
-            className="hover:text-white transition-colors flex items-center gap-1.5 py-1"
+            className="hover:text-white transition-colors flex items-center gap-1.5 py-1 cursor-pointer"
           >
             <span className="text-[#0066FF] font-mono text-xs">04.</span> Agentes IA
           </button>
-          <button
-            onClick={() => scrollToSection('metodologia')}
-            className="hover:text-white transition-colors flex items-center gap-1.5 py-1"
-          >
-            <span className="text-[#0066FF] font-mono text-xs">05.</span> Metodología
-          </button>
-          <button
-            onClick={() => scrollToSection('testimonios')}
-            className="hover:text-white transition-colors flex items-center gap-1.5 py-1"
-          >
-            <span className="text-[#0066FF] font-mono text-xs">06.</span> Casos de Éxito
-          </button>
-          <button
-            onClick={() => scrollToSection('scanner')}
-            className="text-gray-300 hover:text-white transition-colors flex items-center gap-1.5 py-1 font-mono text-xs"
-          >
-            <Zap className="w-3.5 h-3.5 text-[#0066FF]" /> Escáner Web
-          </button>
-          <button
-            onClick={() => scrollToSection('osint-audit')}
+          <a
+            href="/auditoria-seguridad"
+            onClick={(e) => {
+              if (!e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+                navigateTo('/auditoria-seguridad');
+              }
+            }}
             className="text-[#F5A623] hover:text-[#ffd78a] transition-colors flex items-center gap-1.5 py-1 font-mono font-bold text-xs"
           >
             <Shield className="w-3.5 h-3.5" />
@@ -107,9 +120,15 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
             <span className="ml-1 px-1.5 py-0.5 rounded bg-[#F5A623]/20 border border-[#F5A623]/40 text-[#F5A623] text-[9px] font-extrabold tracking-wider">
               29€
             </span>
-          </button>
-          <button
-            onClick={() => scrollToSection('precios')}
+          </a>
+          <a
+            href="/precios"
+            onClick={(e) => {
+              if (!e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+                navigateTo('/precios');
+              }
+            }}
             className="text-white hover:text-[#38BDF8] transition-colors flex items-center gap-1.5 py-1 font-mono font-bold text-xs px-2.5 py-1 rounded bg-[#635BFF]/20 border border-[#635BFF]/50"
           >
             <CreditCard className="w-3.5 h-3.5 text-[#635BFF]" />
@@ -117,7 +136,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
             <span className="ml-1 px-1.5 py-0.5 rounded bg-[#635BFF] text-white text-[9px] font-extrabold tracking-wider">
               19€ / 49€ / 99€
             </span>
-          </button>
+          </a>
         </nav>
 
         {/* CTA & System Status */}
@@ -130,7 +149,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
           <button
             id="nav-cta-btn"
             onClick={onOpenAuditModal}
-            className="metallic-btn px-5 py-2.5 rounded font-mono text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg"
+            className="metallic-btn px-5 py-2.5 rounded font-mono text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg cursor-pointer"
           >
             <Lock className="w-3.5 h-3.5" />
             <span>Auditoría Gratuita</span>
@@ -147,7 +166,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
           </button>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded bg-[#1E293B] border border-gray-800 text-gray-300 hover:text-white"
+            className="p-2 rounded bg-[#1E293B] border border-gray-800 text-gray-300 hover:text-white cursor-pointer"
             aria-label="Alternar Menú"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -174,13 +193,18 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
               <span>01. Diagnóstico de Problema</span>
               <ArrowRight className="w-4 h-4 text-gray-600" />
             </button>
-            <button
-              onClick={() => scrollToSection('servicios')}
+            <a
+              href="/servicios"
+              onClick={(e) => {
+                e.preventDefault();
+                setMobileMenuOpen(false);
+                navigateTo('/servicios');
+              }}
               className="text-left py-2 text-gray-300 hover:text-white flex items-center justify-between"
             >
-              <span>02. Los 3 Pilares de Servicios</span>
+              <span>02. Servicios Completos</span>
               <ArrowRight className="w-4 h-4 text-gray-600" />
-            </button>
+            </a>
             <button
               onClick={() => scrollToSection('sistemas-reservas')}
               className="text-left py-2 text-gray-300 hover:text-white flex items-center justify-between"
@@ -195,48 +219,49 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
               <span>04. Agentes Avanzados con IA</span>
               <ArrowRight className="w-4 h-4 text-gray-600" />
             </button>
-            <button
-              onClick={() => scrollToSection('metodologia')}
-              className="text-left py-2 text-gray-300 hover:text-white flex items-center justify-between"
-            >
-              <span>05. Metodología El Arquitecto</span>
-              <ArrowRight className="w-4 h-4 text-gray-600" />
-            </button>
-            <button
-              onClick={() => scrollToSection('testimonios')}
-              className="text-left py-2 text-gray-300 hover:text-white flex items-center justify-between"
-            >
-              <span>06. Casos de Éxito Reales</span>
-              <ArrowRight className="w-4 h-4 text-gray-600" />
-            </button>
-            <button
-              onClick={() => scrollToSection('scanner')}
-              className="text-left py-2 text-gray-300 hover:text-white flex items-center justify-between"
-            >
-              <span>07. Escáner Rápido de 60s</span>
-              <Zap className="w-4 h-4 text-[#0066FF]" />
-            </button>
-            <button
-              onClick={() => scrollToSection('osint-audit')}
+            <a
+              href="/auditoria-seguridad"
+              onClick={(e) => {
+                e.preventDefault();
+                setMobileMenuOpen(false);
+                navigateTo('/auditoria-seguridad');
+              }}
               className="text-left py-2 text-[#F5A623] font-bold flex items-center justify-between"
             >
-              <span>08. OSINT & Blindaje Cabeceras</span>
+              <span>05. OSINT & Blindaje Cabeceras</span>
               <span className="px-2 py-0.5 rounded bg-[#F5A623]/20 border border-[#F5A623]/40 text-[#F5A623] text-[10px]">
                 29€ ÚNICO
               </span>
-            </button>
-            <button
-              onClick={() => scrollToSection('precios')}
+            </a>
+            <a
+              href="/precios"
+              onClick={(e) => {
+                e.preventDefault();
+                setMobileMenuOpen(false);
+                navigateTo('/precios');
+              }}
               className="text-left py-2.5 px-3 rounded-lg bg-[#635BFF]/20 border border-[#635BFF]/50 text-white font-bold flex items-center justify-between"
             >
               <div className="flex items-center gap-2">
                 <CreditCard className="w-4 h-4 text-[#635BFF]" />
-                <span>09. Planes de Pago (Stripe)</span>
+                <span>06. Planes de Pago (Stripe)</span>
               </div>
               <span className="px-2 py-0.5 rounded bg-[#635BFF] text-white text-[10px] font-mono">
                 19€ / 49€ / 99€
               </span>
-            </button>
+            </a>
+            <a
+              href="/contacto"
+              onClick={(e) => {
+                e.preventDefault();
+                setMobileMenuOpen(false);
+                navigateTo('/contacto');
+              }}
+              className="text-left py-2 text-[#38BDF8] flex items-center justify-between"
+            >
+              <span>07. Contacto Directo</span>
+              <ArrowRight className="w-4 h-4 text-gray-600" />
+            </a>
           </div>
 
           <div className="pt-2">
@@ -245,7 +270,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
                 setMobileMenuOpen(false);
                 onOpenAuditModal();
               }}
-              className="w-full metallic-btn py-3 rounded font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2"
+              className="w-full metallic-btn py-3 rounded font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
             >
               <Shield className="w-4 h-4" />
               <span>Solicitar Auditoría de 5 Puntos</span>

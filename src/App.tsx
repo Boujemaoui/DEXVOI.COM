@@ -20,8 +20,15 @@ import { LegalModal, LegalTab } from './components/LegalModal';
 import { ConsentBanner } from './components/ConsentBanner';
 import { OsintSecurityAuditResult } from './types';
 import { Home, Grid, Shield, Mail, Zap, CreditCard } from 'lucide-react';
+import { useAppRoute, navigateTo } from './utils/navigation';
+import { LegalPage } from './pages/LegalPage';
+import { ServicesPage } from './pages/ServicesPage';
+import { PricingPage } from './pages/PricingPage';
+import { ContactPage } from './pages/ContactPage';
+import { OsintAuditPage } from './pages/OsintAuditPage';
 
 export default function App() {
+  const { route } = useAppRoute();
   const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
   const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
   const [pdfModalTier, setPdfModalTier] = useState<'basic' | 'complete' | 'premium'>('complete');
@@ -41,6 +48,14 @@ export default function App() {
 
   const scrollToSection = (id: string, tabName: 'inicio' | 'servicios' | 'scanner' | 'precios' | 'contacto') => {
     setActiveTab(tabName);
+    if (route !== 'home') {
+      navigateTo(`/#${id}`);
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+      return;
+    }
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
@@ -58,78 +73,127 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#0A0F1F] text-[#e5e2e3] font-sans antialiased selection:bg-[#0066FF] selection:text-white pb-16 lg:pb-0">
-      {/* Top Navigation */}
-      <Navbar onOpenAuditModal={() => setIsAuditModalOpen(true)} />
-
-      {/* Main Content Sections */}
-      <main id="main-content">
-        {/* Section 1: Hero */}
-        <HeroSection
-          onOpenAuditModal={() => setIsAuditModalOpen(true)}
-          onScrollToScanner={() => scrollToSection('scanner', 'scanner')}
-        />
-
-        {/* Section 2: The Problem */}
-        <ProblemSection
+      {/* Route-based Render */}
+      {route === 'services' && (
+        <ServicesPage
+          onNavigateHome={() => navigateTo('/')}
           onOpenAuditModal={() => setIsAuditModalOpen(true)}
         />
+      )}
 
-        {/* Section 3: Services (The 3 Pillars) */}
-        <ServicesSection
-          onOpenAuditModal={() => setIsAuditModalOpen(true)}
-        />
-
-        {/* Section 4: Advanced Booking Systems (Sistemas de Gestión de Reservas Avanzadas) */}
-        <BookingSystemSection
-          onOpenAuditModal={() => setIsAuditModalOpen(true)}
-          onContactClick={() => scrollToSection('contacto', 'contacto')}
-        />
-
-        {/* Section 5: Advanced AI Agents (Agentes Avanzados con IA) */}
-        <AiAgentsSection
-          onOpenAuditModal={() => setIsAuditModalOpen(true)}
-          onContactClick={() => scrollToSection('contacto', 'contacto')}
-        />
-
-        {/* Section 6: Methodology (El Arquitecto) */}
-        <MethodologySection
-          onOpenAuditModal={() => setIsAuditModalOpen(true)}
-        />
-
-        {/* Section 6: Testimonials & Case Studies */}
-        <TestimonialsSection />
-
-        {/* Section 6: Interactive Fast Scanner */}
-        <ScannerSection
-          onSelectAuditWithUrl={handleSelectAuditWithUrl}
-        />
-
-        {/* Section 7: Standalone Real-time OSINT & Security Headers Auditor (29€ Pago Único) */}
-        <OsintSecurityAuditor
-          onOpenPurchaseModal={(result, target) => {
-            setOsintAuditResult(result);
-            setOsintTargetDomain(target);
-            setIsOsintModalOpen(true);
-          }}
-        />
-
-        {/* Section 8: Planes de Pago & Auditoría (19€, 49€, 99€ con Stripe Oficial) */}
-        <PricingSection
+      {route === 'pricing' && (
+        <PricingPage
+          onNavigateHome={() => navigateTo('/')}
           onOpenPdfModal={(tier) => {
             setPdfModalTier(tier);
             setIsPdfModalOpen(true);
           }}
           onOpenAuditModal={() => setIsAuditModalOpen(true)}
         />
+      )}
 
-        {/* Section 9: Final CTA & Contact Form */}
-        <ContactCTASection
-          initialUrl={selectedUrlForAudit}
-          initialFindings={selectedFindings}
+      {route === 'contact' && (
+        <ContactPage
+          onNavigateHome={() => navigateTo('/')}
+          onOpenAuditModal={() => setIsAuditModalOpen(true)}
         />
-      </main>
+      )}
 
-      {/* Section 9: Footer & Trust Badge */}
+      {route === 'security' && (
+        <OsintAuditPage
+          onNavigateHome={() => navigateTo('/')}
+          onOpenPurchaseModal={(result, target) => {
+            setOsintAuditResult(result);
+            setOsintTargetDomain(target);
+            setIsOsintModalOpen(true);
+          }}
+        />
+      )}
+
+      {(route === 'privacy' || route === 'terms' || route === 'cookies' || route === 'legal') && (
+        <LegalPage
+          initialTab={route as LegalTab}
+          onNavigateHome={() => navigateTo('/')}
+          onOpenAuditModal={() => setIsAuditModalOpen(true)}
+        />
+      )}
+
+      {route === 'home' && (
+        <>
+          {/* Top Navigation */}
+          <Navbar onOpenAuditModal={() => setIsAuditModalOpen(true)} />
+
+          {/* Main Content Sections */}
+          <main id="main-content">
+            {/* Section 1: Hero */}
+            <HeroSection
+              onOpenAuditModal={() => setIsAuditModalOpen(true)}
+              onScrollToScanner={() => scrollToSection('scanner', 'scanner')}
+            />
+
+            {/* Section 2: The Problem */}
+            <ProblemSection
+              onOpenAuditModal={() => setIsAuditModalOpen(true)}
+            />
+
+            {/* Section 3: Services (The 3 Pillars) */}
+            <ServicesSection
+              onOpenAuditModal={() => setIsAuditModalOpen(true)}
+            />
+
+            {/* Section 4: Advanced Booking Systems (Sistemas de Gestión de Reservas Avanzadas) */}
+            <BookingSystemSection
+              onOpenAuditModal={() => setIsAuditModalOpen(true)}
+              onContactClick={() => scrollToSection('contacto', 'contacto')}
+            />
+
+            {/* Section 5: Advanced AI Agents (Agentes Avanzados con IA) */}
+            <AiAgentsSection
+              onOpenAuditModal={() => setIsAuditModalOpen(true)}
+              onContactClick={() => scrollToSection('contacto', 'contacto')}
+            />
+
+            {/* Section 6: Methodology (El Arquitecto) */}
+            <MethodologySection
+              onOpenAuditModal={() => setIsAuditModalOpen(true)}
+            />
+
+            {/* Section 6: Testimonials & Case Studies */}
+            <TestimonialsSection />
+
+            {/* Section 6: Interactive Fast Scanner */}
+            <ScannerSection
+              onSelectAuditWithUrl={handleSelectAuditWithUrl}
+            />
+
+            {/* Section 7: Standalone Real-time OSINT & Security Headers Auditor (29€ Pago Único) */}
+            <OsintSecurityAuditor
+              onOpenPurchaseModal={(result, target) => {
+                setOsintAuditResult(result);
+                setOsintTargetDomain(target);
+                setIsOsintModalOpen(true);
+              }}
+            />
+
+            {/* Section 8: Planes de Pago & Auditoría (19€, 49€, 99€ con Stripe Oficial) */}
+            <PricingSection
+              onOpenPdfModal={(tier) => {
+                setPdfModalTier(tier);
+                setIsPdfModalOpen(true);
+              }}
+              onOpenAuditModal={() => setIsAuditModalOpen(true)}
+            />
+
+            {/* Section 9: Final CTA & Contact Form */}
+            <ContactCTASection
+              initialUrl={selectedUrlForAudit}
+              initialFindings={selectedFindings}
+            />
+          </main>
+        </>
+      )}
+
+      {/* Persistent Footer on all views */}
       <Footer onOpenLegalModal={handleOpenLegalModal} />
 
       {/* Global Audit Modal */}
@@ -180,9 +244,12 @@ export default function App() {
       {/* Mobile Bottom Navigation Bar */}
       <nav className="lg:hidden fixed bottom-0 left-0 w-full z-40 bg-[#0D1326]/95 backdrop-blur-md border-t border-gray-800/80 px-2 py-1.5 flex items-center justify-around font-mono text-[10px]">
         <button
-          onClick={() => scrollToSection('hero', 'inicio')}
-          className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all ${
-            activeTab === 'inicio' ? 'text-[#F5A623] font-bold' : 'text-gray-400 hover:text-gray-200'
+          onClick={() => {
+            if (route !== 'home') navigateTo('/');
+            else scrollToSection('hero', 'inicio');
+          }}
+          className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all cursor-pointer ${
+            route === 'home' && activeTab === 'inicio' ? 'text-[#F5A623] font-bold' : 'text-gray-400 hover:text-gray-200'
           }`}
         >
           <Home className="w-5 h-5 mb-0.5" />
@@ -190,9 +257,9 @@ export default function App() {
         </button>
 
         <button
-          onClick={() => scrollToSection('servicios', 'servicios')}
-          className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all ${
-            activeTab === 'servicios' ? 'text-[#F5A623] font-bold' : 'text-gray-400 hover:text-gray-200'
+          onClick={() => navigateTo('/servicios')}
+          className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all cursor-pointer ${
+            route === 'services' ? 'text-[#0066FF] font-bold' : 'text-gray-400 hover:text-gray-200'
           }`}
         >
           <Grid className="w-5 h-5 mb-0.5" />
@@ -200,19 +267,19 @@ export default function App() {
         </button>
 
         <button
-          onClick={() => scrollToSection('scanner', 'scanner')}
-          className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all ${
-            activeTab === 'scanner' ? 'text-[#F5A623] font-bold' : 'text-gray-400 hover:text-gray-200'
+          onClick={() => navigateTo('/auditoria-seguridad')}
+          className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all cursor-pointer ${
+            route === 'security' ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-gray-200'
           }`}
         >
-          <Zap className="w-5 h-5 mb-0.5 text-[#F5A623]" />
-          <span className="text-[#F5A623]">Escáner</span>
+          <Shield className="w-5 h-5 mb-0.5" />
+          <span>Seguridad</span>
         </button>
 
         <button
-          onClick={() => scrollToSection('precios', 'precios')}
-          className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all ${
-            activeTab === 'precios' ? 'text-[#635BFF] font-bold' : 'text-gray-400 hover:text-gray-200'
+          onClick={() => navigateTo('/precios')}
+          className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all cursor-pointer ${
+            route === 'pricing' ? 'text-[#635BFF] font-bold' : 'text-gray-400 hover:text-gray-200'
           }`}
         >
           <CreditCard className="w-5 h-5 mb-0.5" />
@@ -220,9 +287,9 @@ export default function App() {
         </button>
 
         <button
-          onClick={() => scrollToSection('contacto', 'contacto')}
-          className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all ${
-            activeTab === 'contacto' ? 'text-[#F5A623] font-bold' : 'text-gray-400 hover:text-gray-200'
+          onClick={() => navigateTo('/contacto')}
+          className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all cursor-pointer ${
+            route === 'contact' ? 'text-[#F5A623] font-bold' : 'text-gray-400 hover:text-gray-200'
           }`}
         >
           <Mail className="w-5 h-5 mb-0.5" />

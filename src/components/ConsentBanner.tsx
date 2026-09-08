@@ -69,31 +69,49 @@ export const ConsentBanner: React.FC<ConsentBannerProps> = ({ onOpenLegalModal }
 
               <p className="text-xs text-gray-300 font-sans leading-relaxed">
                 En <strong>DEXVOI</strong> protegemos tus datos y empleamos cookies técnicas y de seguridad para blindar tus conexiones y ofrecerte diagnósticos y auditorías fiables. Al navegar o utilizar nuestro asistente y pasarela de pago, aceptas nuestra{' '}
-                <button
-                  onClick={() => onOpenLegalModal('privacy')}
+                <a
+                  href="/privacidad"
+                  onClick={(e) => {
+                    if (!e.ctrlKey && !e.metaKey) {
+                      e.preventDefault();
+                      onOpenLegalModal('privacy');
+                    }
+                  }}
                   className="text-[#38BDF8] underline hover:text-white font-semibold transition-colors"
                 >
                   Política de Privacidad
-                </button>
+                </a>
                 {' '}y los{' '}
-                <button
-                  onClick={() => onOpenLegalModal('terms')}
+                <a
+                  href="/condiciones"
+                  onClick={(e) => {
+                    if (!e.ctrlKey && !e.metaKey) {
+                      e.preventDefault();
+                      onOpenLegalModal('terms');
+                    }
+                  }}
                   className="text-[#38BDF8] underline hover:text-white font-semibold transition-colors"
                 >
                   Términos y Condiciones
-                </button>.
+                </a>.
               </p>
             </div>
           </div>
 
           {/* Buttons */}
           <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 w-full md:w-auto shrink-0 justify-end">
-            <button
-              onClick={() => onOpenLegalModal('cookies')}
+            <a
+              href="/cookies"
+              onClick={(e) => {
+                if (!e.ctrlKey && !e.metaKey) {
+                  e.preventDefault();
+                  onOpenLegalModal('cookies');
+                }
+              }}
               className="w-full sm:w-auto px-3.5 py-2 rounded-xl text-xs font-mono text-gray-300 hover:text-white hover:bg-[#1E293B] border border-gray-700/80 transition-all text-center"
             >
               Configurar
-            </button>
+            </a>
 
             <button
               onClick={handleAcceptNecessary}
