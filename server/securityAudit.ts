@@ -77,7 +77,7 @@ export async function runRealSecurityAudit({ target }: AuditOptions): Promise<Os
     throw new Error(`Acceso denegado: El destino "${hostname}" corresponde a una red privada o restringida.`);
   }
 
-  // 1. DNS & OSINT Reconnaissance in parallel
+  // 1. DNS & OSINT Reconnaissance with timeout guard
   let ip: string | null = null;
   let ipFamily: string | null = null;
   let mxRecords: string[] = [];
@@ -85,8 +85,15 @@ export async function runRealSecurityAudit({ target }: AuditOptions): Promise<Os
   let hasDmarc = false;
   let dmarcRecord: string | null = null;
 
+  const withTimeout = <T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> => {
+    return Promise.race([
+      promise,
+      new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))
+    ]);
+  };
+
   try {
-    const dnsLookup = await dns.lookup(hostname).catch(() => null);
+    const dnsLookup = await withTimeout(dns.lookup(hostname).catch(() => null), 2500, null);
     if (dnsLookup) {
       ip = dnsLookup.address;
       ipFamily = dnsLookup.family === 6 ? 'IPv6' : 'IPv4';
@@ -96,7 +103,7 @@ export async function runRealSecurityAudit({ target }: AuditOptions): Promise<Os
   }
 
   try {
-    const mx = await dns.resolveMx(hostname).catch(() => []);
+    const mx = await withTimeout(dns.resolveMx(hostname).catch(() => []), 2500, []);
     mxRecords = mx
       .sort((a, b) => a.priority - b.priority)
       .slice(0, 3)
@@ -106,7 +113,7 @@ export async function runRealSecurityAudit({ target }: AuditOptions): Promise<Os
   }
 
   try {
-    const txtRecords = await dns.resolveTxt(hostname).catch(() => []);
+    const txtRecords = await withTimeout(dns.resolveTxt(hostname).catch(() => []), 2500, []);
     const flatTxt = txtRecords.map(r => r.join(''));
     hasSpf = flatTxt.some(t => t.toLowerCase().includes('v=spf1'));
   } catch (e) {
@@ -114,7 +121,7 @@ export async function runRealSecurityAudit({ target }: AuditOptions): Promise<Os
   }
 
   try {
-    const dmarcTxt = await dns.resolveTxt(`_dmarc.${hostname}`).catch(() => []);
+    const dmarcTxt = await withTimeout(dns.resolveTxt(`_dmarc.${hostname}`).catch(() => []), 2500, []);
     const flatDmarc = dmarcTxt.map(r => r.join(''));
     const found = flatDmarc.find(t => t.toLowerCase().includes('v=dmarc1'));
     if (found) {

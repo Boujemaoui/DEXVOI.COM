@@ -19,6 +19,7 @@ import {
   Code2
 } from 'lucide-react';
 import { OsintSecurityAuditResult, SecurityHeaderItem, SecurityBreachItem } from '../types';
+import { runClientSecurityAudit } from '../services/clientSecurityAudit';
 
 interface OsintSecurityAuditorProps {
   onOpenPurchaseModal: (result: OsintSecurityAuditResult | null, target: string) => void;
@@ -42,27 +43,43 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
     setErrorMessage(null);
 
     try {
-      const response = await fetch('/api/security-audit', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ target: queryTarget }),
-      });
+      let finalData: OsintSecurityAuditResult | null = null;
 
-      const data = await response.json();
+      // 1. Intentar auditoría en servidor si la API está disponible
+      try {
+        const response = await fetch('/api/security-audit', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ target: queryTarget }),
+        });
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Error al ejecutar la auditoría de seguridad.');
+        const contentType = response.headers.get('content-type') || '';
+        if (response.ok && contentType.includes('application/json')) {
+          const data = await response.json();
+          if (data && !data.error && data.score !== undefined) {
+            finalData = data;
+          }
+        }
+      } catch {
+        // En caso de hosting estático (Cloudflare Pages) o timeout, usar motor cliente DoH
       }
 
-      setAuditData(data);
+      // 2. Si el servidor no devolvió JSON o estamos en hosting estático, ejecutar auditoría en vivo en cliente
+      if (!finalData) {
+        finalData = await runClientSecurityAudit(queryTarget);
+      }
+
+      setAuditData(finalData);
       setTargetInput(queryTarget);
     } catch (err: any) {
       console.error('Audit failed:', err);
-      setErrorMessage(
-        err.message || 'Error de conexión. Asegúrate de ingresar un dominio activo y público.'
-      );
+      let friendlyMessage = err?.message || 'Error de conexión. Asegúrate de ingresar un dominio activo y público.';
+      if (friendlyMessage.includes('JSON') || friendlyMessage.includes('Unexpected') || friendlyMessage.includes('fetch')) {
+        friendlyMessage = 'No se pudo conectar con el dominio indicado. Verifica que esté activo, público y bien escrito (ej: tudominio.com).';
+      }
+      setErrorMessage(friendlyMessage);
     } finally {
       setIsLoading(false);
     }
