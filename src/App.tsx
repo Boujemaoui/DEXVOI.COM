@@ -28,10 +28,12 @@ import { ServicesPage } from './pages/ServicesPage';
 import { PricingPage } from './pages/PricingPage';
 import { ContactPage } from './pages/ContactPage';
 import { OsintAuditPage } from './pages/OsintAuditPage';
+import { BlogPage } from './pages/BlogPage';
+import { BlogPostPage } from './pages/BlogPostPage';
 
 export default function App() {
   const { language } = useLanguage();
-  const { route } = useAppRoute();
+  const { route, blogSlug } = useAppRoute();
   const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
   const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
   const [pdfModalTier, setPdfModalTier] = useState<'basic' | 'complete' | 'premium'>('complete');
@@ -106,6 +108,21 @@ export default function App() {
 
       {route === 'contact' && (
         <ContactPage
+          onNavigateHome={() => navigateTo('/')}
+          onOpenAuditModal={() => setIsAuditModalOpen(true)}
+        />
+      )}
+
+      {route === 'blog' && (
+        <BlogPage
+          onNavigateHome={() => navigateTo('/')}
+          onOpenAuditModal={() => setIsAuditModalOpen(true)}
+        />
+      )}
+
+      {route === 'blog-post' && (
+        <BlogPostPage
+          slug={blogSlug}
           onNavigateHome={() => navigateTo('/')}
           onOpenAuditModal={() => setIsAuditModalOpen(true)}
         />

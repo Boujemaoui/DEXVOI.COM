@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Menu, X, ArrowRight, Lock, CreditCard } from 'lucide-react';
+import { Shield, Menu, X, ArrowRight, Lock, CreditCard, BookOpen } from 'lucide-react';
 import { navigateTo } from '../utils/navigation';
 import { useLanguage } from '../i18n/LanguageContext';
 import { LanguageSelector } from './LanguageSelector';
@@ -137,6 +137,19 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
             <CreditCard className="w-3.5 h-3.5 text-[#635BFF]" />
             <span>{t.nav.pricing}</span>
           </a>
+          <a
+            href="/blog"
+            onClick={(e) => {
+              if (!e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+                navigateTo('/blog');
+              }
+            }}
+            className="hover:text-white text-gray-300 transition-colors flex items-center gap-1.5 py-1 font-mono text-xs cursor-pointer"
+          >
+            <BookOpen className="w-3.5 h-3.5 text-[#38BDF8]" />
+            <span>Blog</span>
+          </a>
         </nav>
 
         {/* CTA & Language Switcher & System Status */}
@@ -268,6 +281,21 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
               className="text-left py-2 text-[#38BDF8] flex items-center justify-between"
             >
               <span>07. {t.nav.contact}</span>
+              <ArrowRight className="w-4 h-4 text-gray-600" />
+            </a>
+            <a
+              href="/blog"
+              onClick={(e) => {
+                e.preventDefault();
+                setMobileMenuOpen(false);
+                navigateTo('/blog');
+              }}
+              className="text-left py-2 text-white font-medium flex items-center justify-between"
+            >
+              <div className="flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-[#38BDF8]" />
+                <span>08. Blog & Recursos Técnicos</span>
+              </div>
               <ArrowRight className="w-4 h-4 text-gray-600" />
             </a>
           </div>

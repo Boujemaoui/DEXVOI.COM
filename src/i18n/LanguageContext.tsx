@@ -19,11 +19,11 @@ const STORAGE_KEY = 'dexvoi_language';
  * 2. Browser navigator.languages / navigator.language
  * 3. Default fallback to 'es'
  */
-export function detectInitialLanguage(): { lang: Language; isAuto: boolean } {
+export function detectInitialLanguage(): { language: Language; isAuto: boolean } {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved === 'es' || saved === 'fr' || saved === 'en') {
-      return { lang: saved, isAuto: false };
+      return { language: saved, isAuto: false };
     }
   } catch (e) {
     // LocalStorage might be disabled in private/sandboxed mode
@@ -42,13 +42,13 @@ export function detectInitialLanguage(): { lang: Language; isAuto: boolean } {
 
   for (const loc of browserLocales) {
     const code = loc.toLowerCase();
-    if (code.startsWith('fr')) return { lang: 'fr', isAuto: true };
-    if (code.startsWith('en')) return { lang: 'en', isAuto: true };
-    if (code.startsWith('es')) return { lang: 'es', isAuto: true };
+    if (code.startsWith('fr')) return { language: 'fr', isAuto: true };
+    if (code.startsWith('en')) return { language: 'en', isAuto: true };
+    if (code.startsWith('es')) return { language: 'es', isAuto: true };
   }
 
   // Fallback default
-  return { lang: 'es', isAuto: true };
+  return { language: 'es', isAuto: true };
 }
 
 interface LanguageProviderProps {

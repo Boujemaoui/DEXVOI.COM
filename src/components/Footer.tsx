@@ -99,6 +99,15 @@ export const Footer: React.FC<FooterProps> = () => {
                   05. {t.pricing.title}
                 </a>
               </li>
+              <li>
+                <a 
+                  href="/blog" 
+                  onClick={(e) => handleLinkClick(e, '/blog')}
+                  className="text-[#38BDF8] hover:underline flex items-center gap-1"
+                >
+                  06. Blog & Guías Técnicas
+                </a>
+              </li>
             </ul>
           </div>
 

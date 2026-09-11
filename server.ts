@@ -735,6 +735,138 @@ Responde SÍ para agendar tu diagnóstico sin costo.
     });
   });
 
+  // Automated & On-Demand Blog Post Generator with Gemini AI
+  app.post('/api/blog/generate', async (req, res) => {
+    try {
+      const { topic, category } = req.body || {};
+      const targetCategory = (category || 'ciberseguridad') as 'ciberseguridad' | 'seo-local' | 'arquitectura-web' | 'ia-reservas';
+      const promptTopic = topic || 'Blindaje perimetral y arquitectura web de alta velocidad para empresas de élite';
+
+      const categoryLabels: Record<string, string> = {
+        'ciberseguridad': 'Ciberseguridad & Compliance',
+        'seo-local': 'SEO Local & Google Maps',
+        'arquitectura-web': 'Arquitectura Web & Rendimiento',
+        'ia-reservas': 'IA & Automatización'
+      };
+
+      const defaultImages: Record<string, string> = {
+        'ciberseguridad': 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1200&q=80',
+        'seo-local': 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80',
+        'arquitectura-web': 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80',
+        'ia-reservas': 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=80'
+      };
+
+      const now = new Date().toISOString();
+      const slugBase = promptTopic
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)+/g, '')
+        .slice(0, 60);
+      const slug = `${slugBase}-${Date.now().toString().slice(-4)}`;
+
+      let generatedTitle = promptTopic;
+      let generatedExcerpt = `Guía técnica exhaustiva sobre ${promptTopic} elaborada por el equipo de ingeniería de Dexvoi.`;
+      let generatedContent = `
+## Introducción Estratégica
+
+En el contexto actual de digitalización avanzada, contar con una infraestructura robusta y blindada es el principal factor diferencial para clínicas médicas y restaurantes de alta gama.
+
+---
+
+### Diagnóstico de Riesgos Comunes
+
+La mayoría de sitios corporativos presentan vulnerabilidades críticas en tres niveles:
+
+1. **Falta de cabeceras de seguridad HTTP:** Exposición a ataques de clickjacking y cross-site scripting (XSS).
+2. **Deuda técnica por CMS obsoletos:** Ralentización de carga que destruye las métricas de Core Web Vitals y penaliza el posicionamiento en Google Search.
+3. **Dependencia de intermediarios de reservas:** Pérdida de hasta un 20% en comisiones a plataformas agregadoras.
+
+---
+
+### Solución Implementada por Dexvoi
+
+- Arquitectura estática y desacoplada con tiempos de carga inferiores a 400ms.
+- Certificación SSL grado A+ y cabeceras de seguridad estrictas (HSTS, CSP).
+- Motores de reserva con IA propietarios sin comisiones por cliente.
+      `;
+      let metaDescription = `Aprende cómo optimizar ${promptTopic} con las directrices técnicas y de seguridad de Dexvoi.`;
+      let tags = ['Ciberseguridad', 'SEO', 'Dexvoi', 'Arquitectura Web'];
+
+      // If Gemini is available, generate a deeply researched article
+      if (process.env.GEMINI_API_KEY) {
+        try {
+          const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+          const prompt = `Actúa como Director Técnico y Consultor Senior de Ciberseguridad y SEO en Dexvoi (empresa de élite de arquitectura web, SEO local y blindaje digital).
+Redacta un artículo de blog técnico, profesional y optimizado para SEO sobre el siguiente tema: "${promptTopic}".
+Categoría: "${targetCategory}".
+
+Instrucciones estrictas:
+1. Formato de salida: Devuelve ÚNICAMENTE un objeto JSON válido, sin bloques de código extra ni texto adicional fuera del JSON.
+2. Campos del JSON:
+{
+  "title": "Título SEO atractivo, riguroso y sin clichés (máx 70 caracteres)",
+  "excerpt": "Resumen persuasivo del artículo (140-160 caracteres)",
+  "metaDescription": "Meta descripción optimizada para Google (máx 155 caracteres)",
+  "tags": ["3 a 5 etiquetas técnicas relevantes"],
+  "readingTimeMinutes": 6,
+  "content": "Contenido completo en Markdown. Debe incluir subtítulos H2 (##), subtítulos H3 (###), listas con viñetas, tabla comparativa en markdown y una llamada a la acción hacia la auditoría gratuita de Dexvoi. Tono técnico, serio y de autoridad médica/corporativa."
+}`;
+
+          const response = await ai.models.generateContent({
+            model: 'gemini-3.8-flash',
+            contents: prompt,
+            config: {
+              temperature: 0.6,
+            }
+          });
+
+          const rawText = response.text?.trim() || '';
+          const cleanedJson = rawText.replace(/^```json\s*/, '').replace(/\s*```$/, '').trim();
+          const parsed = JSON.parse(cleanedJson);
+
+          if (parsed.title) generatedTitle = parsed.title;
+          if (parsed.excerpt) generatedExcerpt = parsed.excerpt;
+          if (parsed.content) generatedContent = parsed.content;
+          if (parsed.metaDescription) metaDescription = parsed.metaDescription;
+          if (Array.isArray(parsed.tags)) tags = parsed.tags;
+        } catch (geminiError) {
+          console.warn('Gemini blog generation fallback applied:', geminiError);
+        }
+      }
+
+      const newPost = {
+        id: `post-gen-${Date.now()}`,
+        slug,
+        title: generatedTitle,
+        excerpt: generatedExcerpt,
+        content: generatedContent,
+        category: targetCategory,
+        categoryLabel: categoryLabels[targetCategory] || 'Ciberseguridad',
+        tags,
+        author: {
+          name: 'Dexvoi Intelligence Team',
+          role: 'Equipo de Arquitectura & Blindaje Digital',
+          badge: 'Verified Dexvoi Author'
+        },
+        publishedAt: now,
+        readingTimeMinutes: 6,
+        featuredImage: defaultImages[targetCategory] || defaultImages.ciberseguridad,
+        isFeatured: false,
+        metaDescription,
+        keywords: tags,
+        targetServiceUrl: targetCategory === 'ciberseguridad' ? '/auditoria-seguridad' : '/servicios',
+        targetServiceLabel: 'Solicitar Auditoría Técnica Relacionada'
+      };
+
+      return res.json({ success: true, post: newPost });
+    } catch (err: any) {
+      console.error('Error generating blog post:', err);
+      return res.status(500).json({ error: 'Error al generar artículo', details: err.message });
+    }
+  });
+
   // Serve public static assets (favicons, og-images, robots)
   app.use(express.static(path.join(process.cwd(), 'public')));
 

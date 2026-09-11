@@ -9,7 +9,9 @@ export type AppRoute =
   | 'legal'
   | 'security'
   | 'pricing'
-  | 'contact';
+  | 'contact'
+  | 'blog'
+  | 'blog-post';
 
 export interface RouteInfo {
   route: AppRoute;
@@ -72,11 +74,32 @@ export const ROUTE_MAP: Record<AppRoute, { path: string; aliases: string[]; titl
     aliases: ['/contact', '/solicitar-auditoria'],
     title: 'Contacto Directo & Diagnóstico Técnico | DEXVOI',
     description: 'Contacta con el equipo de arquitectos digitales de DEXVOI para solicitar tu diagnóstico perimetral prioritario.'
+  },
+  blog: {
+    path: '/blog',
+    aliases: ['/articulos', '/guias', '/noticias'],
+    title: 'Blog & Recursos Técnicos de Ciberseguridad y SEO | DEXVOI',
+    description: 'Artículos de vanguardia sobre arquitectura web Jamstack, auditorías OSINT, blindaje perimetral y SEO local en Google Maps para clínicas y restaurantes.'
+  },
+  'blog-post': {
+    path: '/blog',
+    aliases: [],
+    title: 'Artículo de Inteligencia Técnica | DEXVOI',
+    description: 'Guía técnica especializada de Dexvoi.'
   }
 };
 
+export function getBlogSlugFromPath(pathname: string): string {
+  const match = pathname.match(/^\/blog\/([^/?#]+)/i);
+  return match ? match[1] : '';
+}
+
 export function matchPathToRoute(pathname: string): AppRoute {
   const cleanPath = pathname.replace(/\/$/, '').toLowerCase() || '/';
+
+  if (cleanPath.startsWith('/blog/')) {
+    return 'blog-post';
+  }
 
   for (const [routeKey, routeData] of Object.entries(ROUTE_MAP)) {
     if (routeData.path === cleanPath || routeData.aliases.includes(cleanPath)) {
@@ -85,6 +108,7 @@ export function matchPathToRoute(pathname: string): AppRoute {
   }
 
   // Check section hash or partial routes
+  if (cleanPath === '/blog' || cleanPath.startsWith('/articulos') || cleanPath.startsWith('/guias')) return 'blog';
   if (cleanPath.startsWith('/servicios')) return 'services';
   if (cleanPath.startsWith('/condiciones') || cleanPath.startsWith('/terminos')) return 'terms';
   if (cleanPath.startsWith('/privacidad')) return 'privacy';
@@ -149,15 +173,19 @@ export function navigateTo(path: string, options: { replace?: boolean; scroll?: 
   }
 }
 
-export function useAppRoute(): { route: AppRoute; navigate: (path: string) => void } {
+export function useAppRoute(): { route: AppRoute; blogSlug: string; navigate: (path: string) => void } {
   const [currentRoute, setCurrentRoute] = useState<AppRoute>(() => {
     return matchPathToRoute(window.location.pathname);
+  });
+  const [blogSlug, setBlogSlug] = useState<string>(() => {
+    return getBlogSlugFromPath(window.location.pathname);
   });
 
   useEffect(() => {
     const handleLocationChange = () => {
       const nextRoute = matchPathToRoute(window.location.pathname);
       setCurrentRoute(nextRoute);
+      setBlogSlug(getBlogSlugFromPath(window.location.pathname));
       updatePageMetadata(nextRoute);
     };
 
@@ -175,6 +203,7 @@ export function useAppRoute(): { route: AppRoute; navigate: (path: string) => vo
 
   return {
     route: currentRoute,
+    blogSlug,
     navigate: navigateTo
   };
 }

@@ -21,6 +21,7 @@ import { navigateTo } from '../utils/navigation';
 interface LegalPageProps {
   initialTab?: LegalTab;
   onNavigateHome: () => void;
+  onOpenAuditModal?: () => void;
 }
 
 const TAB_TO_PATH: Record<LegalTab, string> = {
