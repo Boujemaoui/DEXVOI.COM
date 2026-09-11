@@ -4,7 +4,7 @@ on:
   schedule:
     # Se ejecuta 2 veces al día: 08:00 y 16:00 UTC (10:00 y 18:00 hora de España)
     - cron: '0 8,16 * * *'
-  workflow_dispatch: # Permite ejecutarlo manualmente con un botón desde la pestaña Actions
+  workflow_dispatch: # Permite ejecutarlo manualmente cuando quieras
 
 jobs:
   publish-daily-post:
@@ -21,14 +21,13 @@ jobs:
         with:
           version: 9
 
-      - name: Configurar Node.js con caché de pnpm
+      - name: Configurar Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'pnpm'
+          node-version: 22
 
-      - name: Instalar dependencias con pnpm
-        run: pnpm install
+      - name: Instalar dependencias
+        run: pnpm install --no-frozen-lockfile
 
       - name: Generar nuevo artículo de blog con Gemini
         env:
