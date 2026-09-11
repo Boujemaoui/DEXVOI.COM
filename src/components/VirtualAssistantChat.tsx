@@ -18,6 +18,7 @@ import {
   CreditCard
 } from 'lucide-react';
 import { ChatMessage } from '../types';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface VirtualAssistantChatProps {
   onOpenAuditModal: () => void;
@@ -30,23 +31,53 @@ export const VirtualAssistantChat: React.FC<VirtualAssistantChatProps> = ({
   onOpenPdfModal,
   onOpenOsintModal
 }) => {
+  const { language } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showNotificationBadge, setShowNotificationBadge] = useState(true);
 
-  // Initial welcome message in French (Priority 1 - Morocco market)
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
+  const getInitialWelcome = (lang: 'es' | 'fr' | 'en'): ChatMessage => {
+    if (lang === 'en') {
+      return {
+        id: 'welcome-1',
+        role: 'assistant',
+        content:
+          "Hello! I am the virtual Digital Architect at Dexvoi. Our AI automatically audits your website and local Google ranking. (EN / FR / ES)\n\nWhat is your business name or website address?",
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        language: 'en'
+      };
+    }
+    if (lang === 'fr') {
+      return {
+        id: 'welcome-1',
+        role: 'assistant',
+        content:
+          "Bonjour ! Je suis l'Architecte Digital virtuel de Dexvoi. Notre IA analyse automatiquement votre site web et votre présence locale. (FR / EN / ES)\n\nQuel est le nom de votre établissement ou l'adresse de votre site web ?",
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        language: 'fr'
+      };
+    }
+    return {
       id: 'welcome-1',
       role: 'assistant',
       content:
-        "Bonjour ! Je suis l'Architecte Digital virtuel de Dexvoi. Notre IA analyse automatiquement votre site web et votre présence locale. (FR / EN / ES)\n\nQuel est le nom de votre établissement ou l'adresse de votre site web ?",
+        "¡Hola! Soy el Arquitecto Digital virtual de Dexvoi. Nuestra IA analiza automáticamente tu página web y posicionamiento local en Google. (ES / FR / EN)\n\n¿Cuál es el nombre de tu negocio o la dirección de tu página web?",
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      language: 'fr'
+      language: 'es'
+    };
+  };
+
+  const [messages, setMessages] = useState<ChatMessage[]>(() => [getInitialWelcome(language)]);
+
+  // If user hasn't chatted yet and changes language, sync welcome message
+  useEffect(() => {
+    if (messages.length === 1 && messages[0].role === 'assistant') {
+      setMessages([getInitialWelcome(language)]);
     }
-  ]);
+  }, [language]);
+
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -690,10 +721,14 @@ Is this correct? Reply YES for my system to launch the automated analysis.`,
             </button>
             <div className="flex items-center gap-1.5 text-[#F5A623] text-[11px] font-bold uppercase mb-1">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Architecte Digital IA</span>
+              <span>{language === 'fr' ? 'Architecte Digital IA' : language === 'en' ? 'AI Digital Architect' : 'Arquitecto Digital IA'}</span>
             </div>
             <p className="text-gray-200 text-[11px] leading-tight">
-              Besoin de clients sur Google ou de blinder votre site ? Échangeons en direct (FR / EN / ES).
+              {language === 'fr'
+                ? 'Besoin de clients sur Google ou de blinder votre site ? Échangeons en direct (FR / EN / ES).'
+                : language === 'en'
+                ? 'Need more clients on Google or security hardening? Chat live with us (EN / FR / ES).'
+                : '¿Necesitas clientes en Google o blindar tu web? Hablemos en directo (ES / FR / EN).'}
             </p>
           </div>
         )}
@@ -709,14 +744,16 @@ Is this correct? Reply YES for my system to launch the automated analysis.`,
               ? 'bg-[#1E293B] text-gray-300 border border-gray-700 hover:text-white'
               : 'metallic-btn text-[#0A0F1F] font-bold border border-[#F5A623] hover:scale-105 shadow-[0_0_20px_rgba(245,166,35,0.35)]'
           }`}
-          aria-label="Ouvrir l'assistant virtuel"
+          aria-label={isOpen ? "Fermer" : "Ouvrir"}
         >
           <div className="relative flex items-center justify-center">
             <Bot className="w-5 h-5 text-[#0A0F1F]" />
             <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-white animate-pulse"></span>
           </div>
           <span className="hidden sm:inline">
-            {isOpen ? 'Fermer Assistant' : 'Assistant Dexvoi (FR / EN / ES)'}
+            {isOpen
+              ? (language === 'fr' ? 'Fermer Assistant' : language === 'en' ? 'Close Assistant' : 'Cerrar Asistente')
+              : (language === 'fr' ? 'Assistant Dexvoi (FR / EN / ES)' : language === 'en' ? 'Dexvoi Assistant (EN / FR / ES)' : 'Asistente Dexvoi (ES / FR / EN)')}
           </span>
         </button>
       </div>
@@ -897,10 +934,10 @@ Is this correct? Reply YES for my system to launch the automated analysis.`,
               {/* Bottom Quick Action Chips */}
               <div className="px-3 py-1.5 bg-[#0A0F1F] border-t border-gray-800/80 flex items-center gap-1.5 overflow-x-auto scrollbar-none">
                 <button
-                  onClick={() => handleSendMessage("OUI")}
+                  onClick={() => handleSendMessage(language === 'en' ? "YES" : language === 'fr' ? "OUI" : "SÍ")}
                   className="text-[10px] font-mono px-2 py-1 rounded bg-[#0066FF]/20 hover:bg-[#0066FF] hover:text-white text-[#0066FF] border border-[#0066FF]/40 transition-colors whitespace-nowrap font-bold"
                 >
-                  ⚡ Lancer Analyse (OUI)
+                  ⚡ {language === 'en' ? 'Launch Audit (YES)' : language === 'fr' ? 'Lancer Analyse (OUI)' : 'Iniciar Análisis (SÍ)'}
                 </button>
                 <button
                   onClick={() => {
@@ -917,13 +954,13 @@ Is this correct? Reply YES for my system to launch the automated analysis.`,
                   onClick={onOpenAuditModal}
                   className="text-[10px] font-mono px-2 py-1 rounded bg-[#F5A623]/20 hover:bg-[#F5A623] hover:text-[#0A0F1F] text-[#F5A623] border border-[#F5A623]/40 transition-colors whitespace-nowrap font-bold"
                 >
-                  🛡️ Audit Gratuit (5 pts)
+                  🛡️ {language === 'en' ? 'Free Audit (5 pts)' : language === 'fr' ? 'Audit Gratuit (5 pts)' : 'Auditoría Gratuita (5 pts)'}
                 </button>
                 <button
                   onClick={() => onOpenPdfModal ? onOpenPdfModal('complete') : handleSendMessage("Quiero el informe completo en PDF")}
                   className="text-[10px] font-mono px-2 py-1 rounded bg-[#1E293B] hover:bg-[#0066FF] hover:text-white text-gray-300 border border-gray-700 transition-colors whitespace-nowrap"
                 >
-                  📄 Rapport PDF (49€)
+                  📄 {language === 'en' ? 'PDF Report (49€)' : language === 'fr' ? 'Rapport PDF (49€)' : 'Informe PDF (49€)'}
                 </button>
               </div>
 
@@ -941,14 +978,20 @@ Is this correct? Reply YES for my system to launch the automated analysis.`,
                     type="text"
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
-                    placeholder="Écrivez en français, anglais ou espagnol..."
+                    placeholder={
+                      language === 'fr'
+                        ? 'Écrivez en français, anglais ou espagnol...'
+                        : language === 'en'
+                        ? 'Write in English, Spanish, or French...'
+                        : 'Escribe en español, francés o inglés...'
+                    }
                     className="flex-1 bg-[#131B33] border border-gray-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder:text-gray-500 focus:outline-none focus:border-[#0066FF] transition-all"
                   />
 
                   <button
                     type="submit"
                     disabled={!inputMessage.trim() || isLoading}
-                    className="metallic-btn p-2.5 rounded-xl disabled:opacity-40 transition-all flex items-center justify-center shrink-0"
+                    className="metallic-btn p-2.5 rounded-xl disabled:opacity-40 transition-all flex items-center justify-center shrink-0 cursor-pointer"
                     aria-label="Envoyer"
                   >
                     <Send className="w-4 h-4 text-[#0A0F1F]" />
@@ -956,12 +999,12 @@ Is this correct? Reply YES for my system to launch the automated analysis.`,
                 </form>
 
                 <div className="mt-2 flex items-center justify-between text-[10px] font-mono text-gray-500 px-1">
-                  <span>Défaut : Français (Maroc) · EN · ES</span>
+                  <span>{language === 'fr' ? 'Actif : Français (FR / EN / ES)' : language === 'en' ? 'Active: English (EN / ES / FR)' : 'Activo: Español (ES / FR / EN)'}</span>
                   <a
                     href="mailto:contact@dexvoi.com"
                     className="hover:text-[#0066FF] transition-colors"
                   >
-                    Contact humain
+                    {language === 'fr' ? 'Contact humain' : language === 'en' ? 'Human contact' : 'Contacto humano'}
                   </a>
                 </div>
               </div>

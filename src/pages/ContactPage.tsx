@@ -11,6 +11,8 @@ import {
   MessageSquare
 } from 'lucide-react';
 import { ContactCTASection } from '../components/ContactCTASection';
+import { LanguageSelector } from '../components/LanguageSelector';
+import { useLanguage } from '../i18n/LanguageContext';
 import { navigateTo } from '../utils/navigation';
 
 interface ContactPageProps {
@@ -22,6 +24,8 @@ export const ContactPage: React.FC<ContactPageProps> = ({
   onNavigateHome,
   onOpenAuditModal
 }) => {
+  const { language } = useLanguage();
+
   return (
     <div className="min-h-screen bg-[#0A0F1F] text-[#e5e2e3] font-sans pb-24 selection:bg-[#0066FF] selection:text-white">
       {/* Header Bar */}
@@ -33,30 +37,37 @@ export const ContactPage: React.FC<ContactPageProps> = ({
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#131B33] hover:bg-[#1E293B] border border-gray-700/70 text-xs font-mono text-gray-300 hover:text-white transition-all cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Volver al Inicio</span>
+              <span>
+                {language === 'fr' ? "Retour à l'accueil" : language === 'en' ? 'Back to Home' : 'Volver al Inicio'}
+              </span>
             </button>
             <div className="hidden sm:flex items-center gap-2">
               <span className="font-bold text-white text-base tracking-wider font-mono">
                 DEX<span className="text-[#F5A623]">VOI</span>
               </span>
               <span className="text-gray-500 font-mono text-xs">/</span>
-              <span className="text-xs font-mono text-[#F5A623] font-bold">Contacto Directo</span>
+              <span className="text-xs font-mono text-[#F5A623] font-bold">
+                {language === 'fr' ? 'Contact Direct' : language === 'en' ? 'Direct Contact' : 'Contacto Directo'}
+              </span>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
+            <LanguageSelector variant="header" />
             <button
               onClick={() => navigateTo('/servicios')}
               className="hidden sm:inline-flex text-xs font-mono text-gray-400 hover:text-white transition-colors"
             >
-              Ver Servicios
+              {language === 'fr' ? 'Voir Services' : language === 'en' ? 'View Services' : 'Ver Servicios'}
             </button>
             <button
               onClick={onOpenAuditModal}
               className="px-4 py-2 rounded-xl bg-[#0066FF] hover:bg-[#0052cc] text-white text-xs font-mono font-bold transition-all shadow-lg shadow-[#0066FF]/20 flex items-center gap-2 cursor-pointer"
             >
               <Zap className="w-3.5 h-3.5 text-[#F5A623]" />
-              <span>Diagnóstico Rápido</span>
+              <span>
+                {language === 'fr' ? 'Diagnostic Rapide' : language === 'en' ? 'Quick Diagnostic' : 'Diagnóstico Rápido'}
+              </span>
             </button>
           </div>
         </div>
@@ -67,15 +78,29 @@ export const ContactPage: React.FC<ContactPageProps> = ({
         <div className="text-center max-w-2xl mx-auto mb-10 space-y-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#131B33] border border-[#0066FF]/40 text-xs font-mono text-[#38BDF8]">
             <Mail className="w-3.5 h-3.5 text-[#F5A623]" />
-            <span>RESPUESTA TÉCNICA PRIORITARIA &lt; 2 HORAS</span>
+            <span>
+              {language === 'fr' 
+                ? 'RÉPONSE TECHNIQUE PRIORITAIRE < 2 HEURES' 
+                : language === 'en' 
+                ? 'PRIORITY TECHNICAL RESPONSE < 2 HOURS' 
+                : 'RESPUESTA TÉCNICA PRIORITARIA < 2 HORAS'}
+            </span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight font-mono">
-            Contacte con el Equipo de Arquitectos
+            {language === 'fr' 
+              ? "Contactez l'Équipe d'Architectes" 
+              : language === 'en' 
+              ? 'Contact the Architecture Team' 
+              : 'Contacte con el Equipo de Arquitectos'}
           </h1>
 
           <p className="text-base text-gray-400 font-sans leading-relaxed">
-            Sin intermediarios ni comerciales agresivos. Hablará directamente con ingenieros de software y especialistas en ciberseguridad y conversión.
+            {language === 'fr'
+              ? 'Sans intermédiaires ni commerciaux agressifs. Vous échangerez directement avec des ingénieurs logiciels et des spécialistes en cybersécurité et conversion.'
+              : language === 'en'
+              ? 'No middlemen or aggressive sales reps. You will speak directly with software engineers and cybersecurity & conversion specialists.'
+              : 'Sin intermediarios ni comerciales agresivos. Hablará directamente con ingenieros de software y especialistas en ciberseguridad y conversión.'}
           </p>
         </div>
 
@@ -84,7 +109,9 @@ export const ContactPage: React.FC<ContactPageProps> = ({
             <div className="w-10 h-10 mx-auto rounded-xl bg-[#131B33] border border-[#0066FF]/40 flex items-center justify-center text-[#38BDF8]">
               <Mail className="w-5 h-5" />
             </div>
-            <div className="text-white font-bold">Email Oficial</div>
+            <div className="text-white font-bold">
+              {language === 'fr' ? 'Email Officiel' : language === 'en' ? 'Official Email' : 'Email Oficial'}
+            </div>
             <a href="mailto:info@dexvoi.com" className="text-[#38BDF8] hover:underline block text-xs">
               info@dexvoi.com
             </a>
@@ -94,16 +121,32 @@ export const ContactPage: React.FC<ContactPageProps> = ({
             <div className="w-10 h-10 mx-auto rounded-xl bg-[#131B33] border border-emerald-500/40 flex items-center justify-center text-emerald-400">
               <Clock className="w-5 h-5" />
             </div>
-            <div className="text-white font-bold">Horario de Consultoría</div>
-            <div className="text-gray-400 text-xs">Lunes a Viernes: 09:00 - 20:00 CET</div>
+            <div className="text-white font-bold">
+              {language === 'fr' ? 'Horaires de Consultation' : language === 'en' ? 'Consulting Hours' : 'Horario de Consultoría'}
+            </div>
+            <div className="text-gray-400 text-xs">
+              {language === 'fr' 
+                ? 'Lundi au Vendredi: 09:00 - 20:00 CET' 
+                : language === 'en' 
+                ? 'Monday to Friday: 09:00 - 20:00 CET' 
+                : 'Lunes a Viernes: 09:00 - 20:00 CET'}
+            </div>
           </div>
 
           <div className="p-5 rounded-2xl bg-[#0D1326] border border-gray-800 text-center space-y-2">
             <div className="w-10 h-10 mx-auto rounded-xl bg-[#131B33] border border-[#F5A623]/40 flex items-center justify-center text-[#F5A623]">
               <Lock className="w-5 h-5" />
             </div>
-            <div className="text-white font-bold">Confidencialidad</div>
-            <div className="text-gray-400 text-xs">Acuerdo NDA y secreto profesional estricto</div>
+            <div className="text-white font-bold">
+              {language === 'fr' ? 'Confidentialité' : language === 'en' ? 'Confidentiality' : 'Confidencialidad'}
+            </div>
+            <div className="text-gray-400 text-xs">
+              {language === 'fr'
+                ? 'Accord NDA et secret professionnel strict'
+                : language === 'en'
+                ? 'NDA agreement and strict professional confidentiality'
+                : 'Acuerdo NDA y secreto profesional estricto'}
+            </div>
           </div>
         </div>
       </section>
@@ -120,10 +163,17 @@ export const ContactPage: React.FC<ContactPageProps> = ({
           className="text-xs font-mono text-gray-400 hover:text-white transition-colors cursor-pointer inline-flex items-center gap-1.5"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Volver a la página principal</span>
+          <span>
+            {language === 'fr' 
+              ? "Retour à la page d'accueil" 
+              : language === 'en' 
+              ? 'Back to main page' 
+              : 'Volver a la página principal'}
+          </span>
         </button>
       </div>
 
     </div>
   );
 };
+

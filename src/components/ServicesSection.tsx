@@ -1,71 +1,71 @@
-import React, { useState } from 'react';
-import { Layers, Search, ShieldCheck, Check, ArrowRight, Shield, Cpu, Lock, Sparkles } from 'lucide-react';
-import { PillarService } from '../types';
+import React from 'react';
+import { Layers, Search, ShieldCheck, Check, ArrowRight, Shield, Cpu } from 'lucide-react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface ServicesSectionProps {
   onOpenAuditModal: () => void;
 }
 
 export const ServicesSection: React.FC<ServicesSectionProps> = ({ onOpenAuditModal }) => {
-  const [activePillar, setActivePillar] = useState<string>('all');
+  const { t } = useLanguage();
 
-  const pillars: PillarService[] = [
+  const pillars = [
     {
       id: 'arquitectura',
-      title: 'Arquitectura Web & Sistemas',
-      tagline: 'ESTRUCTURAS DIGITALES DE ALTO RENDIMIENTO',
-      shortDesc: 'Estructuras digitales robustas y de carga instantánea diseñadas para brindar una experiencia de usuario impecable.',
+      title: t.services.pillar1Title,
+      tagline: t.services.pillar1Tagline,
+      shortDesc: t.services.pillar1Desc,
       icon: 'Layers',
-      badge: 'VELOCIDAD & CONVERSIÓN',
+      badge: t.services.pillar1Badge,
       benefits: [
-        'Plataformas a medida con sistemas de reservas online y gestión de citas automatizadas 24/7.',
-        'Optimización de velocidad militar (tiempos de carga menores a 1.5s) para maximizar conversiones.',
-        'Experiencia móvil ultrafluida para comensales exigentes y pacientes de alto valor.'
+        t.services.pillar1Benefit1,
+        t.services.pillar1Benefit2,
+        t.services.pillar1Benefit3
       ],
       specs: [
-        { label: 'Tiempo de Carga', value: '< 1.2 Segundos' },
-        { label: 'Disponibilidad', value: '99.99% Uptime' },
-        { label: 'Automatización Citas', value: 'Integración WhatsApp/Email' }
+        { label: t.services.pillar1Spec1Label, value: t.services.pillar1Spec1Val },
+        { label: t.services.pillar1Spec2Label, value: t.services.pillar1Spec2Val },
+        { label: t.services.pillar1Spec3Label, value: t.services.pillar1Spec3Val }
       ],
-      targetAudience: 'Clínicas médicas, centros estéticos y restaurantes que requieren agenda automatizada.'
+      ctaText: `${t.services.ctaPillar} (${t.services.pillar1Title})`
     },
     {
       id: 'seo-ads',
-      title: 'Posicionamiento Avanzado (SEO Local & Ads)',
-      tagline: 'DOMINACIÓN DE TRÁFICO GEO-LOCALIZADO',
-      shortDesc: 'Estrategias de visibilidad dominante para colocar tu clínica o restaurante frente a clientes listos para comprar.',
+      title: t.services.pillar2Title,
+      tagline: t.services.pillar2Tagline,
+      shortDesc: t.services.pillar2Desc,
       icon: 'Search',
-      badge: 'GOOGLE MAPS #1 & ADS',
+      badge: t.services.pillar2Badge,
       benefits: [
-        'Dominio en Google Maps y búsquedas geo-localizadas ("cerca de mí") en tu ciudad.',
-        'Campañas de publicidad digital hipersegmentadas con retorno de inversión medible desde el primer mes.',
-        'Auditoría de competencia y sistemas de captura estratégica de reseñas 5 estrellas.'
+        t.services.pillar2Benefit1,
+        t.services.pillar2Benefit2,
+        t.services.pillar2Benefit3
       ],
       specs: [
-        { label: 'Visibilidad Local', value: 'Top 3 Google Maps' },
-        { label: 'Costo por Adquisición', value: 'Optimizado por IA' },
-        { label: 'Generador Reseñas', value: 'Automatizado post-visita' }
+        { label: t.services.pillar2Spec1Label, value: t.services.pillar2Spec1Val },
+        { label: t.services.pillar2Spec2Label, value: t.services.pillar2Spec2Val },
+        { label: t.services.pillar2Spec3Label, value: t.services.pillar2Spec3Val }
       ],
-      targetAudience: 'Negocios con sede física que buscan acaparar las búsquedas de su zona urbana.'
+      ctaText: `${t.services.ctaPillar} (${t.services.pillar2Title})`
     },
     {
       id: 'hacking-blindaje',
-      title: 'Ethical Hacking & Blindaje Digital',
-      tagline: 'DEFENSA PERIMETRAL Y AUDITORÍA OFENSIVA',
-      shortDesc: 'Protección perimetral y auditorías de seguridad continua para que operes con total tranquilidad financiera y legal.',
+      title: t.services.pillar3Title,
+      tagline: t.services.pillar3Tagline,
+      shortDesc: t.services.pillar3Desc,
       icon: 'ShieldCheck',
-      badge: 'SEGURIDAD & PROTECCIÓN DE DATOS',
+      badge: t.services.pillar3Badge,
       benefits: [
-        'Auditoría web profunda y hacking ético para detectar y cerrar brechas antes de que sean explotadas.',
-        'Cumplimiento estricto en protección de datos, cifrado SSL avanzado y escudos antimalware.',
-        'Protocolos de respaldo automatizado y recuperación inmediata ante incidentes o caídas del servidor.'
+        t.services.pillar3Benefit1,
+        t.services.pillar3Benefit2,
+        t.services.pillar3Benefit3
       ],
       specs: [
-        { label: 'Pruebas de Penetración', value: 'Vulnerabilidades OWASP Top 10' },
-        { label: 'Cifrado de Datos', value: 'AES-256 / SSL Grado A+' },
-        { label: 'Copias de Seguridad', value: 'Snapshot Diario Inmutable' }
+        { label: t.services.pillar3Spec1Label, value: t.services.pillar3Spec1Val },
+        { label: t.services.pillar3Spec2Label, value: t.services.pillar3Spec2Val },
+        { label: t.services.pillar3Spec3Label, value: t.services.pillar3Spec3Val }
       ],
-      targetAudience: 'Clínicas con historiales clínicos confidenciales y restaurantes con TPV/pagos online.'
+      ctaText: `${t.services.ctaPillar} (${t.services.pillar3Title})`
     }
   ];
 
@@ -80,15 +80,15 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ onOpenAuditMod
         <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-[#0066FF]/10 border border-[#0066FF]/30 text-[#0066FF] font-mono text-xs uppercase tracking-wider">
             <Cpu className="w-3.5 h-3.5" />
-            <span>ARQUITECTURA DE TRES PILARES</span>
+            <span>{t.services.badge}</span>
           </div>
 
           <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
-            Nuestros Pilares de Arquitectura Digital
+            {t.services.title}
           </h2>
 
           <p className="text-gray-300 text-sm sm:text-base">
-            No somos una agencia convencional de marketing. Fusionamos ingeniería de sistemas, analítica de crecimiento y ciberseguridad ofensiva para crear una ventaja competitiva infranqueable.
+            {t.services.subtitle}
           </p>
         </div>
 
@@ -143,7 +143,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ onOpenAuditMod
                   {/* 3 Bullet Points with Measurable Benefits */}
                   <div className="space-y-3 pt-2">
                     <div className="text-xs font-mono text-gray-400 uppercase">
-                      Beneficios Concretos:
+                      {t.services.pillar1Benefit1 ? (t.nav?.services || 'Beneficios') : 'Beneficios'}:
                     </div>
                     {pillar.benefits.map((benefit, bIdx) => (
                       <div key={bIdx} className="flex items-start gap-3">
@@ -172,9 +172,9 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ onOpenAuditMod
                 <div className="pt-6 mt-6 border-t border-gray-800/80 relative z-10">
                   <button
                     onClick={onOpenAuditModal}
-                    className="w-full py-3 rounded bg-[#1E293B] hover:bg-[#0066FF] text-gray-200 hover:text-white font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-colors border border-gray-700 hover:border-transparent font-bold"
+                    className="w-full py-3 rounded bg-[#1E293B] hover:bg-[#0066FF] text-gray-200 hover:text-white font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-colors border border-gray-700 hover:border-transparent font-bold cursor-pointer"
                   >
-                    <span>Auditar {pillar.id === 'arquitectura' ? 'Velocidad' : pillar.id === 'seo-ads' ? 'SEO Local' : 'Seguridad'}</span>
+                    <span>{pillar.ctaText}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
@@ -188,13 +188,13 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ onOpenAuditMod
         <div className="mt-12 p-6 rounded-xl bg-[#131B33]/60 border border-[#0066FF]/30 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs">
           <div className="flex items-center gap-3 text-gray-300">
             <Shield className="w-5 h-5 text-[#F5A623] shrink-0" />
-            <span>Todos los sistemas se entregan bajo contrato de confidencialidad y garantía de rendimiento.</span>
+            <span>{t.footer.badgeText}</span>
           </div>
           <button
             onClick={onOpenAuditModal}
-            className="metallic-btn px-6 py-2.5 rounded uppercase tracking-wider whitespace-nowrap text-[11px]"
+            className="metallic-btn px-6 py-2.5 rounded uppercase tracking-wider whitespace-nowrap text-[11px] cursor-pointer"
           >
-            Consultar con el Arquitecto
+            {t.footer.contactArchitect}
           </button>
         </div>
 
@@ -202,3 +202,4 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ onOpenAuditMod
     </section>
   );
 };
+

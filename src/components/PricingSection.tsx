@@ -1,5 +1,6 @@
 import React from 'react';
-import { Check, Shield, Zap, Sparkles, Lock, ArrowRight, ExternalLink, CreditCard, Clock, Award } from 'lucide-react';
+import { Check, Sparkles, Lock, ArrowRight, ExternalLink, CreditCard } from 'lucide-react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface PricingSectionProps {
   onOpenPdfModal?: (tier: 'basic' | 'complete' | 'premium') => void;
@@ -10,21 +11,37 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
   onOpenPdfModal,
   onOpenAuditModal,
 }) => {
+  const { t, language } = useLanguage();
+
   const plans = [
     {
       id: 'basic',
       tierKey: 'basic' as const,
-      name: 'Starter Audit Report',
-      subtitle: 'Diagnóstico express para validar velocidad, seguridad y presencia.',
+      name: t.pricing.tierBasicTitle,
+      subtitle: t.pricing.tierBasicSubtitle,
       price: '19',
       currency: '€',
-      period: 'pago único',
-      pages: '5 páginas',
+      period: language === 'fr' ? 'paiement unique' : language === 'en' ? 'one-time fee' : 'pago único',
+      pages: t.pricing.tierBasicPages,
       badge: null,
       highlighted: false,
       stripeUrl: 'https://buy.stripe.com/aFa00kaea4fy0nQ6UFdAk00',
-      buttonText: 'Adquirir Starter (19€)',
-      features: [
+      buttonText: t.pricing.tierBasicBtn,
+      features: language === 'fr' ? [
+        'Analyse de vitesse de chargement Core Web Vitals',
+        'Vérification de certificat SSL et en-têtes HTTP',
+        'Détection de présence et visibilité Google Maps',
+        'Détection basique de ports de serveur exposés',
+        'Checklist technique des améliorations prioritaires',
+        'Livraison rapide en PDF exécutif par e-mail',
+      ] : language === 'en' ? [
+        'Core Web Vitals load speed benchmarking',
+        'SSL certificate and HTTP security headers check',
+        'Google Maps local presence detection',
+        'Basic exposed server port scanning',
+        'Prioritized technical fix checklist',
+        'Executive PDF report delivered via email',
+      ] : [
         'Análisis de velocidad de carga Core Web Vitals',
         'Verificación de certificado SSL y headers HTTP',
         'Detección de presencia y visibilidad en Google Maps',
@@ -36,17 +53,33 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
     {
       id: 'complete',
       tierKey: 'complete' as const,
-      name: 'Comprehensive Audit',
-      subtitle: 'Nuestra auditoría técnica más completa y recomendada para empresas.',
+      name: t.pricing.tierCompleteTitle,
+      subtitle: t.pricing.tierCompleteSubtitle,
       price: '49',
       currency: '€',
-      period: 'pago único',
-      pages: '20+ páginas',
-      badge: 'MÁS POPULAR / RECOMENDADO',
+      period: language === 'fr' ? 'paiement unique' : language === 'en' ? 'one-time fee' : 'pago único',
+      pages: t.pricing.tierCompletePages,
+      badge: t.pricing.popularBadge,
       highlighted: true,
       stripeUrl: 'https://buy.stripe.com/9B66oI862eUc8Um92NdAk01',
-      buttonText: 'Adquirir Auditoría Completa (49€)',
-      features: [
+      buttonText: t.pricing.tierCompleteBtn,
+      features: language === 'fr' ? [
+        'Tout ce qui est inclus dans le rapport Starter',
+        'Audit médicolégal approfondi de plus de 20 pages',
+        'Reconnaissance passive OSINT et surface d\'exposition',
+        'Protection préventive contre les failles OWASP Top 10',
+        'Graphiques de latence serveur (TTFB) et goulots d\'étranglement',
+        'Feuille de route de durcissement prête à déployer',
+        'Livraison prioritaire au format PDF haute résolution',
+      ] : language === 'en' ? [
+        'Everything included in the Starter report',
+        'In-depth 20+ page technical forensic audit',
+        'Passive OSINT and digital exposure surface scan',
+        'Hardening recommendations against OWASP Top 10',
+        'Server TTFB latency graphs & bottleneck identification',
+        'Prioritized implementation roadmap for engineers',
+        'Priority delivery in high-resolution executive PDF',
+      ] : [
         'Todo lo incluido en el informe Starter',
         'Auditoría forense técnica profunda de más de 20 páginas',
         'Reconocimiento OSINT y huella de exposición digital',
@@ -59,17 +92,31 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
     {
       id: 'premium',
       tierKey: 'premium' as const,
-      name: 'Premium + Consultoría 1-a-1',
-      subtitle: 'Auditoría integral con sesión estratégica privada con un Arquitecto Digital.',
+      name: t.pricing.tierPremiumTitle,
+      subtitle: t.pricing.tierPremiumSubtitle,
       price: '99',
       currency: '€',
-      period: 'pago único',
-      pages: '25+ páginas + Sesión 45 min',
-      badge: 'ÉLITE VIP',
+      period: language === 'fr' ? 'paiement unique' : language === 'en' ? 'one-time fee' : 'pago único',
+      pages: t.pricing.tierPremiumPages,
+      badge: language === 'fr' ? 'ÉLITE VIP' : language === 'en' ? 'VIP ELITE' : 'ÉLITE VIP',
       highlighted: false,
       stripeUrl: 'https://buy.stripe.com/14A5kE0DA7rKgmO4MxdAk02',
-      buttonText: 'Reservar Auditoría Premium (99€)',
-      features: [
+      buttonText: t.pricing.tierPremiumBtn,
+      features: language === 'fr' ? [
+        'Tout ce qui est inclus dans l\'Audit Complet de 20+ pages',
+        'Session stratégique 1-à-1 privée de 45 min en visioconférence',
+        'Analyse en direct de votre site, réservations et conversion',
+        'Stratégie sur-mesure pour doubler les réservations qualifiées',
+        'Plan d\'architecture propriétaire à haut retour sur investissement',
+        'Support direct prioritaire pour vos questions techniques',
+      ] : language === 'en' ? [
+        'Everything in the 20+ page Comprehensive Audit',
+        'Private 45-minute 1-on-1 strategy video call',
+        'Live teardown of your website, bookings, and UX flow',
+        'Playbook to double qualified client bookings in 30 days',
+        'Bespoke digital architecture blueprint with high ROI',
+        'Direct priority support for implementation guidance',
+      ] : [
         'Todo lo incluido en la Auditoría Completa de 20+ páginas',
         'Sesión estratégica 1-a-1 privada de 45 minutos por videollamada',
         'Análisis en vivo de tu web, sistema de reservas y procesos',
@@ -91,16 +138,16 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#131B33] border border-[#0066FF]/40 text-xs font-mono text-[#38BDF8] mb-4 shadow-sm">
             <CreditCard className="w-3.5 h-3.5 text-[#0066FF]" />
-            <span>PLANES DE AUDITORÍA & TARIFAS OFICIALES</span>
+            <span>{t.pricing.badge}</span>
           </div>
 
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight mb-4">
-            Planes de Auditoría Técnica y Seguridad
+            {t.pricing.title}
           </h2>
           <p className="text-base sm:text-lg text-gray-300 leading-relaxed font-sans">
-            Informes forenses ejecutivos con entrega rápida y pasarela oficial de <span className="text-white font-semibold">Stripe Checkout</span>.
+            {t.pricing.subtitle}
             <span className="block mt-1 text-[#F5A623] font-mono text-sm font-semibold">
-              ✓ Pago único · Sin costes ocultos · Sin suscripciones mensuales
+              {t.pricing.vatNotice}
             </span>
           </p>
         </div>
@@ -153,7 +200,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
                       {plan.period}
                     </span>
                     <span className="text-[10px] text-gray-500 font-mono">
-                      Factura disponible
+                      {language === 'fr' ? 'Facture disponible' : language === 'en' ? 'Invoice available' : 'Factura disponible'}
                     </span>
                   </div>
                 </div>
@@ -161,7 +208,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
                 {/* Features List */}
                 <div className="space-y-3 mb-8">
                   <p className="text-[11px] font-mono text-gray-400 uppercase tracking-wider font-bold">
-                    Incluye en este plan:
+                    {language === 'fr' ? 'Inclus dans ce forfait :' : language === 'en' ? 'Included in this tier:' : 'Incluye en este plan:'}
                   </p>
                   <ul className="space-y-2.5">
                     {plan.features.map((feature, idx) => (
@@ -198,9 +245,9 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
                 {onOpenPdfModal && (
                   <button
                     onClick={() => onOpenPdfModal(plan.tierKey)}
-                    className="w-full py-2 text-center text-[11px] font-mono text-gray-400 hover:text-white transition-colors"
+                    className="w-full py-2 text-center text-[11px] font-mono text-gray-400 hover:text-white transition-colors cursor-pointer"
                   >
-                    O abrir asistente de pedido guiado →
+                    {language === 'fr' ? 'Ou ouvrir l’assistant de commande guidé →' : language === 'en' ? 'Or open guided order assistant →' : 'O abrir asistente de pedido guiado →'}
                   </button>
                 )}
               </div>
@@ -216,13 +263,13 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
             </div>
             <div>
               <h4 className="text-sm font-bold text-white font-mono flex items-center gap-2">
-                <span>Pasarela Oficial Stripe Checkout</span>
+                <span>{t.pricing.guaranteeTitle}</span>
                 <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-mono">
                   SSL 256-BIT
                 </span>
               </h4>
               <p className="text-xs text-gray-400 mt-0.5">
-                Acepta tarjetas Visa, Mastercard, American Express, Apple Pay y Google Pay. Cifrado bancario de extremo a extremo.
+                {t.pricing.guaranteeDesc}
               </p>
             </div>
           </div>
@@ -231,9 +278,9 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
             {onOpenAuditModal && (
               <button
                 onClick={onOpenAuditModal}
-                className="px-4 py-2.5 rounded-lg bg-[#131B33] hover:bg-[#1A233D] text-[#38BDF8] border border-[#0066FF]/40 text-xs font-mono font-semibold transition-all flex items-center gap-1.5"
+                className="px-4 py-2.5 rounded-lg bg-[#131B33] hover:bg-[#1A233D] text-[#38BDF8] border border-[#0066FF]/40 text-xs font-mono font-semibold transition-all flex items-center gap-1.5 cursor-pointer"
               >
-                <span>¿Prefieres la auditoría gratuita de 5 puntos?</span>
+                <span>{t.pricing.freeAuditPrompt}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             )}
@@ -243,3 +290,4 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
     </section>
   );
 };
+

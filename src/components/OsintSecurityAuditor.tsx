@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import {
   Shield,
   ShieldCheck,
-  ShieldAlert,
-  Terminal,
   RefreshCw,
   Lock,
   Globe2,
@@ -14,12 +12,11 @@ import {
   Mail,
   Zap,
   Sparkles,
-  ExternalLink,
-  ChevronRight,
   Code2
 } from 'lucide-react';
-import { OsintSecurityAuditResult, SecurityHeaderItem, SecurityBreachItem } from '../types';
+import { OsintSecurityAuditResult } from '../types';
 import { runClientSecurityAudit } from '../services/clientSecurityAudit';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface OsintSecurityAuditorProps {
   onOpenPurchaseModal: (result: OsintSecurityAuditResult | null, target: string) => void;
@@ -28,6 +25,7 @@ interface OsintSecurityAuditorProps {
 export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
   onOpenPurchaseModal,
 }) => {
+  const { language } = useLanguage();
   const [targetInput, setTargetInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -75,9 +73,17 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
       setTargetInput(queryTarget);
     } catch (err: any) {
       console.error('Audit failed:', err);
-      let friendlyMessage = err?.message || 'Error de conexión. Asegúrate de ingresar un dominio activo y público.';
+      let friendlyMessage = err?.message || (language === 'fr'
+        ? 'Erreur de connexion. Veuillez saisir un domaine public et actif.'
+        : language === 'en'
+        ? 'Connection error. Make sure to enter an active and public domain.'
+        : 'Error de conexión. Asegúrate de ingresar un dominio activo y público.');
       if (friendlyMessage.includes('JSON') || friendlyMessage.includes('Unexpected') || friendlyMessage.includes('fetch')) {
-        friendlyMessage = 'No se pudo conectar con el dominio indicado. Verifica que esté activo, público y bien escrito (ej: tudominio.com).';
+        friendlyMessage = language === 'fr'
+          ? 'Impossible de se connecter au domaine indiqué. Vérifiez qu’il est actif, public et bien orthographié (ex: votredomaine.com).'
+          : language === 'en'
+          ? 'Could not connect to specified domain. Verify it is reachable, public, and correctly spelled (e.g., yourdomain.com).'
+          : 'No se pudo conectar con el dominio indicado. Verifica que esté activo, público y bien escrito (ej: tudominio.com).';
       }
       setErrorMessage(friendlyMessage);
     } finally {
@@ -101,22 +107,46 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
         <div className="text-center space-y-4 mb-12">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0066FF]/10 border border-[#0066FF]/30 text-[#0066FF] font-mono text-xs uppercase tracking-wider">
             <Shield className="w-3.5 h-3.5 text-[#F5A623]" />
-            <span>MÓDULO ESPECIALIZADO · CIBERSEGURIDAD EN TIEMPO REAL</span>
+            <span>
+              {language === 'fr'
+                ? 'MODULE SPÉCIALISÉ · CYBERSÉCURITÉ EN TEMPS RÉEL'
+                : language === 'en'
+                ? 'SPECIALIZED MODULE · REAL-TIME CYBERSECURITY'
+                : 'MÓDULO ESPECIALIZADO · CIBERSEGURIDAD EN TIEMPO REAL'}
+            </span>
           </div>
 
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight">
-            Auditoría OSINT & Blindaje de Cabeceras HTTP
+            {language === 'fr'
+              ? 'Audit OSINT & Blindage des En-têtes HTTP'
+              : language === 'en'
+              ? 'OSINT Audit & HTTP Security Headers Hardening'
+              : 'Auditoría OSINT & Blindaje de Cabeceras HTTP'}
           </h2>
 
           <p className="text-gray-300 text-sm sm:text-base max-w-3xl mx-auto leading-relaxed">
-            Inspecciona en vivo las cabeceras de respuesta, políticas HSTS, defensas anti-clickjacking, configuración anti-XSS y exposición tecnológica de cualquier sitio web en tiempo real.
+            {language === 'fr'
+              ? 'Inspectez en direct les en-têtes HTTP, politiques HSTS, protections anti-clickjacking, configurations anti-XSS et l’exposition technologique de n’importe quel site web en temps réel.'
+              : language === 'en'
+              ? 'Live inspection of HTTP response headers, HSTS policies, anti-clickjacking defense, anti-XSS configuration, and infrastructure exposure of any domain in real time.'
+              : 'Inspecciona en vivo las cabeceras de respuesta, políticas HSTS, defensas anti-clickjacking, configuración anti-XSS y exposición tecnológica de cualquier sitio web en tiempo real.'}
           </p>
 
           {/* Standalone Price Pill */}
           <div className="inline-flex flex-wrap items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#1E293B]/90 border border-[#F5A623]/40 text-xs font-mono">
-            <span className="text-gray-300">Servicio Independiente:</span>
-            <span className="text-[#F5A623] font-bold">29€ Pago Único</span>
-            <span className="text-gray-400">· Sin planes mensuales · Informe Forense + Scripts Listos para Copiar</span>
+            <span className="text-gray-300">
+              {language === 'fr' ? 'Service Indépendant :' : language === 'en' ? 'Standalone Service:' : 'Servicio Independiente:'}
+            </span>
+            <span className="text-[#F5A623] font-bold">
+              {language === 'fr' ? '29 € Paiement Unique' : language === 'en' ? '29€ One-time Payment' : '29€ Pago Único'}
+            </span>
+            <span className="text-gray-400">
+              {language === 'fr'
+                ? '· Sans abonnement mensuel · Rapport Forensique + Scripts Prêts à Déployer'
+                : language === 'en'
+                ? '· No subscription · Forensic PDF + Copy-Ready Web Server Configs'
+                : '· Sin planes mensuales · Informe Forense + Scripts Listos para Copiar'}
+            </span>
           </div>
         </div>
 
@@ -124,7 +154,11 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
         <div className="glass-panel p-6 sm:p-8 rounded-2xl border border-[#0066FF]/40 shadow-2xl bg-[#0B1224]/90 mb-10">
           <form onSubmit={(e) => handleRunRealAudit(e)} className="space-y-4">
             <label className="block text-xs font-mono text-gray-300 uppercase tracking-wider">
-              Ingresa el dominio o URL a auditar en vivo:
+              {language === 'fr'
+                ? 'Saisissez le domaine ou l’URL à auditer en direct :'
+                : language === 'en'
+                ? 'Enter domain or URL to audit in real time:'
+                : 'Ingresa el dominio o URL a auditar en vivo:'}
             </label>
 
             <div className="flex flex-col sm:flex-row gap-3">
@@ -136,7 +170,7 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
                   type="text"
                   value={targetInput}
                   onChange={(e) => setTargetInput(e.target.value)}
-                  placeholder="ejemplo.com o tuweb.es"
+                  placeholder={language === 'fr' ? 'votresite.com' : language === 'en' ? 'yourdomain.com' : 'ejemplo.com o tuweb.es'}
                   required
                   disabled={isLoading}
                   className="w-full bg-[#131B33] border border-gray-700 rounded-xl pl-22 pr-4 py-3.5 text-white font-mono text-sm focus:outline-none focus:border-[#0066FF] focus:ring-1 focus:ring-[#0066FF] transition-all disabled:opacity-50"
@@ -151,12 +185,16 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
                 {isLoading ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin text-[#F5A623]" />
-                    <span>Conectando e Inspeccionando...</span>
+                    <span>
+                      {language === 'fr' ? 'Connexion & Analyse...' : language === 'en' ? 'Connecting & Scanning...' : 'Conectando e Inspeccionando...'}
+                    </span>
                   </>
                 ) : (
                   <>
                     <Zap className="w-4 h-4 text-[#F5A623]" />
-                    <span>Auditar en Tiempo Real</span>
+                    <span>
+                      {language === 'fr' ? 'Auditer en temps réel' : language === 'en' ? 'Audit in Real Time' : 'Auditar en Tiempo Real'}
+                    </span>
                   </>
                 )}
               </button>
@@ -164,25 +202,25 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
 
             {/* Quick Demo Pre-set Chips */}
             <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono text-gray-400 pt-1">
-              <span>Probar dominios de referencia:</span>
+              <span>{language === 'fr' ? 'Tester des domaines de référence :' : language === 'en' ? 'Try reference domains:' : 'Probar dominios de referencia:'}</span>
               <button
                 type="button"
                 onClick={() => setSample('dexvoi.com')}
-                className="px-2 py-0.5 rounded bg-[#131B33] border border-gray-700 hover:border-[#0066FF] text-[#0066FF] hover:text-white transition-colors"
+                className="px-2 py-0.5 rounded bg-[#131B33] border border-gray-700 hover:border-[#0066FF] text-[#0066FF] hover:text-white transition-colors cursor-pointer"
               >
                 dexvoi.com
               </button>
               <button
                 type="button"
                 onClick={() => setSample('cloudflare.com')}
-                className="px-2 py-0.5 rounded bg-[#131B33] border border-gray-700 hover:border-[#0066FF] text-gray-300 hover:text-white transition-colors"
+                className="px-2 py-0.5 rounded bg-[#131B33] border border-gray-700 hover:border-[#0066FF] text-gray-300 hover:text-white transition-colors cursor-pointer"
               >
                 cloudflare.com
               </button>
               <button
                 type="button"
                 onClick={() => setSample('github.com')}
-                className="px-2 py-0.5 rounded bg-[#131B33] border border-gray-700 hover:border-[#0066FF] text-gray-300 hover:text-white transition-colors"
+                className="px-2 py-0.5 rounded bg-[#131B33] border border-gray-700 hover:border-[#0066FF] text-gray-300 hover:text-white transition-colors cursor-pointer"
               >
                 github.com
               </button>
@@ -209,7 +247,7 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
               <div className="p-6 rounded-2xl bg-[#0E1528] border border-[#0066FF]/40 flex flex-col justify-between">
                 <div>
                   <div className="text-xs font-mono text-gray-400 uppercase">
-                    Puntuación de Seguridad
+                    {language === 'fr' ? 'Score de Sécurité' : language === 'en' ? 'Security Score' : 'Puntuación de Seguridad'}
                   </div>
                   <div className="flex items-baseline gap-3 mt-2">
                     <span className="text-4xl font-extrabold text-white font-mono">
@@ -220,7 +258,9 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
                 </div>
 
                 <div className="mt-4 pt-4 border-t border-gray-800 flex items-center justify-between">
-                  <span className="text-xs text-gray-400 font-mono">Grado Defensivo:</span>
+                  <span className="text-xs text-gray-400 font-mono">
+                    {language === 'fr' ? 'Niveau Défensif :' : language === 'en' ? 'Defense Grade:' : 'Grado Defensivo:'}
+                  </span>
                   <span
                     className={`px-3 py-1 rounded-lg font-mono text-sm font-bold ${
                       auditData.grade === 'A+' || auditData.grade === 'A'
@@ -230,7 +270,7 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
                         : 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
                     }`}
                   >
-                    NIVEL {auditData.grade}
+                    {language === 'fr' ? `NIVEAU ${auditData.grade}` : language === 'en' ? `GRADE ${auditData.grade}` : `NIVEL ${auditData.grade}`}
                   </span>
                 </div>
               </div>
@@ -239,7 +279,7 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
               <div className="p-6 rounded-2xl bg-[#0E1528] border border-gray-800 flex flex-col justify-between">
                 <div>
                   <div className="text-xs font-mono text-gray-400 uppercase">
-                    Conexión en Vivo
+                    {language === 'fr' ? 'Connexion en Direct' : language === 'en' ? 'Live Connection' : 'Conexión en Vivo'}
                   </div>
                   <div className="text-2xl font-bold text-white font-mono mt-2 flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
@@ -248,7 +288,9 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
                 </div>
 
                 <div className="mt-4 pt-4 border-t border-gray-800 flex items-center justify-between text-xs font-mono">
-                  <span className="text-gray-400">Latencia Servidor:</span>
+                  <span className="text-gray-400">
+                    {language === 'fr' ? 'Latence Serveur :' : language === 'en' ? 'Server Latency:' : 'Latencia Servidor:'}
+                  </span>
                   <span className="text-[#F5A623] font-bold">{auditData.responseTimeMs} ms</span>
                 </div>
               </div>
@@ -257,18 +299,24 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
               <div className="p-6 rounded-2xl bg-[#0E1528] border border-gray-800 flex flex-col justify-between">
                 <div>
                   <div className="text-xs font-mono text-gray-400 uppercase">
-                    Cifrado de Tránsito
+                    {language === 'fr' ? 'Chiffrement en Transit' : language === 'en' ? 'Transit Encryption' : 'Cifrado de Tránsito'}
                   </div>
                   <div className="text-2xl font-bold text-white font-mono mt-2 flex items-center gap-2">
                     <Lock className={`w-5 h-5 ${auditData.isHttps ? 'text-emerald-400' : 'text-red-400'}`} />
-                    {auditData.isHttps ? 'HTTPS ACTIVO' : 'HTTP INSEGURO'}
+                    {auditData.isHttps
+                      ? (language === 'fr' ? 'HTTPS ACTIF' : language === 'en' ? 'HTTPS ACTIVE' : 'HTTPS ACTIVO')
+                      : (language === 'fr' ? 'HTTP NON SÉCURISÉ' : language === 'en' ? 'INSECURE HTTP' : 'HTTP INSEGURO')}
                   </div>
                 </div>
 
                 <div className="mt-4 pt-4 border-t border-gray-800 flex items-center justify-between text-xs font-mono">
-                  <span className="text-gray-400">Certificado SSL:</span>
+                  <span className="text-gray-400">
+                    {language === 'fr' ? 'Certificat SSL :' : language === 'en' ? 'SSL Certificate:' : 'Certificado SSL:'}
+                  </span>
                   <span className={auditData.isHttps ? 'text-emerald-400' : 'text-red-400'}>
-                    {auditData.isHttps ? 'Válido & Cifrado' : 'No Forzado'}
+                    {auditData.isHttps
+                      ? (language === 'fr' ? 'Valide & Chiffré' : language === 'en' ? 'Valid & Encrypted' : 'Válido & Cifrado')
+                      : (language === 'fr' ? 'Non Forcé' : language === 'en' ? 'Not Enforced' : 'No Forzado')}
                   </span>
                 </div>
               </div>
@@ -277,19 +325,25 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
               <div className="p-6 rounded-2xl bg-[#0E1528] border border-gray-800 flex flex-col justify-between">
                 <div>
                   <div className="text-xs font-mono text-gray-400 uppercase">
-                    Brechas Detectadas
+                    {language === 'fr' ? 'Vulnérabilités Détectées' : language === 'en' ? 'Vulnerabilities Detected' : 'Brechas Detectadas'}
                   </div>
                   <div className="text-2xl font-bold text-white font-mono mt-2 flex items-center gap-2">
                     {auditData.breaches.length > 0 ? (
-                      <span className="text-amber-400">{auditData.breaches.length} Vulnerabilidades</span>
+                      <span className="text-amber-400">
+                        {auditData.breaches.length} {language === 'fr' ? 'Vulnérabilités' : language === 'en' ? 'Vulnerabilities' : 'Vulnerabilidades'}
+                      </span>
                     ) : (
-                      <span className="text-emerald-400">0 Brechas Críticas</span>
+                      <span className="text-emerald-400">
+                        {language === 'fr' ? '0 Faille Critique' : language === 'en' ? '0 Critical Breaches' : '0 Brechas Críticas'}
+                      </span>
                     )}
                   </div>
                 </div>
 
                 <div className="mt-4 pt-4 border-t border-gray-800 flex items-center justify-between text-xs font-mono">
-                  <span className="text-gray-400">Cabeceras OK:</span>
+                  <span className="text-gray-400">
+                    {language === 'fr' ? 'En-têtes OK :' : language === 'en' ? 'Headers Passed:' : 'Cabeceras OK:'}
+                  </span>
                   <span className="text-emerald-400 font-bold">
                     {auditData.summary.passed} / {auditData.summary.total}
                   </span>
@@ -298,44 +352,50 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
             </div>
 
             {/* Navigation Tabs */}
-            <div className="flex border-b border-gray-800 gap-2 sm:gap-6 font-mono text-xs">
+            <div className="flex border-b border-gray-800 gap-2 sm:gap-6 font-mono text-xs overflow-x-auto">
               <button
                 type="button"
                 onClick={() => setActiveTab('headers')}
-                className={`pb-3 px-2 font-bold uppercase transition-all flex items-center gap-2 border-b-2 ${
+                className={`pb-3 px-2 font-bold uppercase transition-all flex items-center gap-2 border-b-2 whitespace-nowrap cursor-pointer ${
                   activeTab === 'headers'
                     ? 'border-[#0066FF] text-[#0066FF]'
                     : 'border-transparent text-gray-400 hover:text-white'
                 }`}
               >
                 <Code2 className="w-4 h-4" />
-                <span>Cabeceras de Seguridad ({auditData.headers.length})</span>
+                <span>
+                  {language === 'fr' ? `En-têtes de Sécurité (${auditData.headers.length})` : language === 'en' ? `Security Headers (${auditData.headers.length})` : `Cabeceras de Seguridad (${auditData.headers.length})`}
+                </span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveTab('osint')}
-                className={`pb-3 px-2 font-bold uppercase transition-all flex items-center gap-2 border-b-2 ${
+                className={`pb-3 px-2 font-bold uppercase transition-all flex items-center gap-2 border-b-2 whitespace-nowrap cursor-pointer ${
                   activeTab === 'osint'
                     ? 'border-[#0066FF] text-[#0066FF]'
                     : 'border-transparent text-gray-400 hover:text-white'
                 }`}
               >
                 <Server className="w-4 h-4" />
-                <span>Reconocimiento OSINT & DNS</span>
+                <span>
+                  {language === 'fr' ? 'Reconnaissance OSINT & DNS' : language === 'en' ? 'OSINT & DNS Recon' : 'Reconocimiento OSINT & DNS'}
+                </span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveTab('breaches')}
-                className={`pb-3 px-2 font-bold uppercase transition-all flex items-center gap-2 border-b-2 ${
+                className={`pb-3 px-2 font-bold uppercase transition-all flex items-center gap-2 border-b-2 whitespace-nowrap cursor-pointer ${
                   activeTab === 'breaches'
                     ? 'border-[#0066FF] text-[#0066FF]'
                     : 'border-transparent text-gray-400 hover:text-white'
                 }`}
               >
                 <AlertTriangle className="w-4 h-4 text-[#F5A623]" />
-                <span>Vulnerabilidades ({auditData.breaches.length})</span>
+                <span>
+                  {language === 'fr' ? `Vulnérabilités (${auditData.breaches.length})` : language === 'en' ? `Vulnerabilities (${auditData.breaches.length})` : `Vulnerabilidades (${auditData.breaches.length})`}
+                </span>
               </button>
             </div>
 
@@ -375,10 +435,14 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
                                 : 'bg-red-500/20 text-red-400 border border-red-500/40'
                             }`}
                           >
-                            {hdr.status === 'PASS' ? 'CONFIGURADO' : hdr.status === 'WARN' ? 'ATENCIÓN' : 'DESPROTEGIDO'}
+                            {hdr.status === 'PASS'
+                              ? (language === 'fr' ? 'CONFIGURÉ' : language === 'en' ? 'CONFIGURED' : 'CONFIGURADO')
+                              : hdr.status === 'WARN'
+                              ? (language === 'fr' ? 'ATTENTION' : language === 'en' ? 'WARNING' : 'ATENCIÓN')
+                              : (language === 'fr' ? 'NON PROTÉGÉ' : language === 'en' ? 'UNPROTECTED' : 'DESPROTEGIDO')}
                           </span>
                           <span className="text-[10px] font-mono text-gray-500">
-                            Prioridad: {hdr.importance}
+                            {language === 'fr' ? 'Priorité :' : language === 'en' ? 'Priority:' : 'Prioridad:'} {hdr.importance}
                           </span>
                         </div>
                       </div>
@@ -389,15 +453,19 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
 
                       {/* Header Value from Real Server */}
                       <div className="bg-[#070B16] rounded-lg p-2.5 font-mono text-[11px] text-gray-400 border border-gray-800/80 flex items-center justify-between overflow-x-auto">
-                        <span className="text-gray-500 select-none">Valor recibido:</span>
+                        <span className="text-gray-500 select-none">
+                          {language === 'fr' ? 'Valeur reçue :' : language === 'en' ? 'Received value:' : 'Valor recibido:'}
+                        </span>
                         <span className={hdr.value ? 'text-[#0066FF]' : 'text-gray-600 italic'}>
-                          {hdr.value || '(Cabecera no enviada por el servidor)'}
+                          {hdr.value || (language === 'fr' ? '(En-tête non envoyé par le serveur)' : language === 'en' ? '(Header not returned by server)' : '(Cabecera no enviada por el servidor)')}
                         </span>
                       </div>
 
                       {hdr.status !== 'PASS' && (
                         <div className="text-[11px] font-mono text-amber-300/90 flex items-start gap-1.5 pt-1">
-                          <span className="text-[#F5A623]">› Remediar:</span>
+                          <span className="text-[#F5A623]">
+                            {language === 'fr' ? '› Remédier :' : language === 'en' ? '› Remediate:' : '› Remediar:'}
+                          </span>
                           <span>{hdr.recommendation}</span>
                         </div>
                       )}
@@ -415,35 +483,45 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
                 <div className="p-6 rounded-2xl bg-[#0C1326] border border-gray-800 space-y-4">
                   <div className="flex items-center gap-2 text-sm font-bold text-white font-mono">
                     <Globe2 className="w-4 h-4 text-[#0066FF]" />
-                    <span>Resolución de Red & Servidor</span>
+                    <span>
+                      {language === 'fr' ? 'Résolution Réseau & Serveur' : language === 'en' ? 'Network & Host Resolution' : 'Resolución de Red & Servidor'}
+                    </span>
                   </div>
 
                   <div className="space-y-2.5 text-xs font-mono">
                     <div className="flex justify-between py-2 border-b border-gray-800">
-                      <span className="text-gray-400">Dirección IP Resuelta:</span>
-                      <span className="text-white font-bold">{auditData.osint.ip || 'Oculta tras CDN'}</span>
+                      <span className="text-gray-400">
+                        {language === 'fr' ? 'Adresse IP Résolue :' : language === 'en' ? 'Resolved IP Address:' : 'Dirección IP Resuelta:'}
+                      </span>
+                      <span className="text-white font-bold">{auditData.osint.ip || (language === 'fr' ? 'Masquée par CDN' : language === 'en' ? 'Masked behind CDN' : 'Oculta tras CDN')}</span>
                     </div>
 
                     <div className="flex justify-between py-2 border-b border-gray-800">
-                      <span className="text-gray-400">Tipo de Protocolo:</span>
+                      <span className="text-gray-400">
+                        {language === 'fr' ? 'Famille IP :' : language === 'en' ? 'IP Protocol:' : 'Tipo de Protocolo:'}
+                      </span>
                       <span className="text-gray-300">{auditData.osint.ipFamily || 'IPv4'}</span>
                     </div>
 
                     <div className="flex justify-between py-2 border-b border-gray-800">
-                      <span className="text-gray-400">Banner de Servidor Web:</span>
-                      <span className="text-[#F5A623]">{auditData.osint.serverBanner || 'No divulgado (Protegido)'}</span>
+                      <span className="text-gray-400">
+                        {language === 'fr' ? 'Bannière Serveur :' : language === 'en' ? 'Server Banner:' : 'Banner de Servidor Web:'}
+                      </span>
+                      <span className="text-[#F5A623]">{auditData.osint.serverBanner || (language === 'fr' ? 'Non divulguée (Protégée)' : language === 'en' ? 'Hidden (Secured)' : 'No divulgado (Protegido)')}</span>
                     </div>
 
                     <div className="flex justify-between py-2 border-b border-gray-800">
-                      <span className="text-gray-400">Framework Detectado:</span>
-                      <span className="text-gray-300">{auditData.osint.poweredBy || 'Oculto'}</span>
+                      <span className="text-gray-400">
+                        {language === 'fr' ? 'Framework Détecté :' : language === 'en' ? 'Detected Framework:' : 'Framework Detectado:'}
+                      </span>
+                      <span className="text-gray-300">{auditData.osint.poweredBy || (language === 'fr' ? 'Masqué' : language === 'en' ? 'Hidden' : 'Oculto')}</span>
                     </div>
                   </div>
 
                   {auditData.osint.detectedTech.length > 0 && (
                     <div className="pt-2">
                       <span className="text-[11px] font-mono text-gray-400 block mb-2">
-                        Stack Tecnológico Detectado:
+                        {language === 'fr' ? 'Stack Technologique Détectée :' : language === 'en' ? 'Detected Tech Stack:' : 'Stack Tecnológico Detectado:'}
                       </span>
                       <div className="flex flex-wrap gap-1.5">
                         {auditData.osint.detectedTech.map((tech, tIdx) => (
@@ -463,11 +541,17 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
                 <div className="p-6 rounded-2xl bg-[#0C1326] border border-gray-800 space-y-4">
                   <div className="flex items-center gap-2 text-sm font-bold text-white font-mono">
                     <Mail className="w-4 h-4 text-[#F5A623]" />
-                    <span>Seguridad de Correo & Anti-Spoofing</span>
+                    <span>
+                      {language === 'fr' ? 'Sécurité Email & Anti-Spoofing' : language === 'en' ? 'Email Security & Anti-Spoofing' : 'Seguridad de Correo & Anti-Spoofing'}
+                    </span>
                   </div>
 
                   <p className="text-xs text-gray-300 leading-relaxed">
-                    Evaluación de registros DNS para verificar si atacantes pueden suplantar la identidad del dominio para enviar correos maliciosos a tus clientes.
+                    {language === 'fr'
+                      ? 'Évaluation des enregistrements DNS pour vérifier si des attaquants peuvent usurper votre nom de domaine pour envoyer des courriels malveillants à vos clients.'
+                      : language === 'en'
+                      ? 'DNS records analysis to verify whether malicious actors can spoof your domain identity to send fraudulent emails to your patients and clients.'
+                      : 'Evaluación de registros DNS para verificar si atacantes pueden suplantar la identidad del dominio para enviar correos maliciosos a tus clientes.'}
                   </p>
 
                   <div className="space-y-3 pt-2">
@@ -478,10 +562,14 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
                         ) : (
                           <AlertTriangle className="w-4 h-4 text-amber-400" />
                         )}
-                        <span className="text-gray-300">Registro SPF (Sender Policy):</span>
+                        <span className="text-gray-300">
+                          {language === 'fr' ? 'Enregistrement SPF :' : language === 'en' ? 'SPF Record (Sender Policy):' : 'Registro SPF (Sender Policy):'}
+                        </span>
                       </div>
                       <span className={auditData.osint.hasSpf ? 'text-emerald-400 font-bold' : 'text-amber-400 font-bold'}>
-                        {auditData.osint.hasSpf ? 'ACTIVO' : 'NO DETECTADO'}
+                        {auditData.osint.hasSpf
+                          ? (language === 'fr' ? 'ACTIF' : language === 'en' ? 'ACTIVE' : 'ACTIVO')
+                          : (language === 'fr' ? 'NON DÉTECTÉ' : language === 'en' ? 'NOT DETECTED' : 'NO DETECTADO')}
                       </span>
                     </div>
 
@@ -492,17 +580,21 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
                         ) : (
                           <XCircle className="w-4 h-4 text-red-400" />
                         )}
-                        <span className="text-gray-300">Política DMARC Anti-Phishing:</span>
+                        <span className="text-gray-300">
+                          {language === 'fr' ? 'Politique DMARC Anti-Phishing :' : language === 'en' ? 'DMARC Anti-Phishing Policy:' : 'Política DMARC Anti-Phishing:'}
+                        </span>
                       </div>
                       <span className={auditData.osint.hasDmarc ? 'text-emerald-400 font-bold' : 'text-red-400 font-bold'}>
-                        {auditData.osint.hasDmarc ? 'ACTIVO' : 'DESPROTEGIDO'}
+                        {auditData.osint.hasDmarc
+                          ? (language === 'fr' ? 'ACTIF' : language === 'en' ? 'ACTIVE' : 'ACTIVO')
+                          : (language === 'fr' ? 'NON PROTÉGÉ' : language === 'en' ? 'UNPROTECTED' : 'DESPROTEGIDO')}
                       </span>
                     </div>
                   </div>
 
                   {auditData.osint.mxRecords.length > 0 && (
                     <div className="pt-2 text-[11px] font-mono text-gray-400">
-                      <span>Servidores MX vinculados:</span>
+                      <span>{language === 'fr' ? 'Serveurs MX associés :' : language === 'en' ? 'Associated MX Servers:' : 'Servidores MX vinculados:'}</span>
                       <ul className="list-disc list-inside mt-1 text-gray-300 space-y-0.5">
                         {auditData.osint.mxRecords.map((mx, mIdx) => (
                           <li key={mIdx}>{mx}</li>
@@ -521,10 +613,14 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
                   <div className="p-8 rounded-2xl bg-[#0C1326] border border-emerald-500/40 text-center space-y-2">
                     <ShieldCheck className="w-10 h-10 text-emerald-400 mx-auto" />
                     <h4 className="text-base font-bold text-white font-mono">
-                      Excelente Postura Defensiva
+                      {language === 'fr' ? 'Excellente Posture Défensive' : language === 'en' ? 'Excellent Defensive Posture' : 'Excelente Postura Defensiva'}
                     </h4>
                     <p className="text-xs text-gray-300">
-                      No se detectaron brechas críticas ni falta de cabeceras obligatorias en la respuesta analizada.
+                      {language === 'fr'
+                        ? 'Aucune faille critique ni absence d’en-tête obligatoire n’a été détectée dans la réponse analysée.'
+                        : language === 'en'
+                        ? 'No critical vulnerabilities or missing mandatory headers detected in inspected responses.'
+                        : 'No se detectaron brechas críticas ni falta de cabeceras obligatorias en la respuesta analizada.'}
                     </p>
                   </div>
                 ) : (
@@ -544,7 +640,7 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
                                 : 'bg-blue-500/20 text-blue-400 border border-blue-500/40'
                             }`}
                           >
-                            SEVERIDAD {breach.severity}
+                            {language === 'fr' ? `SÉVÉRITÉ ${breach.severity}` : language === 'en' ? `SEVERITY ${breach.severity}` : `SEVERIDAD ${breach.severity}`}
                           </span>
                           <span className="text-xs font-mono text-gray-400">
                             {breach.id} · {breach.category}
@@ -562,10 +658,10 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
 
                       <div className="p-3 rounded-xl bg-[#070B16] border border-gray-800 text-xs font-mono space-y-1">
                         <div className="text-red-400">
-                          <strong>Impacto Real:</strong> {breach.impact}
+                          <strong>{language === 'fr' ? 'Impact Réel :' : language === 'en' ? 'Real Impact:' : 'Impacto Real:'}</strong> {breach.impact}
                         </div>
                         <div className="text-emerald-400">
-                          <strong>Remediación:</strong> {breach.remediation}
+                          <strong>{language === 'fr' ? 'Remédiation :' : language === 'en' ? 'Remediation:' : 'Remediación:'}</strong> {breach.remediation}
                         </div>
                       </div>
                     </div>
@@ -579,13 +675,27 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
               <div className="space-y-2 text-center md:text-left">
                 <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-[#F5A623]/20 border border-[#F5A623]/40 text-[#F5A623] font-mono text-xs font-bold">
                   <Sparkles className="w-3.5 h-3.5" />
-                  <span>SERVICIO INDEPENDIENTE · 29€ PAGO ÚNICO</span>
+                  <span>
+                    {language === 'fr'
+                      ? 'SERVICE INDÉPENDANT · 29 € PAIEMENT UNIQUE'
+                      : language === 'en'
+                      ? 'STANDALONE SERVICE · 29€ ONE-TIME PAYMENT'
+                      : 'SERVICIO INDEPENDIENTE · 29€ PAGO ÚNICO'}
+                  </span>
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-white font-mono">
-                  ¿Quieres Blindar tu Sitio Web Hoy Mismo?
+                  {language === 'fr'
+                    ? 'Souhaitez-vous Blinder votre Site Web dès Aujourd’hui ?'
+                    : language === 'en'
+                    ? 'Ready to Shield and Harden Your Website Today?'
+                    : '¿Quieres Blindar tu Sitio Web Hoy Mismo?'}
                 </h3>
                 <p className="text-xs sm:text-sm text-gray-300 max-w-xl">
-                  Obtén el informe forense completo de <strong>{auditData.target}</strong> con los scripts listos para pegar en Nginx/Apache y soporte de validación directo con Dexvoi.
+                  {language === 'fr'
+                    ? <>Obtenez le rapport forensique complet de <strong>{auditData.target}</strong> avec les scripts prêts à copier pour Nginx/Apache et l’assistance directe de Dexvoi.</>
+                    : language === 'en'
+                    ? <>Get the comprehensive forensic report for <strong>{auditData.target}</strong> with ready-to-paste Nginx/Apache configuration scripts and validation support from Dexvoi.</>
+                    : <>Obtén el informe forense completo de <strong>{auditData.target}</strong> con los scripts listos para pegar en Nginx/Apache y soporte de validación directo con Dexvoi.</>}
                 </p>
               </div>
 
@@ -595,7 +705,13 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
                 className="w-full md:w-auto metallic-btn px-8 py-4 rounded-xl font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl whitespace-nowrap cursor-pointer"
               >
                 <Lock className="w-4 h-4 text-[#F5A623]" />
-                <span>Desbloquear Blindaje Completo (29€)</span>
+                <span>
+                  {language === 'fr'
+                    ? 'Débloquer le Blindage Complet (29 €)'
+                    : language === 'en'
+                    ? 'Unlock Complete Hardening (29€)'
+                    : 'Desbloquear Blindaje Completo (29€)'}
+                </span>
               </button>
             </div>
 
@@ -606,3 +722,4 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
     </section>
   );
 };
+

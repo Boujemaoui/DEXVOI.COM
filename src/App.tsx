@@ -21,6 +21,7 @@ import { ConsentBanner } from './components/ConsentBanner';
 import { OsintSecurityAuditResult } from './types';
 import { Home, Grid, Shield, Mail, Zap, CreditCard } from 'lucide-react';
 import { useAppRoute, navigateTo } from './utils/navigation';
+import { useLanguage } from './i18n/LanguageContext';
 import { LegalPage } from './pages/LegalPage';
 import { ServicesPage } from './pages/ServicesPage';
 import { PricingPage } from './pages/PricingPage';
@@ -28,6 +29,7 @@ import { ContactPage } from './pages/ContactPage';
 import { OsintAuditPage } from './pages/OsintAuditPage';
 
 export default function App() {
+  const { language } = useLanguage();
   const { route } = useAppRoute();
   const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
   const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
@@ -253,7 +255,7 @@ export default function App() {
           }`}
         >
           <Home className="w-5 h-5 mb-0.5" />
-          <span>Inicio</span>
+          <span>{language === 'fr' ? 'Accueil' : language === 'en' ? 'Home' : 'Inicio'}</span>
         </button>
 
         <button
@@ -263,7 +265,7 @@ export default function App() {
           }`}
         >
           <Grid className="w-5 h-5 mb-0.5" />
-          <span>Servicios</span>
+          <span>{language === 'es' ? 'Servicios' : 'Services'}</span>
         </button>
 
         <button
@@ -273,7 +275,7 @@ export default function App() {
           }`}
         >
           <Shield className="w-5 h-5 mb-0.5" />
-          <span>Seguridad</span>
+          <span>{language === 'fr' ? 'Sécurité' : language === 'en' ? 'Security' : 'Seguridad'}</span>
         </button>
 
         <button
@@ -283,7 +285,7 @@ export default function App() {
           }`}
         >
           <CreditCard className="w-5 h-5 mb-0.5" />
-          <span>Precios</span>
+          <span>{language === 'fr' ? 'Tarifs' : language === 'en' ? 'Pricing' : 'Precios'}</span>
         </button>
 
         <button
@@ -293,7 +295,7 @@ export default function App() {
           }`}
         >
           <Mail className="w-5 h-5 mb-0.5" />
-          <span>Contacto</span>
+          <span>{language === 'es' ? 'Contacto' : 'Contact'}</span>
         </button>
       </nav>
     </div>

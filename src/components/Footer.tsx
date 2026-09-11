@@ -1,18 +1,22 @@
 import React from 'react';
-import { Shield, Lock, Award, Terminal, ArrowUp, Cookie } from 'lucide-react';
+import { Shield, Award, ArrowUp } from 'lucide-react';
 import { LegalTab } from './LegalModal';
 import { navigateTo } from '../utils/navigation';
+import { useLanguage } from '../i18n/LanguageContext';
+import { LanguageSelector } from './LanguageSelector';
 
 interface FooterProps {
   onOpenLegalModal?: (tab: LegalTab) => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onOpenLegalModal }) => {
+export const Footer: React.FC<FooterProps> = () => {
+  const { t } = useLanguage();
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, path: string, legalTab?: LegalTab) => {
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, path: string) => {
     if (e.ctrlKey || e.metaKey) return; // allow new tab
     e.preventDefault();
     navigateTo(path);
@@ -36,14 +40,18 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegalModal }) => {
               </span>
             </div>
             <p className="text-gray-400 font-sans text-xs leading-relaxed">
-              Arquitectos Digitales de Negocios. Especialistas en blindaje perimetral, alta conversión y posicionamiento local dominante para clínicas y restaurantes.
+              {t.footer.description}
             </p>
+            {/* Language Switcher in Footer */}
+            <div className="pt-2">
+              <LanguageSelector variant="footer" />
+            </div>
           </div>
 
           {/* Pillars Col */}
           <div className="space-y-3">
             <div className="text-white font-bold uppercase tracking-wider text-xs">
-              Páginas de Servicio
+              {t.footer.servicesCol}
             </div>
             <ul className="space-y-2 text-xs">
               <li>
@@ -52,7 +60,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegalModal }) => {
                   onClick={(e) => handleLinkClick(e, '/servicios')}
                   className="hover:text-[#0066FF] transition-colors"
                 >
-                  01. Arquitectura Web & Sistemas
+                  01. {t.services.pillar1Title}
                 </a>
               </li>
               <li>
@@ -61,7 +69,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegalModal }) => {
                   onClick={(e) => handleLinkClick(e, '/servicios')}
                   className="hover:text-[#0066FF] transition-colors"
                 >
-                  02. Posicionamiento (SEO Local & Maps)
+                  02. {t.services.pillar2Title}
                 </a>
               </li>
               <li>
@@ -70,7 +78,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegalModal }) => {
                   onClick={(e) => handleLinkClick(e, '/servicios')}
                   className="hover:text-[#0066FF] transition-colors"
                 >
-                  03. Ethical Hacking & Blindaje
+                  03. {t.services.pillar3Title}
                 </a>
               </li>
               <li>
@@ -79,7 +87,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegalModal }) => {
                   onClick={(e) => handleLinkClick(e, '/auditoria-seguridad')}
                   className="text-[#F5A623] hover:underline"
                 >
-                  04. Escáner de Vulnerabilidades OSINT
+                  04. OSINT Security Audit (29€)
                 </a>
               </li>
               <li>
@@ -88,7 +96,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegalModal }) => {
                   onClick={(e) => handleLinkClick(e, '/precios')}
                   className="text-[#635BFF] hover:underline"
                 >
-                  05. Planes y Precios Oficiales
+                  05. {t.pricing.title}
                 </a>
               </li>
             </ul>
@@ -97,20 +105,20 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegalModal }) => {
           {/* Sectors Col */}
           <div className="space-y-3">
             <div className="text-white font-bold uppercase tracking-wider text-xs">
-              Sectores Especializados
+              {t.footer.sectorsCol}
             </div>
             <ul className="space-y-2 text-xs">
-              <li><span className="text-gray-300">Clínicas Médicas & Quirúrgicas</span></li>
-              <li><span className="text-gray-300">Centros de Medicina Estética</span></li>
-              <li><span className="text-gray-300">Restaurantes de Gama Media-Alta</span></li>
-              <li><span className="text-gray-300">Grupos Gastronómicos</span></li>
+              <li><span className="text-gray-300">{t.footer.sectorClinics}</span></li>
+              <li><span className="text-gray-300">{t.footer.sectorAesthetic}</span></li>
+              <li><span className="text-gray-300">{t.footer.sectorRestaurants}</span></li>
+              <li><span className="text-gray-300">{t.footer.sectorHospitality}</span></li>
               <li className="pt-2">
                 <a 
                   href="/contacto" 
                   onClick={(e) => handleLinkClick(e, '/contacto')}
                   className="text-[#38BDF8] hover:underline block"
                 >
-                  → Contactar con un Arquitecto
+                  → {t.footer.contactArchitect}
                 </a>
               </li>
             </ul>
@@ -122,14 +130,14 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegalModal }) => {
               <div className="flex items-center gap-2 text-[#F5A623]">
                 <Award className="w-5 h-5" />
                 <span className="font-bold text-xs uppercase tracking-wider text-white">
-                  SELLO DE GARANTÍA
+                  {t.footer.badgeTitle}
                 </span>
               </div>
               <div className="text-xs font-bold text-emerald-400">
-                Seguridad y Estrategia Digital Certificada
+                {t.footer.badgeSubtitle}
               </div>
               <p className="text-[11px] text-gray-400 leading-tight">
-                Cumplimiento estricto en auditoría de penetración, protección de datos confidenciales y tiempos de respuesta militar.
+                {t.footer.badgeText}
               </p>
             </div>
           </div>
@@ -139,44 +147,44 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegalModal }) => {
         {/* Bottom Bar with Real Legal URLs */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
           <div className="flex items-center gap-2 text-gray-400">
-            <span>© {new Date().getFullYear()} DEXVOI. SEGURIDAD Y ESTRATEGIA CERTIFICADA.</span>
+            <span>© {new Date().getFullYear()} DEXVOI. {t.footer.rights}</span>
           </div>
 
           <div className="flex flex-wrap items-center gap-4 sm:gap-6">
             <a
               href="/privacidad"
-              onClick={(e) => handleLinkClick(e, '/privacidad', 'privacy')}
+              onClick={(e) => handleLinkClick(e, '/privacidad')}
               className="hover:text-white transition-colors"
             >
-              Privacidad & Protocolos
+              {t.footer.privacy}
             </a>
             <a
               href="/condiciones"
-              onClick={(e) => handleLinkClick(e, '/condiciones', 'terms')}
+              onClick={(e) => handleLinkClick(e, '/condiciones')}
               className="hover:text-white transition-colors"
             >
-              Términos de Servicio
+              {t.footer.terms}
             </a>
             <a
               href="/cookies"
-              onClick={(e) => handleLinkClick(e, '/cookies', 'cookies')}
+              onClick={(e) => handleLinkClick(e, '/cookies')}
               className="hover:text-white transition-colors"
             >
-              Cookies
+              {t.footer.cookies}
             </a>
             <a
               href="/aviso-legal"
-              onClick={(e) => handleLinkClick(e, '/aviso-legal', 'legal')}
+              onClick={(e) => handleLinkClick(e, '/aviso-legal')}
               className="hover:text-white transition-colors"
             >
-              Aviso Legal
+              {t.footer.legal}
             </a>
             <a
               href="/auditoria-seguridad"
-              onClick={(e) => handleLinkClick(e, '/auditoria-seguridad', 'security')}
+              onClick={(e) => handleLinkClick(e, '/auditoria-seguridad')}
               className="hover:text-white transition-colors text-[#F5A623]"
             >
-              Auditoría Ética
+              {t.footer.ethicalAudit}
             </a>
             <button
               onClick={scrollToTop}
@@ -192,3 +200,4 @@ export const Footer: React.FC<FooterProps> = ({ onOpenLegalModal }) => {
     </footer>
   );
 };
+

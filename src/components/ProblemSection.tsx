@@ -1,38 +1,41 @@
 import React from 'react';
 import { Clock, EyeOff, ShieldAlert, Shield, Zap, TrendingUp, ArrowRight } from 'lucide-react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface ProblemSectionProps {
   onOpenAuditModal: () => void;
 }
 
 export const ProblemSection: React.FC<ProblemSectionProps> = ({ onOpenAuditModal }) => {
+  const { t, language } = useLanguage();
+
   const problems = [
     {
       id: 'speed',
-      badge: 'PÉRDIDA DE PACIENTES & COMENSALES',
-      title: 'Web lenta = Clientes perdidos',
-      question: '¿Tu web tarda más de 3 segundos en cargar y los usuarios abandonan tu menú o citas antes de reservar?',
-      metric: 'Cada segundo de retraso destruye un 7% de tus conversiones.',
+      badge: language === 'fr' ? 'PERTE DE PATIENTS & CLIENTS' : language === 'en' ? 'LOST PATIENTS & GUESTS' : 'PÉRDIDA DE PACIENTES & COMENSALES',
+      title: t.problem.leak1Title,
+      question: t.problem.leak1Desc,
+      metric: t.problem.leak1Impact,
       icon: Clock,
       borderColor: 'border-red-500/30',
       badgeBg: 'bg-red-500/10 text-red-400'
     },
     {
       id: 'visibility',
-      badge: 'VENTAS ENTREGADAS A TU COMPETENCIA',
-      title: 'Invisible en Google Maps',
-      question: '¿Tus competidores directos acaparan las primeras 3 posiciones en Google Maps mientras tu negocio no aparece?',
-      metric: 'El 82% de las búsquedas locales "cerca de mí" terminan en una llamada o reserva en menos de 24h.',
+      badge: language === 'fr' ? 'RÉSERVATIONS OFFERTES AUX CONCURRENTS' : language === 'en' ? 'LEADS HANDED TO COMPETITORS' : 'VENTAS ENTREGADAS A TU COMPETENCIA',
+      title: t.problem.leak3Title,
+      question: t.problem.leak3Desc,
+      metric: t.problem.leak3Impact,
       icon: EyeOff,
       borderColor: 'border-amber-500/30',
       badgeBg: 'bg-amber-500/10 text-amber-400'
     },
     {
       id: 'security',
-      badge: 'RIESGO LEGAL & REPUTACIONAL',
-      title: 'Vulnerable a ataques y filtraciones',
-      question: '¿Manejas historiales médicos, datos de contacto o cobros online sin una auditoría de seguridad perimetral?',
-      metric: 'Una filtración de datos destruye la reputación forjada durante años en cuestión de minutos.',
+      badge: language === 'fr' ? 'RISQUE JURIDIQUE & RÉPUTATIONNEL' : language === 'en' ? 'LEGAL & REPUTATIONAL LIABILITY' : 'RIESGO LEGAL & REPUTACIONAL',
+      title: t.problem.leak2Title,
+      question: t.problem.leak2Desc,
+      metric: t.problem.leak2Impact,
       icon: ShieldAlert,
       borderColor: 'border-blue-500/30',
       badgeBg: 'bg-blue-500/10 text-blue-400'
@@ -47,15 +50,18 @@ export const ProblemSection: React.FC<ProblemSectionProps> = ({ onOpenAuditModal
         <div className="text-center max-w-3xl mx-auto space-y-4 mb-14">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-red-500/10 border border-red-500/20 text-red-400 font-mono text-xs uppercase tracking-wider">
             <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span>
-            <span>DIAGNÓSTICO CRÍTICO DE NEGOCIO</span>
+            <span>{t.problem.badge}</span>
           </div>
           
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight">
-            ¿Tu presencia digital está frenando el crecimiento de tu negocio?
+            {t.problem.title}{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-amber-400 to-[#F5A623]">
+              {t.problem.titleHighlight}
+            </span>
           </h2>
           
           <p className="text-gray-400 text-sm sm:text-base">
-            La mayoría de clínicas y restaurantes pagan por webs que parecen atractivas por fuera, pero están rotas por dentro: lentas, invisibles y expuestas a amenazas.
+            {t.problem.subtitle}
           </p>
           <div className="w-16 h-1 bg-red-500/50 mx-auto rounded-full mt-4"></div>
         </div>
@@ -90,7 +96,9 @@ export const ProblemSection: React.FC<ProblemSectionProps> = ({ onOpenAuditModal
                 </div>
 
                 <div className="pt-4 border-t border-gray-800/80 text-xs font-mono text-gray-400">
-                  <span className="text-[#F5A623] font-bold block mb-1">Impacto Financiero:</span>
+                  <span className="text-[#F5A623] font-bold block mb-1">
+                    {language === 'fr' ? 'Impact Financier :' : language === 'en' ? 'Financial Impact:' : 'Impacto Financiero:'}
+                  </span>
                   {problem.metric}
                 </div>
               </div>
@@ -101,7 +109,7 @@ export const ProblemSection: React.FC<ProblemSectionProps> = ({ onOpenAuditModal
         {/* The Equation Formula Box */}
         <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-xl border border-[#0066FF]/40 bg-gradient-to-b from-[#131B33]/80 to-[#0A0F1F] shadow-[0_0_30px_rgba(0,102,255,0.15)] text-center relative overflow-hidden">
           <div className="text-xs font-mono text-[#0066FF] uppercase tracking-widest mb-4">
-            LA ECUACIÓN DE CRECIMIENTO DIGITAL SEGURO
+            {language === 'fr' ? 'L’ÉQUATION DE CROISSANCE DIGITALE SÉCURISÉE' : language === 'en' ? 'THE SECURE DIGITAL GROWTH EQUATION' : 'LA ECUACIÓN DE CRECIMIENTO DIGITAL SEGURO'}
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 my-4 font-mono">
@@ -110,7 +118,9 @@ export const ProblemSection: React.FC<ProblemSectionProps> = ({ onOpenAuditModal
               <Shield className="w-6 h-6 text-[#0066FF]" />
               <div className="text-left">
                 <div className="text-xs text-gray-400">Pilar 01</div>
-                <div className="text-sm font-bold text-white uppercase">BLINDAJE & SEGURIDAD</div>
+                <div className="text-sm font-bold text-white uppercase">
+                  {language === 'fr' ? 'BLINDAGE & SÉCURITÉ' : language === 'en' ? 'SECURITY & HARDENING' : 'BLINDAJE & SEGURIDAD'}
+                </div>
               </div>
             </div>
 
@@ -121,7 +131,9 @@ export const ProblemSection: React.FC<ProblemSectionProps> = ({ onOpenAuditModal
               <Zap className="w-6 h-6 text-[#0066FF]" />
               <div className="text-left">
                 <div className="text-xs text-gray-400">Pilar 02</div>
-                <div className="text-sm font-bold text-white uppercase">VELOCIDAD & SEO LOCAL</div>
+                <div className="text-sm font-bold text-white uppercase">
+                  {language === 'fr' ? 'VITESSE & SEO LOCAL' : language === 'en' ? 'SPEED & LOCAL SEO' : 'VELOCIDAD & SEO LOCAL'}
+                </div>
               </div>
             </div>
 
@@ -131,8 +143,12 @@ export const ProblemSection: React.FC<ProblemSectionProps> = ({ onOpenAuditModal
             <div className="flex items-center gap-3 bg-[#F5A623]/10 px-6 py-3 rounded-lg border border-[#F5A623]/60 shadow-[0_0_15px_rgba(245,166,35,0.2)]">
               <TrendingUp className="w-7 h-7 text-[#F5A623]" />
               <div className="text-left">
-                <div className="text-xs text-[#F5A623]">Resultado</div>
-                <div className="text-base font-extrabold text-[#F5A623] uppercase">MÁS VENTAS & RESERVAS</div>
+                <div className="text-xs text-[#F5A623]">
+                  {language === 'fr' ? 'Résultat' : language === 'en' ? 'Outcome' : 'Resultado'}
+                </div>
+                <div className="text-base font-extrabold text-[#F5A623] uppercase">
+                  {language === 'fr' ? 'PLUS DE CLIENTS & RÉSERVATIONS' : language === 'en' ? 'MORE REVENUE & BOOKINGS' : 'MÁS VENTAS & RESERVAS'}
+                </div>
               </div>
             </div>
           </div>
@@ -140,14 +156,18 @@ export const ProblemSection: React.FC<ProblemSectionProps> = ({ onOpenAuditModal
           {/* Impact Closing Paragraph */}
           <div className="mt-6 pt-6 border-t border-gray-800/80 max-w-2xl mx-auto">
             <p className="text-sm sm:text-base text-gray-200 leading-relaxed font-normal">
-              No necesitas otra página web decorativa. Necesitas una <strong className="text-white font-semibold">arquitectura digital sólida</strong> que elimine vulnerabilidades técnicas, inspire confianza absoluta y transforme búsquedas locales en ingresos recurrentes y predecibles.
+              {language === 'fr'
+                ? 'Vous n’avez pas besoin d’un énième site web décoratif. Vous avez besoin d’une architecture digitale solide qui élimine les vulnérabilités techniques, inspire une confiance absolue et transforme vos recherches locales en réservations directes.'
+                : language === 'en'
+                ? 'You do not need another cosmetic brochure website. You need resilient digital architecture that eliminates technical exploits, establishes unshakeable trust, and converts local searches into recurring revenue.'
+                : 'No necesitas otra página web decorativa. Necesitas una arquitectura digital sólida que elimine vulnerabilidades técnicas, inspire confianza absoluta y transforme búsquedas locales en ingresos recurrentes y predecibles.'}
             </p>
 
             <button
               onClick={onOpenAuditModal}
-              className="mt-5 inline-flex items-center gap-2 text-xs font-mono text-[#F5A623] hover:text-[#ffd78a] uppercase font-bold tracking-wider underline underline-offset-4"
+              className="mt-5 inline-flex items-center gap-2 text-xs font-mono text-[#F5A623] hover:text-[#ffd78a] uppercase font-bold tracking-wider underline underline-offset-4 cursor-pointer"
             >
-              <span>Solicita un diagnóstico para identificar tus fugas</span>
+              <span>{t.problem.ctaAudit}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -157,3 +177,4 @@ export const ProblemSection: React.FC<ProblemSectionProps> = ({ onOpenAuditModal
     </section>
   );
 };
+

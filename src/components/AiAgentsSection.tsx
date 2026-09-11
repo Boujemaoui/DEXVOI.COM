@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   Bot,
-  Cpu,
   Sparkles,
   CheckCircle2,
   ArrowRight,
@@ -13,11 +12,11 @@ import {
   Sliders,
   X,
   Send,
-  UserCheck,
   ShieldCheck,
   Database,
   Check
 } from 'lucide-react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface AiAgentsSectionProps {
   onOpenAuditModal: () => void;
@@ -28,22 +27,53 @@ export const AiAgentsSection: React.FC<AiAgentsSectionProps> = ({
   onOpenAuditModal,
   onContactClick,
 }) => {
+  const { t, language } = useLanguage();
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [activeDemoTab, setActiveDemoTab] = useState<'whatsapp' | 'web' | 'workflow'>('whatsapp');
   
   // Interactive mini-simulator conversation state
-  const [simMessages, setSimMessages] = useState<Array<{ sender: 'user' | 'agent'; text: string; time: string }>>([
-    {
-      sender: 'user',
-      text: 'Hola, ¿qué servicios tenéis para mejorar la velocidad y captar más reservas en mi clínica?',
-      time: '12:14',
-    },
-    {
-      sender: 'agent',
-      text: '¡Hola! En Dexvoi implementamos optimización web de carga <1s y sistemas de reservas automáticas 24/7 sincronizados con tu agenda y WhatsApp. ¿Te gustaría agendar una demostración en vivo de 10 minutos?',
-      time: '12:14',
-    },
-  ]);
+  const [simMessages, setSimMessages] = useState<Array<{ sender: 'user' | 'agent'; text: string; time: string }>>(() => {
+    if (language === 'fr') {
+      return [
+        {
+          sender: 'user',
+          text: 'Bonjour, que proposez-vous pour accélérer le site et capter plus de réservations pour ma clinique ?',
+          time: '12:14',
+        },
+        {
+          sender: 'agent',
+          text: 'Bonjour ! Chez Dexvoi, nous déployons une architecture web avec temps de chargement < 1s et des systèmes de réservation automatique 24/7 synchronisés avec votre calendrier et WhatsApp. Souhaitez-vous planifier une démo de 10 min ?',
+          time: '12:14',
+        },
+      ];
+    }
+    if (language === 'en') {
+      return [
+        {
+          sender: 'user',
+          text: 'Hello, what services do you offer to increase speed and booking conversions for my clinic?',
+          time: '12:14',
+        },
+        {
+          sender: 'agent',
+          text: 'Hi! At Dexvoi, we build sub-second web architectures and 24/7 automated booking agents synced with Google Calendar and WhatsApp. Would you like to schedule a 10-minute live demonstration?',
+          time: '12:14',
+        },
+      ];
+    }
+    return [
+      {
+        sender: 'user',
+        text: 'Hola, ¿qué servicios tenéis para mejorar la velocidad y captar más reservas en mi clínica?',
+        time: '12:14',
+      },
+      {
+        sender: 'agent',
+        text: '¡Hola! En Dexvoi implementamos optimización web de carga <1s y sistemas de reservas automáticas 24/7 sincronizados con tu agenda y WhatsApp. ¿Te gustaría agendar una demostración en vivo de 10 minutos?',
+        time: '12:14',
+      },
+    ];
+  });
   const [simInput, setSimInput] = useState('');
 
   const handleSimSend = (e: React.FormEvent) => {
@@ -58,11 +88,22 @@ export const AiAgentsSection: React.FC<AiAgentsSectionProps> = ({
 
     // Automated smart agent response simulation
     setTimeout(() => {
-      const replies = [
+      const repliesFr = [
+        'Votre demande a été enregistrée. Notre agent IA peut évaluer l’urgence, enregistrer vos données dans le CRM et vous orienter vers l’architecte adéquat.',
+        'Bien compris. Souhaitez-vous recevoir un audit préliminaire par e-mail ou réserver un appel stratégique de 15 minutes ?',
+        'Excellente question. Nos agents sont entraînés exclusivement sur vos documentations et protocoles, garantissant 0 hallucination.',
+      ];
+      const repliesEn = [
+        'I have recorded your request. Our AI agent can instantly score lead priority, update your CRM, and connect you with a digital architect.',
+        'Understood. Would you prefer an executive technical report sent by email or a 15-minute diagnostic walkthrough?',
+        'Great question. Our agents are strictly grounded on your proprietary manuals and FAQs, ensuring 100% truthful, hallucination-free answers.',
+      ];
+      const repliesEs = [
         'He registrado tu consulta. Nuestro agente de IA puede clasificar la urgencia, guardar tus datos en el CRM y derivarte al especialista adecuado al instante.',
         'Entendido. ¿Prefieres que te enviemos un informe preliminar por correo o prefieres que agendemos una llamada de valoración técnica?',
         'Excelente pregunta. La ventaja de nuestros agentes es que se entrenan con tus propios manuales y FAQs, garantizando respuestas 100% certeras sin alucinaciones.',
       ];
+      const replies = language === 'fr' ? repliesFr : language === 'en' ? repliesEn : repliesEs;
       const randomReply = replies[Math.floor(Math.random() * replies.length)];
       const replyTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       setSimMessages((prev) => [...prev, { sender: 'agent', text: randomReply, time: replyTime }]);
@@ -72,38 +113,46 @@ export const AiAgentsSection: React.FC<AiAgentsSectionProps> = ({
   const benefits = [
     {
       icon: Bot,
-      title: 'Asistentes virtuales',
-      summary: 'Chatbots que responden preguntas y captan leads 24/7.',
-      detail: 'Atiende a cualquier visitante en milisegundos. Califica prospectos, recopila datos de contacto y responde consultas frecuentes sin descanso.',
-      metric: 'Respuesta < 1.5s · 24/7/365',
+      title: t.aiAgents.feature1Title,
+      summary: language === 'fr' ? 'Agents conversationnels 24h/24 qualifiant vos prospects.' : language === 'en' ? 'Smart chatbots resolving inquiries and capturing leads 24/7.' : 'Chatbots que responden preguntas y captan leads 24/7.',
+      detail: t.aiAgents.feature1Desc,
+      metric: 'Response < 1.5s · 24/7/365',
     },
     {
       icon: Workflow,
-      title: 'Automatización de procesos',
-      summary: 'Ahorra tiempo con flujos de trabajo automáticos.',
-      detail: 'Conecta tus herramientas (CRM, ERP, hojas de cálculo, calendarios y pasarelas de pago) para que los datos viajen sin intervención manual.',
-      metric: '+15 hrs semanales ahorradas',
+      title: t.aiAgents.feature2Title,
+      summary: language === 'fr' ? 'Gagnez du temps avec des flux opérationnels automatisés.' : language === 'en' ? 'Save hours each week with autonomous CRM & database workflows.' : 'Ahorra tiempo con flujos de trabajo automáticos.',
+      detail: t.aiAgents.feature2Desc,
+      metric: language === 'fr' ? '+15h gagnées / semaine' : language === 'en' ? '+15 hrs saved weekly' : '+15 hrs semanales ahorradas',
     },
     {
       icon: Headphones,
-      title: 'Atención al cliente inteligente',
-      summary: 'Resuelve dudas y agenda citas sin intervención humana.',
-      detail: 'Comprende el lenguaje natural con precisión humana. Resuelve problemas comunes y coordina la agenda de tu equipo de forma autónoma.',
-      metric: '85% resolución en primer contacto',
+      title: t.aiAgents.feature3Title,
+      summary: language === 'fr' ? 'Résolution immédiate et prise de rendez-vous sans friction.' : language === 'en' ? 'Human-grade natural language parsing for instant bookings.' : 'Resuelve dudas y agenda citas sin intervención humana.',
+      detail: t.aiAgents.feature3Desc,
+      metric: language === 'fr' ? '85% résolu dès le 1er contact' : language === 'en' ? '85% first-contact resolution' : '85% resolución en primer contacto',
     },
     {
       icon: Mail,
-      title: 'Integración con WhatsApp y email',
-      summary: 'Comunica con tus clientes donde estén.',
-      detail: 'Despliega tu agente con la API oficial de WhatsApp Business, bandeja de entrada web y secuencias de correo electrónico automatizadas.',
-      metric: 'Omnicanalidad centralizada',
+      title: language === 'fr' ? 'Intégration WhatsApp & E-mail' : language === 'en' ? 'WhatsApp & Email Cloud Integration' : 'Integración con WhatsApp y email',
+      summary: language === 'fr' ? 'Communiquez avec vos clients sur leurs canaux favoris.' : language === 'en' ? 'Engage clients directly where they already are.' : 'Comunica con tus clientes donde estén.',
+      detail: language === 'fr'
+        ? 'Déployez votre agent avec l’API officielle WhatsApp Business Cloud, un widget web et des séquences d’e-mails intelligentes.'
+        : language === 'en'
+        ? 'Deploy your AI agent across official WhatsApp Business Cloud API, website chat and automated email follow-up sequences.'
+        : 'Despliega tu agente con la API oficial de WhatsApp Business, bandeja de entrada web y secuencias de correo electrónico automatizadas.',
+      metric: language === 'fr' ? 'Omnicanal unifié' : language === 'en' ? 'Unified Omnichannel' : 'Omnicanalidad centralizada',
     },
     {
       icon: Sliders,
-      title: 'Personalización total',
-      summary: 'Adaptamos la IA a las necesidades de tu negocio.',
-      detail: 'Entrenamos al agente con tu catálogo de servicios, tono de marca, políticas de precios y protocolos de seguridad estrictos.',
-      metric: '100% a medida de tu marca',
+      title: language === 'fr' ? 'Personnalisation Sur-Mesure' : language === 'en' ? 'Total Brand Customization' : 'Personalización total',
+      summary: language === 'fr' ? 'L’IA adaptée fidèlement aux exigences de votre entreprise.' : language === 'en' ? 'Fine-tuned to your tone of voice and technical catalogs.' : 'Adaptamos la IA a las necesidades de tu negocio.',
+      detail: language === 'fr'
+        ? 'Nous entraînons l’agent sur vos documentations techniques, votre grille tarifaire, votre identité de marque et vos règles de confidentialité.'
+        : language === 'en'
+        ? 'We ground the model in your service catalog, corporate voice, pricing models, and strict zero-trust data protection policies.'
+        : 'Entrenamos al agente con tu catálogo de servicios, tono de marca, políticas de precios y protocolos de seguridad estrictos.',
+      metric: language === 'fr' ? '100% sur-mesure' : language === 'en' ? '100% Bespoke' : '100% a medida de tu marca',
     },
   ];
 
@@ -122,15 +171,15 @@ export const AiAgentsSection: React.FC<AiAgentsSectionProps> = ({
         <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0066FF]/10 border border-[#0066FF]/30 text-[#0066FF] font-mono text-xs uppercase tracking-wider">
             <Bot className="w-3.5 h-3.5 text-[#F5A623]" />
-            <span>INTELIGENCIA ARTIFICIAL APLICADA A NEGOCIOS</span>
+            <span>{t.aiAgents.badge}</span>
           </div>
 
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight">
-            🤖 AGENTES AVANZADOS CON IA
+            {t.aiAgents.title} <span className="text-[#0066FF]">{t.aiAgents.titleHighlight}</span>
           </h2>
 
           <p className="text-gray-300 text-base sm:text-lg leading-relaxed">
-            Lleva tu negocio al siguiente nivel con asistentes virtuales y automatizaciones inteligentes.
+            {t.aiAgents.subtitle}
           </p>
         </div>
 
@@ -193,17 +242,17 @@ export const AiAgentsSection: React.FC<AiAgentsSectionProps> = ({
                     <h4 className="text-xs font-bold text-white font-mono flex items-center gap-1.5">
                       <span>Dexvoi AI Agent</span>
                       <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 font-normal">
-                        EN LÍNEA
+                        {language === 'fr' ? 'EN LIGNE' : language === 'en' ? 'ONLINE' : 'EN LÍNEA'}
                       </span>
                     </h4>
                     <p className="text-[10px] text-gray-400 font-mono">
-                      Modelo especializado · RAG Corporativo
+                      {language === 'fr' ? 'Modèle spécialisé · RAG Entreprise' : language === 'en' ? 'Specialized Engine · Corporate RAG' : 'Modelo especializado · RAG Corporativo'}
                     </p>
                   </div>
                 </div>
 
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#131B33] text-gray-300 border border-gray-700">
-                  LATENCIA: 120ms
+                  {language === 'fr' ? 'LATENCE: 120ms' : language === 'en' ? 'LATENCY: 120ms' : 'LATENCIA: 120ms'}
                 </span>
               </div>
 
@@ -277,20 +326,20 @@ export const AiAgentsSection: React.FC<AiAgentsSectionProps> = ({
                 <button
                   type="button"
                   onClick={() => {
-                    setSimInput('¿Podéis integrar el asistente con mi WhatsApp y Google Calendar?');
+                    setSimInput(language === 'fr' ? 'Pouvez-vous connecter l’assistant avec WhatsApp et Google Agenda ?' : language === 'en' ? 'Can you integrate this agent with WhatsApp and Google Calendar?' : '¿Podéis integrar el asistente con mi WhatsApp y Google Calendar?');
                   }}
-                  className="px-2 py-1 rounded bg-[#131B33] hover:bg-[#1C2744] text-gray-300 hover:text-white border border-gray-700 transition-colors"
+                  className="px-2 py-1 rounded bg-[#131B33] hover:bg-[#1C2744] text-gray-300 hover:text-white border border-gray-700 transition-colors cursor-pointer"
                 >
-                  📅 "¿Integración WhatsApp + Calendar?"
+                  📅 {language === 'fr' ? '« WhatsApp + Agenda ? »' : language === 'en' ? '"WhatsApp + Calendar sync?"' : '"¿Integración WhatsApp + Calendar?"'}
                 </button>
                 <button
                   type="button"
                   onClick={() => {
-                    setSimInput('¿Cómo evita el agente respuestas falsas o errores?');
+                    setSimInput(language === 'fr' ? 'Comment l’agent évite-t-il les réponses erronées ou fausses ?' : language === 'en' ? 'How does the agent avoid hallucinations or wrong pricing?' : '¿Cómo evita el agente respuestas falsas o errores?');
                   }}
-                  className="px-2 py-1 rounded bg-[#131B33] hover:bg-[#1C2744] text-gray-300 hover:text-white border border-gray-700 transition-colors"
+                  className="px-2 py-1 rounded bg-[#131B33] hover:bg-[#1C2744] text-gray-300 hover:text-white border border-gray-700 transition-colors cursor-pointer"
                 >
-                  🛡️ "¿Cómo evita alucinaciones?"
+                  🛡️ {language === 'fr' ? '« Zéro hallucination ? »' : language === 'en' ? '"Zero hallucinations?"' : '"¿Cómo evita alucinaciones?"'}
                 </button>
               </div>
 
@@ -300,7 +349,7 @@ export const AiAgentsSection: React.FC<AiAgentsSectionProps> = ({
                   type="text"
                   value={simInput}
                   onChange={(e) => setSimInput(e.target.value)}
-                  placeholder="Escribe una pregunta al agente de prueba..."
+                  placeholder={language === 'fr' ? 'Posez une question à l’agent de test...' : language === 'en' ? 'Type a question for the live demo agent...' : 'Escribe una pregunta al agente de prueba...'}
                   className="flex-1 bg-[#131B33] border border-gray-700 rounded-xl px-3.5 py-2.5 text-xs text-white font-mono focus:outline-none focus:border-[#0066FF]"
                 />
                 <button
@@ -322,13 +371,17 @@ export const AiAgentsSection: React.FC<AiAgentsSectionProps> = ({
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded bg-[#F5A623]/20 border border-[#F5A623]/40 text-[#F5A623] font-mono text-xs font-bold">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>INGENIERÍA DE IA A MEDIDA</span>
+              <span>{language === 'fr' ? 'INGÉNIERIE IA SUR MESURE' : language === 'en' ? 'BESPOKE AI ENGINEERING' : 'INGENIERÍA DE IA A MEDIDA'}</span>
             </div>
             <h3 className="text-xl sm:text-2xl font-bold text-white font-mono">
-              Desarrollamos soluciones de IA personalizadas para tu negocio.
+              {language === 'fr' ? 'Nous concevons des solutions IA sur-mesure pour votre entreprise.' : language === 'en' ? 'We build custom AI agent architectures tailored to your business.' : 'Desarrollamos soluciones de IA personalizadas para tu negocio.'}
             </h3>
             <p className="text-xs sm:text-sm text-gray-300 max-w-2xl">
-              Desde la conceptualización del flujo y la ingesta de tus bases de conocimiento hasta la integración con tus bases de datos, pasarelas de pago y soporte continuo.
+              {language === 'fr'
+                ? 'De la modélisation du flux et l’indexation de vos connaissances jusqu’à l’intégration avec vos logiciels CRM et le suivi régulier.'
+                : language === 'en'
+                ? 'From conversational workflow mapping and knowledge vectorization to enterprise database APIs and continuous monitoring.'
+                : 'Desde la conceptualización del flujo y la ingesta de tus bases de conocimiento hasta la integración con tus bases de datos, pasarelas de pago y soporte continuo.'}
             </p>
           </div>
 
@@ -338,7 +391,7 @@ export const AiAgentsSection: React.FC<AiAgentsSectionProps> = ({
             onClick={() => setIsDetailModalOpen(true)}
             className="w-full md:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-gradient-to-r from-[#0066FF] to-[#004ECC] hover:from-[#0055DD] hover:to-[#003EA8] text-white font-mono text-sm uppercase tracking-wider font-bold shadow-[0_0_25px_rgba(0,102,255,0.4)] hover:shadow-[0_0_35px_rgba(0,102,255,0.6)] transition-all duration-300 group cursor-pointer whitespace-nowrap"
           >
-            <span>🔗 DESCUBRE MÁS</span>
+            <span>🔗 {t.aiAgents.cta}</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
@@ -358,10 +411,10 @@ export const AiAgentsSection: React.FC<AiAgentsSectionProps> = ({
                   <span>DEXVOI AI SUITE</span>
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-white font-mono">
-                  Agentes Avanzados con Inteligencia Artificial
+                  {t.aiAgents.title} {t.aiAgents.titleHighlight}
                 </h3>
                 <p className="text-xs text-gray-400">
-                  Automatizaciones cognitivas que liberan a tu equipo del trabajo repetitivo y multiplican tus conversiones comerciales.
+                  {t.aiAgents.subtitle}
                 </p>
               </div>
 
@@ -380,10 +433,14 @@ export const AiAgentsSection: React.FC<AiAgentsSectionProps> = ({
               <div className="p-4 rounded-xl bg-[#070B16] border border-gray-800 space-y-2">
                 <div className="flex items-center gap-2 text-white font-mono font-bold text-sm">
                   <Database className="w-4 h-4 text-[#0066FF]" />
-                  <span>RAG con Datos Corporativos</span>
+                  <span>{language === 'fr' ? 'RAG avec Données Privées' : language === 'en' ? 'Enterprise Grounded RAG' : 'RAG con Datos Corporativos'}</span>
                 </div>
                 <p className="text-xs text-gray-300 leading-relaxed">
-                  Conectamos la IA a tus manuales de producto, FAQs, inventarios y políticas internas para garantizar respuestas fidedignas con cero invenciones.
+                  {language === 'fr'
+                    ? 'Nous connectons l’IA à vos documentations, tarifs et manuels pour garantir des réponses certifiées sans fausses affirmations.'
+                    : language === 'en'
+                    ? 'Ground your model on internal docs, service catalogs, and pricing sheets to deliver 100% accurate responses with zero guesswork.'
+                    : 'Conectamos la IA a tus manuales de producto, FAQs, inventarios y políticas internas para garantizar respuestas fidedignas con cero invenciones.'}
                 </p>
               </div>
 
@@ -393,27 +450,39 @@ export const AiAgentsSection: React.FC<AiAgentsSectionProps> = ({
                   <span>WhatsApp Business Cloud API</span>
                 </div>
                 <p className="text-xs text-gray-300 leading-relaxed">
-                  Integración oficial verificada con WhatsApp: atiende a miles de usuarios concurrentes de forma personalizada desde un solo número corporativo.
+                  {language === 'fr'
+                    ? 'Intégration officielle certifiée avec WhatsApp : servez des centaines de prospects simultanément depuis un numéro vérifié.'
+                    : language === 'en'
+                    ? 'Verified official WhatsApp Cloud API integration: serve hundreds of prospects concurrently with your official business number.'
+                    : 'Integración oficial verificada con WhatsApp: atiende a miles de usuarios concurrentes de forma personalizada desde un solo número corporativo.'}
                 </p>
               </div>
 
               <div className="p-4 rounded-xl bg-[#070B16] border border-gray-800 space-y-2">
                 <div className="flex items-center gap-2 text-white font-mono font-bold text-sm">
                   <Workflow className="w-4 h-4 text-[#F5A623]" />
-                  <span>Llamada a Funciones & Acciones</span>
+                  <span>{language === 'fr' ? 'Appel de Fonctions & Actions' : language === 'en' ? 'Autonomous Function Calling' : 'Llamada a Funciones & Acciones'}</span>
                 </div>
                 <p className="text-xs text-gray-300 leading-relaxed">
-                  El agente no solo responde texto: puede crear citas en el calendario, emitir presupuestos, enviar correos y registrar oportunidades en tu CRM.
+                  {language === 'fr'
+                    ? 'L’agent ne fait pas que chatter : il crée des créneaux dans l’agenda, envoie des devis, transmet des e-mails et met à jour votre CRM.'
+                    : language === 'en'
+                    ? 'The agent acts directly: books appointments, creates CRM opportunities, generates invoices, and schedules automatic follow-ups.'
+                    : 'El agente no solo responde texto: puede crear citas en el calendario, emitir presupuestos, enviar correos y registrar oportunidades en tu CRM.'}
                 </p>
               </div>
 
               <div className="p-4 rounded-xl bg-[#070B16] border border-gray-800 space-y-2">
                 <div className="flex items-center gap-2 text-white font-mono font-bold text-sm">
                   <ShieldCheck className="w-4 h-4 text-purple-400" />
-                  <span>Privacidad & RGPD Blindado</span>
+                  <span>{language === 'fr' ? 'Confidentialité & RGPD Blindé' : language === 'en' ? 'Hardened GDPR & Privacy' : 'Privacidad & RGPD Blindado'}</span>
                 </div>
                 <p className="text-xs text-gray-300 leading-relaxed">
-                  Tus datos empresariales nunca se utilizan para reentrenar modelos públicos. Servidores en la Unión Europea y cifrado de extremo a extremo.
+                  {language === 'fr'
+                    ? 'Vos données confidentielles ne servent jamais à entraîner des modèles publics. Hébergement UE et chiffrement de bout en bout.'
+                    : language === 'en'
+                    ? 'Your private business data is never used to train public LLMs. European Union servers with full end-to-end encryption.'
+                    : 'Tus datos empresariales nunca se utilizan para reentrenar modelos públicos. Servidores en la Unión Europea y cifrado de extremo a extremo.'}
                 </p>
               </div>
 
@@ -422,33 +491,33 @@ export const AiAgentsSection: React.FC<AiAgentsSectionProps> = ({
             {/* Implementation Checklist */}
             <div className="p-4 rounded-xl bg-[#131B33]/60 border border-gray-800 space-y-3">
               <h4 className="text-xs font-mono font-bold text-gray-300 uppercase tracking-wider">
-                Fases del Despliegue con Dexvoi:
+                {language === 'fr' ? 'Étapes du Déploiement Dexvoi :' : language === 'en' ? 'Dexvoi Deployment Roadmap:' : 'Fases del Despliegue con Dexvoi:'}
               </h4>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono text-gray-300">
                 <div className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>1. Auditoría de flujos y procesos clave</span>
+                  <span>{language === 'fr' ? '1. Audit des processus & questions fréquentes' : language === 'en' ? '1. Workflow and FAQ business audit' : '1. Auditoría de flujos y procesos clave'}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>2. Ingesta y vectorización de documentación</span>
+                  <span>{language === 'fr' ? '2. Ingestion et vectorisation documentaire' : language === 'en' ? '2. Documentation vectorization & RAG setup' : '2. Ingesta y vectorización de documentación'}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>3. Conexión de APIs (CRM, ERP, Calendario)</span>
+                  <span>{language === 'fr' ? '3. Connexion des APIs (CRM, Calendrier, ERP)' : language === 'en' ? '3. API integration (CRM, Calendar, ERP)' : '3. Conexión de APIs (CRM, ERP, Calendario)'}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>4. Pruebas de seguridad y blindaje de prompts</span>
+                  <span>{language === 'fr' ? '4. Tests de sécurité et blindage des invites' : language === 'en' ? '4. Security testing & prompt firewalling' : '4. Pruebas de seguridad y blindaje de prompts'}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>5. Despliegue en producción omnicanal</span>
+                  <span>{language === 'fr' ? '5. Déploiement omnicanal en production' : language === 'en' ? '5. Omnichannel live production deployment' : '5. Despliegue en producción omnicanal'}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>6. Monitorización continua y mejora de precisión</span>
+                  <span>{language === 'fr' ? '6. Monitoring permanent et amélioration continue' : language === 'en' ? '6. Continuous monitoring & accuracy fine-tuning' : '6. Monitorización continua y mejora de precisión'}</span>
                 </div>
               </div>
             </div>
@@ -456,7 +525,7 @@ export const AiAgentsSection: React.FC<AiAgentsSectionProps> = ({
             {/* Actions Footer */}
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-gray-800">
               <div className="text-xs font-mono text-gray-400 text-center sm:text-left">
-                ¿Hablamos sobre cómo automatizar tu negocio con IA?
+                {language === 'fr' ? 'Discutons de l’automatisation de votre activité avec l’IA :' : language === 'en' ? 'Ready to automate key operational bottlenecks with AI?' : '¿Hablamos sobre cómo automatizar tu negocio con IA?'}
               </div>
 
               <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
@@ -468,7 +537,7 @@ export const AiAgentsSection: React.FC<AiAgentsSectionProps> = ({
                   }}
                   className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white font-mono text-xs uppercase tracking-wider transition-colors cursor-pointer text-center"
                 >
-                  Hablar con un Especialista
+                  {t.nav.contact}
                 </button>
 
                 <button
@@ -480,7 +549,7 @@ export const AiAgentsSection: React.FC<AiAgentsSectionProps> = ({
                   className="w-full sm:w-auto metallic-btn px-6 py-2.5 rounded-xl font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg cursor-pointer"
                 >
                   <Sparkles className="w-3.5 h-3.5 text-[#F5A623]" />
-                  <span>Solicitar Propuesta de IA</span>
+                  <span>{t.pricing.freeAuditBtn}</span>
                 </button>
               </div>
             </div>
@@ -491,3 +560,4 @@ export const AiAgentsSection: React.FC<AiAgentsSectionProps> = ({
     </section>
   );
 };
+

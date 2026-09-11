@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Shield, Lock, FileText, CheckCircle, Scale, AlertCircle, Cookie, ChevronRight, Languages } from 'lucide-react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 export type LegalTab = 'privacy' | 'terms' | 'legal' | 'cookies' | 'security';
-export type LegalLang = 'es' | 'en';
+export type LegalLang = 'es' | 'en' | 'fr';
 
 interface LegalModalProps {
   isOpen: boolean;
@@ -15,10 +16,17 @@ export const LegalModal: React.FC<LegalModalProps> = ({
   onClose,
   initialTab = 'privacy',
 }) => {
+  const { language } = useLanguage();
   const [activeTab, setActiveTab] = useState<LegalTab>(initialTab);
-  const [legalLang, setLegalLang] = useState<LegalLang>('es');
+  const [legalLang, setLegalLang] = useState<LegalLang>(language);
 
-  React.useEffect(() => {
+  useEffect(() => {
+    if (isOpen) {
+      setLegalLang(language);
+    }
+  }, [isOpen, language]);
+
+  useEffect(() => {
     if (isOpen && initialTab) {
       setActiveTab(initialTab);
     }
@@ -40,7 +48,13 @@ export const LegalModal: React.FC<LegalModalProps> = ({
             </div>
             <div>
               <h3 className="text-base sm:text-lg font-bold text-white font-mono flex items-center gap-2 flex-wrap">
-                <span>{legalLang === 'es' ? 'Centro Legal & Cumplimiento' : 'Legal & Compliance Center'}</span>
+                <span>
+                  {legalLang === 'es'
+                    ? 'Centro Legal & Cumplimiento'
+                    : legalLang === 'fr'
+                    ? 'Centre Légal & Conformité'
+                    : 'Legal & Compliance Center'}
+                </span>
                 <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                   GDPR / RGPD
                 </span>
@@ -48,6 +62,8 @@ export const LegalModal: React.FC<LegalModalProps> = ({
               <p className="text-xs text-gray-400 font-sans">
                 {legalLang === 'es' 
                   ? 'DEXVOI · Seguridad, Transparencia y Protección de Datos Confidenciales' 
+                  : legalLang === 'fr'
+                  ? 'DEXVOI · Sécurité, Transparence et Protection des Données Confidentielles'
                   : 'DEXVOI · Security, Transparency & Confidential Data Protection'}
               </p>
             </div>
@@ -64,9 +80,21 @@ export const LegalModal: React.FC<LegalModalProps> = ({
                     ? 'bg-[#0066FF] text-white font-bold shadow'
                     : 'text-gray-400 hover:text-white'
                 }`}
-                title="Ver en Español"
+                title="Español"
               >
                 ES
+              </button>
+              <button
+                type="button"
+                onClick={() => setLegalLang('fr')}
+                className={`px-2.5 py-1 rounded-md transition-all ${
+                  legalLang === 'fr'
+                    ? 'bg-[#0066FF] text-white font-bold shadow'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+                title="Français"
+              >
+                FR
               </button>
               <button
                 type="button"
@@ -76,7 +104,7 @@ export const LegalModal: React.FC<LegalModalProps> = ({
                     ? 'bg-[#0066FF] text-white font-bold shadow'
                     : 'text-gray-400 hover:text-white'
                 }`}
-                title="View in English"
+                title="English"
               >
                 EN
               </button>
@@ -103,7 +131,13 @@ export const LegalModal: React.FC<LegalModalProps> = ({
             }`}
           >
             <Lock className="w-4 h-4" />
-            <span>{legalLang === 'es' ? 'Política de Privacidad' : 'Privacy Policy'}</span>
+            <span>
+              {legalLang === 'es'
+                ? 'Política de Privacidad'
+                : legalLang === 'fr'
+                ? 'Politique de Confidentialité'
+                : 'Privacy Policy'}
+            </span>
           </button>
 
           <button
@@ -115,7 +149,13 @@ export const LegalModal: React.FC<LegalModalProps> = ({
             }`}
           >
             <Scale className="w-4 h-4" />
-            <span>{legalLang === 'es' ? 'Términos y Condiciones' : 'Terms & Conditions'}</span>
+            <span>
+              {legalLang === 'es'
+                ? 'Términos y Condiciones'
+                : legalLang === 'fr'
+                ? 'Conditions Générales'
+                : 'Terms & Conditions'}
+            </span>
           </button>
 
           <button
@@ -127,7 +167,13 @@ export const LegalModal: React.FC<LegalModalProps> = ({
             }`}
           >
             <Cookie className="w-4 h-4" />
-            <span>{legalLang === 'es' ? 'Política de Cookies' : 'Cookie Policy'}</span>
+            <span>
+              {legalLang === 'es'
+                ? 'Política de Cookies'
+                : legalLang === 'fr'
+                ? 'Politique des Cookies'
+                : 'Cookie Policy'}
+            </span>
           </button>
 
           <button
@@ -139,7 +185,13 @@ export const LegalModal: React.FC<LegalModalProps> = ({
             }`}
           >
             <FileText className="w-4 h-4" />
-            <span>{legalLang === 'es' ? 'Aviso Legal' : 'Legal Notice'}</span>
+            <span>
+              {legalLang === 'es'
+                ? 'Aviso Legal'
+                : legalLang === 'fr'
+                ? 'Mentions Légales'
+                : 'Legal Notice'}
+            </span>
           </button>
 
           <button
@@ -151,7 +203,13 @@ export const LegalModal: React.FC<LegalModalProps> = ({
             }`}
           >
             <Shield className="w-4 h-4 text-[#F5A623]" />
-            <span>{legalLang === 'es' ? 'Protocolos Éticos & OSINT' : 'Ethical OSINT Protocols'}</span>
+            <span>
+              {legalLang === 'es'
+                ? 'Protocolos Éticos & OSINT'
+                : legalLang === 'fr'
+                ? 'Protocoles Éthiques & OSINT'
+                : 'Ethical OSINT Protocols'}
+            </span>
           </button>
         </div>
 

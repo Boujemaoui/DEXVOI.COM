@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Cookie, Check, X, ExternalLink, Lock } from 'lucide-react';
+import { Shield, Check } from 'lucide-react';
 import { LegalTab } from './LegalModal';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface ConsentBannerProps {
   onOpenLegalModal: (tab: LegalTab) => void;
 }
 
 export const ConsentBanner: React.FC<ConsentBannerProps> = ({ onOpenLegalModal }) => {
+  const { language } = useLanguage();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Comprobar si ya fue aceptado o rechazado previamente
+    // Check if previously accepted or configured
     const consent = localStorage.getItem('dexvoi_legal_consent_v1');
     if (!consent) {
-      // Pequeño retardo para una aparición limpia y no intrusiva
       const timer = setTimeout(() => {
         setIsVisible(true);
       }, 700);
@@ -60,40 +61,108 @@ export const ConsentBanner: React.FC<ConsentBannerProps> = ({ onOpenLegalModal }
             <div className="space-y-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <h4 className="text-white font-mono text-sm font-bold flex items-center gap-1.5">
-                  <span>Privacidad, Cookies & Condiciones Legales</span>
+                  <span>
+                    {language === 'fr'
+                      ? 'Confidentialité, Cookies & Conditions Légales'
+                      : language === 'en'
+                      ? 'Privacy, Cookies & Terms of Service'
+                      : 'Privacidad, Cookies & Condiciones Legales'}
+                  </span>
                 </h4>
                 <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                  RGPD / LOPDGDD
+                  RGPD / GDPR
                 </span>
               </div>
 
               <p className="text-xs text-gray-300 font-sans leading-relaxed">
-                En <strong>DEXVOI</strong> protegemos tus datos y empleamos cookies técnicas y de seguridad para blindar tus conexiones y ofrecerte diagnósticos y auditorías fiables. Al navegar o utilizar nuestro asistente y pasarela de pago, aceptas nuestra{' '}
-                <a
-                  href="/privacidad"
-                  onClick={(e) => {
-                    if (!e.ctrlKey && !e.metaKey) {
-                      e.preventDefault();
-                      onOpenLegalModal('privacy');
-                    }
-                  }}
-                  className="text-[#38BDF8] underline hover:text-white font-semibold transition-colors"
-                >
-                  Política de Privacidad
-                </a>
-                {' '}y los{' '}
-                <a
-                  href="/condiciones"
-                  onClick={(e) => {
-                    if (!e.ctrlKey && !e.metaKey) {
-                      e.preventDefault();
-                      onOpenLegalModal('terms');
-                    }
-                  }}
-                  className="text-[#38BDF8] underline hover:text-white font-semibold transition-colors"
-                >
-                  Términos y Condiciones
-                </a>.
+                {language === 'fr' ? (
+                  <>
+                    Chez <strong>DEXVOI</strong>, nous protégeons vos données et utilisons des cookies techniques et de sécurité pour sécuriser vos connexions et délivrer des audits fiables. En naviguant sur ce site ou en utilisant nos passerelles, vous acceptez notre{' '}
+                    <a
+                      href="/privacidad"
+                      onClick={(e) => {
+                        if (!e.ctrlKey && !e.metaKey) {
+                          e.preventDefault();
+                          onOpenLegalModal('privacy');
+                        }
+                      }}
+                      className="text-[#38BDF8] underline hover:text-white font-semibold transition-colors"
+                    >
+                      Politique de Confidentialité
+                    </a>{' '}
+                    et nos{' '}
+                    <a
+                      href="/condiciones"
+                      onClick={(e) => {
+                        if (!e.ctrlKey && !e.metaKey) {
+                          e.preventDefault();
+                          onOpenLegalModal('terms');
+                        }
+                      }}
+                      className="text-[#38BDF8] underline hover:text-white font-semibold transition-colors"
+                    >
+                      Conditions Générales
+                    </a>.
+                  </>
+                ) : language === 'en' ? (
+                  <>
+                    At <strong>DEXVOI</strong>, we safeguard your data and use essential technical security cookies to harden connections and deliver reliable business audits. By browsing this website or using our checkout, you agree to our{' '}
+                    <a
+                      href="/privacidad"
+                      onClick={(e) => {
+                        if (!e.ctrlKey && !e.metaKey) {
+                          e.preventDefault();
+                          onOpenLegalModal('privacy');
+                        }
+                      }}
+                      className="text-[#38BDF8] underline hover:text-white font-semibold transition-colors"
+                    >
+                      Privacy Policy
+                    </a>{' '}
+                    and{' '}
+                    <a
+                      href="/condiciones"
+                      onClick={(e) => {
+                        if (!e.ctrlKey && !e.metaKey) {
+                          e.preventDefault();
+                          onOpenLegalModal('terms');
+                        }
+                      }}
+                      className="text-[#38BDF8] underline hover:text-white font-semibold transition-colors"
+                    >
+                      Terms of Service
+                    </a>.
+                  </>
+                ) : (
+                  <>
+                    En <strong>DEXVOI</strong> protegemos tus datos y empleamos cookies técnicas y de seguridad para blindar tus conexiones y ofrecerte diagnósticos fiables. Al navegar o utilizar nuestro asistente y pasarela de pago, aceptas nuestra{' '}
+                    <a
+                      href="/privacidad"
+                      onClick={(e) => {
+                        if (!e.ctrlKey && !e.metaKey) {
+                          e.preventDefault();
+                          onOpenLegalModal('privacy');
+                        }
+                      }}
+                      className="text-[#38BDF8] underline hover:text-white font-semibold transition-colors"
+                    >
+                      Política de Privacidad
+                    </a>{' '}
+                    y los{' '}
+                    <a
+                      href="/condiciones"
+                      onClick={(e) => {
+                        if (!e.ctrlKey && !e.metaKey) {
+                          e.preventDefault();
+                          onOpenLegalModal('terms');
+                        }
+                      }}
+                      className="text-[#38BDF8] underline hover:text-white font-semibold transition-colors"
+                    >
+                      Términos y Condiciones
+                    </a>.
+                  </>
+                )}
               </p>
             </div>
           </div>
@@ -108,24 +177,24 @@ export const ConsentBanner: React.FC<ConsentBannerProps> = ({ onOpenLegalModal }
                   onOpenLegalModal('cookies');
                 }
               }}
-              className="w-full sm:w-auto px-3.5 py-2 rounded-xl text-xs font-mono text-gray-300 hover:text-white hover:bg-[#1E293B] border border-gray-700/80 transition-all text-center"
+              className="w-full sm:w-auto px-3.5 py-2 rounded-xl text-xs font-mono text-gray-300 hover:text-white hover:bg-[#1E293B] border border-gray-700/80 transition-all text-center cursor-pointer"
             >
-              Configurar
+              {language === 'fr' ? 'Configurer' : language === 'en' ? 'Settings' : 'Configurar'}
             </a>
 
             <button
               onClick={handleAcceptNecessary}
-              className="w-full sm:w-auto px-3.5 py-2 rounded-xl text-xs font-mono text-gray-300 hover:text-white bg-[#131B33] hover:bg-[#1C2746] border border-[#0066FF]/30 transition-all text-center"
+              className="w-full sm:w-auto px-3.5 py-2 rounded-xl text-xs font-mono text-gray-300 hover:text-white bg-[#131B33] hover:bg-[#1C2746] border border-[#0066FF]/30 transition-all text-center cursor-pointer"
             >
-              Solo Necesarias
+              {language === 'fr' ? 'Nécessaires' : language === 'en' ? 'Essential Only' : 'Solo Necesarias'}
             </button>
 
             <button
               onClick={handleAcceptAll}
-              className="w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs font-mono font-bold text-white bg-[#0066FF] hover:bg-[#0052cc] shadow-lg shadow-[#0066FF]/25 transition-all flex items-center justify-center gap-1.5"
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs font-mono font-bold text-white bg-[#0066FF] hover:bg-[#0052cc] shadow-lg shadow-[#0066FF]/25 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <Check className="w-3.5 h-3.5" />
-              <span>Aceptar y Continuar</span>
+              <span>{language === 'fr' ? 'Tout Accepter' : language === 'en' ? 'Accept All' : 'Aceptar y Continuar'}</span>
             </button>
           </div>
 
@@ -134,3 +203,4 @@ export const ConsentBanner: React.FC<ConsentBannerProps> = ({ onOpenLegalModal }
     </aside>
   );
 };
+

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Shield, Lock, Send, CheckCircle2, PhoneCall, Sparkles, Clock, AlertCircle } from 'lucide-react';
+import { Shield, Lock, CheckCircle2, Clock } from 'lucide-react';
 import { LeadFormData } from '../types';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface ContactCTASectionProps {
   initialUrl?: string;
@@ -8,6 +9,8 @@ interface ContactCTASectionProps {
 }
 
 export const ContactCTASection: React.FC<ContactCTASectionProps> = ({ initialUrl = '', initialFindings = [] }) => {
+  const { t, language } = useLanguage();
+
   const [formData, setFormData] = useState<LeadFormData>({
     fullName: '',
     email: '',
@@ -70,21 +73,27 @@ export const ContactCTASection: React.FC<ContactCTASectionProps> = ({ initialUrl
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-6 border-b border-gray-800 text-xs font-mono text-gray-400">
             <div className="flex items-center gap-2 text-[#F5A623]">
               <Lock className="w-4 h-4" />
-              <span>SESIÓN PRIVADA CIFRADA (CANAL SEGURO)</span>
+              <span>{t.contact.badge}</span>
             </div>
             <div className="flex items-center gap-2 text-emerald-400">
               <Clock className="w-3.5 h-3.5" />
-              <span>3 PLAZAS DISPONIBLES ESTE MES</span>
+              <span>
+                {language === 'fr'
+                  ? '3 PLACES DISPONIBLES CE MOIS-CI'
+                  : language === 'en'
+                  ? '3 AUDIT SLOTS LEFT THIS MONTH'
+                  : '3 PLAZAS DISPONIBLES ESTE MES'}
+              </span>
             </div>
           </div>
 
-          {/* Titles matching Copywriting requirements */}
+          {/* Titles */}
           <div className="mt-8 mb-10 text-center space-y-3">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight">
-              Construyamos una presencia digital blindada que multiplique los ingresos de tu negocio.
+              {t.contact.title} <span className="text-[#F5A623]">{t.contact.titleHighlight}</span>
             </h2>
             <p className="text-gray-300 text-sm sm:text-base font-medium">
-              Agenda tu sesión estratégica hoy. Plazas de auditoría técnica limitadas por mes.
+              {t.contact.subtitle}
             </p>
           </div>
 
@@ -97,29 +106,30 @@ export const ContactCTASection: React.FC<ContactCTASectionProps> = ({ initialUrl
 
               <div className="space-y-2">
                 <h3 className="text-2xl font-bold text-white font-mono">
-                  SOLICITUD DE AUDITORÍA REGISTRADA
+                  {t.contact.successTitle}
                 </h3>
                 <p className="text-sm font-mono text-emerald-400">
-                  Expediente Técnico: <span className="font-bold text-white">{ticketId}</span>
+                  {language === 'fr' ? 'Dossier Technique :' : language === 'en' ? 'Technical File ID:' : 'Expediente Técnico:'}{' '}
+                  <span className="font-bold text-white">{ticketId}</span>
                 </p>
                 <p className="text-sm text-gray-300 max-w-lg mx-auto pt-2">
-                  Hemos asignado tu caso al Arquitecto Digital. En menos de 24 horas hábiles recibirás el análisis de vulnerabilidades y la confirmación para tu sesión estratégica.
+                  {t.contact.successDesc}
                 </p>
               </div>
 
               <div className="p-4 bg-[#131B33] rounded-xl border border-gray-800 max-w-md mx-auto text-left font-mono text-xs text-gray-300 space-y-1">
-                <div><strong>Titular:</strong> {formData.fullName}</div>
-                <div><strong>Email:</strong> {formData.email}</div>
-                <div><strong>Teléfono:</strong> {formData.phone}</div>
-                {formData.websiteUrl && <div><strong>Web auditada:</strong> {formData.websiteUrl}</div>}
+                <div><strong>{t.contact.nameLabel}:</strong> {formData.fullName}</div>
+                <div><strong>{t.contact.emailLabel}:</strong> {formData.email}</div>
+                <div><strong>{t.contact.phoneLabel}:</strong> {formData.phone}</div>
+                {formData.websiteUrl && <div><strong>{t.contact.urlLabel}:</strong> {formData.websiteUrl}</div>}
               </div>
 
               <button
                 type="button"
                 onClick={() => setIsSubmitted(false)}
-                className="text-xs font-mono text-[#0066FF] hover:underline"
+                className="text-xs font-mono text-[#0066FF] hover:underline cursor-pointer"
               >
-                ← Enviar otra solicitud técnica
+                ← {language === 'fr' ? 'Envoyer une autre demande' : language === 'en' ? 'Submit another request' : 'Enviar otra solicitud técnica'}
               </button>
             </div>
           ) : (
@@ -129,7 +139,7 @@ export const ContactCTASection: React.FC<ContactCTASectionProps> = ({ initialUrl
                 {/* Nombre y Apellido */}
                 <div>
                   <label htmlFor="fullName" className="block text-xs font-mono text-gray-300 uppercase mb-2">
-                    Nombre y Apellido *
+                    {t.contact.nameLabel} *
                   </label>
                   <input
                     id="fullName"
@@ -137,7 +147,7 @@ export const ContactCTASection: React.FC<ContactCTASectionProps> = ({ initialUrl
                     required
                     value={formData.fullName}
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                    placeholder="Ej: Dr. Roberto Gómez o Chef Laura Vega"
+                    placeholder={t.contact.namePlaceholder}
                     className="w-full bg-[#0A0F1F] border border-gray-700 rounded-lg px-4 py-3.5 text-white font-sans text-sm focus:outline-none focus:border-[#0066FF] focus:ring-1 focus:ring-[#0066FF] transition-all"
                   />
                 </div>
@@ -145,7 +155,7 @@ export const ContactCTASection: React.FC<ContactCTASectionProps> = ({ initialUrl
                 {/* Email Profesional */}
                 <div>
                   <label htmlFor="email" className="block text-xs font-mono text-gray-300 uppercase mb-2">
-                    Email Profesional *
+                    {t.contact.emailLabel} *
                   </label>
                   <input
                     id="email"
@@ -153,7 +163,7 @@ export const ContactCTASection: React.FC<ContactCTASectionProps> = ({ initialUrl
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    placeholder="contacto@tuclinicaorestaurante.com"
+                    placeholder={t.contact.emailPlaceholder}
                     className="w-full bg-[#0A0F1F] border border-gray-700 rounded-lg px-4 py-3.5 text-white font-sans text-sm focus:outline-none focus:border-[#0066FF] focus:ring-1 focus:ring-[#0066FF] transition-all"
                   />
                 </div>
@@ -161,7 +171,7 @@ export const ContactCTASection: React.FC<ContactCTASectionProps> = ({ initialUrl
                 {/* Teléfono / WhatsApp */}
                 <div>
                   <label htmlFor="phone" className="block text-xs font-mono text-gray-300 uppercase mb-2">
-                    Teléfono / WhatsApp *
+                    {t.contact.phoneLabel} *
                   </label>
                   <input
                     id="phone"
@@ -169,7 +179,7 @@ export const ContactCTASection: React.FC<ContactCTASectionProps> = ({ initialUrl
                     required
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    placeholder="+34 600 000 000 / +52 55 0000 0000"
+                    placeholder={t.contact.phonePlaceholder}
                     className="w-full bg-[#0A0F1F] border border-gray-700 rounded-lg px-4 py-3.5 text-white font-sans text-sm focus:outline-none focus:border-[#0066FF] focus:ring-1 focus:ring-[#0066FF] transition-all"
                   />
                 </div>
@@ -177,7 +187,7 @@ export const ContactCTASection: React.FC<ContactCTASectionProps> = ({ initialUrl
                 {/* Tipo de Negocio */}
                 <div>
                   <label htmlFor="businessType" className="block text-xs font-mono text-gray-300 uppercase mb-2">
-                    Sector del Negocio *
+                    {t.contact.businessTypeLabel} *
                   </label>
                   <select
                     id="businessType"
@@ -185,9 +195,9 @@ export const ContactCTASection: React.FC<ContactCTASectionProps> = ({ initialUrl
                     onChange={(e) => setFormData({ ...formData, businessType: e.target.value })}
                     className="w-full bg-[#0A0F1F] border border-gray-700 rounded-lg px-4 py-3.5 text-white font-sans text-sm focus:outline-none focus:border-[#0066FF] focus:ring-1 focus:ring-[#0066FF] transition-all"
                   >
-                    <option value="Clínica Médica / Estética">Clínica Médica / Estética / Odontología</option>
-                    <option value="Restaurante de Gama Alta">Restaurante de Gama Media-Alta / Gastronomía</option>
-                    <option value="Servicios Profesionales de Élite">Servicios Profesionales de Élite</option>
+                    <option value="Clínica Médica / Estética">{t.footer.sectorClinics}</option>
+                    <option value="Restaurante de Gama Alta">{t.footer.sectorRestaurants}</option>
+                    <option value="Servicios Profesionales de Élite">{t.footer.sectorHospitality}</option>
                   </select>
                 </div>
               </div>
@@ -195,9 +205,11 @@ export const ContactCTASection: React.FC<ContactCTASectionProps> = ({ initialUrl
               {/* URL de tu web (Opcional) */}
               <div>
                 <label htmlFor="websiteUrl" className="block text-xs font-mono text-gray-300 uppercase mb-2 flex items-center justify-between">
-                  <span>URL de tu web (Opcional si aún no tienes o quieres rediseño completo):</span>
+                  <span>{t.contact.urlLabel}</span>
                   {initialFindings.length > 0 && (
-                    <span className="text-emerald-400 text-[11px] lowercase">Resultados de escáner adjuntos</span>
+                    <span className="text-emerald-400 text-[11px] lowercase">
+                      {language === 'fr' ? 'Résultats du scan joints' : language === 'en' ? 'Scanner findings attached' : 'Resultados de escáner adjuntos'}
+                    </span>
                   )}
                 </label>
                 <input
@@ -205,24 +217,24 @@ export const ContactCTASection: React.FC<ContactCTASectionProps> = ({ initialUrl
                   type="text"
                   value={formData.websiteUrl}
                   onChange={(e) => setFormData({ ...formData, websiteUrl: e.target.value })}
-                  placeholder="www.tuclinicaorestaurante.com"
+                  placeholder={t.contact.urlPlaceholder}
                   className="w-full bg-[#0A0F1F] border border-gray-700 rounded-lg px-4 py-3.5 text-white font-sans text-sm focus:outline-none focus:border-[#0066FF] focus:ring-1 focus:ring-[#0066FF] transition-all"
                 />
               </div>
 
-              {/* Submit Button (Matching Requested CTA Options) */}
+              {/* Submit Button */}
               <div className="pt-4">
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full metallic-btn py-4 rounded-xl font-mono text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-3 shadow-xl hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-50"
+                  className="w-full metallic-btn py-4 rounded-xl font-mono text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-3 shadow-xl hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-50 cursor-pointer"
                 >
                   {isSubmitting ? (
-                    <span>Procesando solicitud de auditoría...</span>
+                    <span>{t.contact.submitting}</span>
                   ) : (
                     <>
                       <Shield className="w-5 h-5 text-[#0A0F1F]" />
-                      <span>Solicitar Mi Diagnóstico Estratégico Sin Costo</span>
+                      <span>{t.contact.submitBtn}</span>
                     </>
                   )}
                 </button>
@@ -230,7 +242,11 @@ export const ContactCTASection: React.FC<ContactCTASectionProps> = ({ initialUrl
 
               {/* Confidentiality Disclaimer */}
               <p className="text-center font-mono text-gray-400 text-xs mt-4">
-                * Datos encriptados y confidenciales bajo protocolo de seguridad estricto. Sin compromisos comerciales ni spam.
+                {language === 'fr'
+                  ? '* Données chiffrées et confidentielles sous protocole de sécurité strict. Aucun démarchage ni spam.'
+                  : language === 'en'
+                  ? '* Encrypted confidential data under strict security protocol. Zero commercial spam.'
+                  : '* Datos encriptados y confidenciales bajo protocolo de seguridad estricto. Sin compromisos comerciales ni spam.'}
               </p>
             </form>
           )}
@@ -241,3 +257,4 @@ export const ContactCTASection: React.FC<ContactCTASectionProps> = ({ initialUrl
     </section>
   );
 };
+

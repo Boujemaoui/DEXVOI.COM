@@ -45,7 +45,7 @@ export interface Testimonial {
   name: string;
   role: string;
   company: string;
-  category: 'Clínica' | 'Restaurante';
+  category: string;
   quote: string;
   metrics: { label: string; value: string }[];
   verified: boolean;
