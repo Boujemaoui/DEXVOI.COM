@@ -1,0 +1,43 @@
+name: DEXVOI Automated Daily Blog Publisher
+
+on:
+  schedule:
+    # Se ejecuta 2 veces al día: 08:00 y 16:00 UTC (10:00 y 18:00 hora de España)
+    - cron: '0 8,16 * * *'
+  workflow_dispatch: # Permite ejecutarlo manualmente con un botón desde la pestaña Actions
+
+jobs:
+  publish-daily-post:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Instalar dependencias
+        run: npm ci || npm install
+
+      - name: Generar nuevo artículo de blog
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: node scripts/generate-blog-post.mjs
+
+      - name: Guardar y subir cambios al repositorio
+        run: |
+          git config --global user.name "dexvoi-bot[bot]"
+          git config --global user.email "bot@dexvoi.com"
+          git add src/data/blogPosts.ts public/sitemap.xml
+          if git diff --staged --quiet; then
+            echo "No hay nuevos artículos pendientes para publicar hoy."
+          else
+            git commit -m "chore(blog): auto-publish daily SEO post [skip ci]"
+            git push
+          fi
