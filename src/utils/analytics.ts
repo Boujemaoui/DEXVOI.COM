@@ -41,8 +41,32 @@ export function initGA(overrideId?: string): boolean {
     return false;
   }
 
-  // Only load third-party analytics script if user has granted consent or in transparent mode
-  if (document.getElementById('google-analytics-script')) {
+  // If tag is already present in HTML or previously injected, do not add a duplicate
+  const existingScript = document.getElementById('google-analytics-script') || 
+    document.querySelector('script[src*="googletagmanager.com/gtag/js"]');
+
+  if (existingScript || typeof window.gtag === 'function') {
+    window.dataLayer = window.dataLayer || [];
+    if (typeof window.gtag !== 'function') {
+      window.gtag = function (...args: any[]) {
+        window.dataLayer.push(args);
+      };
+    }
+
+    const consentGranted = hasAnalyticsConsent();
+    window.gtag('consent', 'default', {
+      analytics_storage: consentGranted ? 'granted' : 'denied',
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied'
+    });
+
+    if (consentGranted) {
+      window.gtag('consent', 'update', {
+        analytics_storage: 'granted'
+      });
+      trackPageView(window.location.pathname, document.title);
+    }
     return true;
   }
 
