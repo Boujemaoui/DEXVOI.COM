@@ -5,6 +5,9 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
+    define: {
+      'import.meta.env.VITE_GA_MEASUREMENT_ID': JSON.stringify(process.env.VITE_GA_MEASUREMENT_ID || 'G-KDJYZJ3WL2'),
+    },
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {

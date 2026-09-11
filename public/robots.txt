@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://dexvoi.com/sitemap.xml
+Sitemap: https://www.dexvoi.com/sitemap.xml

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
 import { ProblemSection } from './components/ProblemSection';
@@ -22,6 +22,7 @@ import { OsintSecurityAuditResult } from './types';
 import { Home, Grid, Shield, Mail, Zap, CreditCard } from 'lucide-react';
 import { useAppRoute, navigateTo } from './utils/navigation';
 import { useLanguage } from './i18n/LanguageContext';
+import { initGA, trackPageView } from './utils/analytics';
 import { LegalPage } from './pages/LegalPage';
 import { ServicesPage } from './pages/ServicesPage';
 import { PricingPage } from './pages/PricingPage';
@@ -42,6 +43,15 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<'inicio' | 'servicios' | 'scanner' | 'precios' | 'contacto'>('inicio');
   const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
   const [legalModalTab, setLegalModalTab] = useState<LegalTab>('privacy');
+
+  // Initialize Google Analytics and track route changes
+  useEffect(() => {
+    initGA();
+  }, []);
+
+  useEffect(() => {
+    trackPageView(window.location.pathname, document.title);
+  }, [route]);
 
   const handleOpenLegalModal = (tab: LegalTab = 'privacy') => {
     setLegalModalTab(tab);

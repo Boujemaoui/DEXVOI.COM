@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Shield, Check } from 'lucide-react';
 import { LegalTab } from './LegalModal';
 import { useLanguage } from '../i18n/LanguageContext';
+import { updateAnalyticsConsent } from '../utils/analytics';
 
 interface ConsentBannerProps {
   onOpenLegalModal: (tab: LegalTab) => void;
@@ -29,6 +30,7 @@ export const ConsentBanner: React.FC<ConsentBannerProps> = ({ onOpenLegalModal }
       analytics: true,
       security: true,
     }));
+    updateAnalyticsConsent(true);
     setIsVisible(false);
   };
 
@@ -39,6 +41,7 @@ export const ConsentBanner: React.FC<ConsentBannerProps> = ({ onOpenLegalModal }
       analytics: false,
       security: true,
     }));
+    updateAnalyticsConsent(false);
     setIsVisible(false);
   };
 
