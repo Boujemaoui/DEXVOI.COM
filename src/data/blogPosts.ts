@@ -2,6 +2,28 @@ import { BlogPost } from '../types/blog';
 
 export const INITIAL_BLOG_POSTS: BlogPost[] = [
   {
+    id: 'post-auto-1789158685430',
+    slug: 'cabeceras-http-de-seguridad-para-clinicas-y-restaurante',
+    title: "Cabeceras HTTP de Seguridad para Clínicas y Restaurantes: HSTS, CSP y Permissions-Policy",
+    excerpt: "Guía técnica para directores médicos y hosteleros: configuración de cabeceras HSTS, CSP y permisos perimetrales para evitar ciberataques.",
+    category: 'ciberseguridad',
+    categoryLabel: 'Ciberseguridad & Compliance',
+    tags: ["Cabeceras HTTP","HSTS","CSP","Seguridad Web","OWASP"],
+    author: {
+      name: 'Dexvoi Intelligence Team',
+      role: 'Especialistas en Blindaje & Rendimiento Digital',
+      badge: 'Verified Lead'
+    },
+    publishedAt: '2026-09-11T20:31:25.430Z',
+    readingTimeMinutes: 7,
+    featuredImage: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80',
+    metaDescription: "Guía técnica para directores médicos y hosteleros: configuración de cabeceras HSTS, CSP y permisos perimetrales para evitar ciberataques.",
+    keywords: ["Cabeceras HTTP","HSTS","CSP","Seguridad Web","OWASP"],
+    targetServiceUrl: '/auditoria-seguridad',
+    targetServiceLabel: 'Solicitar Diagnóstico Especializado',
+    content: "\n## La primera línea de defensa perimetral: Cabeceras HTTP\n\nCuando un navegador solicita tu página web, el servidor responde no solo con el código visual, sino con un conjunto de instrucciones de seguridad conocidas como **cabeceras de respuesta HTTP**.\n\nPara una clínica privada que maneja datos médicos o un restaurante con reservas exclusivas, omitir estas cabeceras es equivalente a dejar la puerta del servidor abierta.\n\n---\n\n### Las 4 cabeceras obligatorias que auditamos en Dexvoi\n\n1. **Strict-Transport-Security (HSTS):** Fuerza la conexión encriptada HTTPS durante 1 año (`max-age=31536000; includeSubDomains; preload`), anulando ataques de degradación SSL (*SSL Stripping*).\n2. **Content-Security-Policy (CSP):** Restringe las fuentes desde donde el navegador puede cargar scripts, estilos e imágenes, bloqueando el 99% de inyecciones XSS.\n3. **X-Frame-Options:** Establecida en `DENY` o `SAMEORIGIN` para evitar ataques de *Clickjacking* en tus formularios de contacto.\n4. **X-Content-Type-Options:** Fijada en `nosniff` para impedir que navegadores ejecuten archivos adjuntos maliciosos haciéndose pasar por imágenes.\n\n---\n\n### Diagnóstico perimetral con Dexvoi\n\nEn **Dexvoi** integramos estas directivas de forma nativa en la capa perimetral (Edge CDN), protegiendo tu plataforma sin añadir latencia.\n    "
+  },
+  {
     id: 'post-1',
     slug: 'ciberseguridad-clinicas-privadas-guia-rgpd-blindaje',
     title: 'Ciberseguridad en Clínicas Privadas: Cómo Proteger las Historias Clínicas y Cumplir con el RGPD',
