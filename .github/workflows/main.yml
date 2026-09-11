@@ -16,16 +16,21 @@ jobs:
       - name: Checkout repositorio
         uses: actions/checkout@v4
 
-      - name: Configurar Node.js
+      - name: Instalar pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Configurar Node.js con caché de pnpm
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
+          cache: 'pnpm'
 
-      - name: Instalar dependencias
-        run: npm ci || npm install
+      - name: Instalar dependencias con pnpm
+        run: pnpm install
 
-      - name: Generar nuevo artículo de blog
+      - name: Generar nuevo artículo de blog con Gemini
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: node scripts/generate-blog-post.mjs
