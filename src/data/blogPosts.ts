@@ -2,6 +2,28 @@ import { BlogPost } from '../types/blog';
 
 export const INITIAL_BLOG_POSTS: BlogPost[] = [
   {
+    id: 'post-auto-1789213620965',
+    slug: 'como-evitar-resenas-falsas-y-sabotaje-de-reputacion-en',
+    title: "Cómo evitar reseñas falsas y sabotaje de reputación en Google Maps para Alta Gastronomía",
+    excerpt: "Estrategias legales y técnicas para detectar, impugnar y eliminar reseñas maliciosas en Google Business Profile para restaurantes de alta cocina.",
+    category: 'seo-local',
+    categoryLabel: 'SEO Local & Google Maps',
+    tags: ["Reputación Digital","Google Maps","Reseñas Falsas","SEO Restaurantes"],
+    author: {
+      name: 'Dexvoi Intelligence Team',
+      role: 'Especialistas en Blindaje & Rendimiento Digital',
+      badge: 'Verified Lead'
+    },
+    publishedAt: '2026-09-12T11:47:00.965Z',
+    readingTimeMinutes: 6,
+    featuredImage: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80',
+    metaDescription: "Estrategias legales y técnicas para detectar, impugnar y eliminar reseñas maliciosas en Google Business Profile para restaurantes de alta cocina.",
+    keywords: ["Reputación Digital","Google Maps","Reseñas Falsas","SEO Restaurantes"],
+    targetServiceUrl: '/auditoria-seguridad',
+    targetServiceLabel: 'Solicitar Diagnóstico Especializado',
+    content: "\n## El impacto destructivo de una reseña falsa de 1 estrella\n\nPara un restaurante gastronómico donde el ticket medio supera los 60€, **una sola reseña negativa falsa puede costar miles de euros al mes en comensales perdidos**.\n\nMuchos competidores desleales o bots automáticos publican valoraciones sin haber pisado jamás el establecimiento.\n\n---\n\n### Protocolo de respuesta e impugnación ante Google\n\n- **Monitoreo de huella IP y patrones temporales:** Las campañas de desprestigio suelen concentrar varias valoraciones sin texto en intervalos de menos de 48 horas.\n- **Respuesta institucional asertiva:** Nunca entres en conflicto público. Responde con un mensaje profesional indicando que no consta reserva a ese nombre y ofreciendo canal directo con gerencia.\n- **Impugnación formal por vulneración de políticas:** Solicita la retirada alegando conflicto de interés y contenido falso con pruebas del registro interno de reservas.\n\n---\n\n### Solución Dexvoi: Ficha blindada y reputación proactiva\n\nDiseñamos sistemas que canalizan las valoraciones positivas de comensales reales directamente a Google Maps mientras resuelven incidencias de forma privada.\n    "
+  },
+  {
     id: 'post-auto-1789158685430',
     slug: 'cabeceras-http-de-seguridad-para-clinicas-y-restaurante',
     title: "Cabeceras HTTP de Seguridad para Clínicas y Restaurantes: HSTS, CSP y Permissions-Policy",
