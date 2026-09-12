@@ -2,6 +2,28 @@ import { BlogPost } from '../types/blog';
 
 export const INITIAL_BLOG_POSTS: BlogPost[] = [
   {
+    id: 'post-auto-1789235818061',
+    slug: 'core-web-vitals-inp-y-lcp-en-2026-como-dexvoi-logra-tie',
+    title: "Core Web Vitals INP y LCP en 2026: Cómo Dexvoi logra tiempos de carga bajo 300ms",
+    excerpt: "Cómo optimizar Interaction to Next Paint (INP) y Largest Contentful Paint (LCP) para lograr puntuaciones perfectas de 100/100 en Google PageSpeed.",
+    category: 'arquitectura-web',
+    categoryLabel: 'Arquitectura Web & Rendimiento',
+    tags: ["Core Web Vitals","INP","LCP","Jamstack","Velocidad Web"],
+    author: {
+      name: 'Dexvoi Intelligence Team',
+      role: 'Especialistas en Blindaje & Rendimiento Digital',
+      badge: 'Verified Lead'
+    },
+    publishedAt: '2026-09-12T17:56:58.061Z',
+    readingTimeMinutes: 8,
+    featuredImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80',
+    metaDescription: "Cómo optimizar Interaction to Next Paint (INP) y Largest Contentful Paint (LCP) para lograr puntuaciones perfectas de 100/100 en Google PageSpeed.",
+    keywords: ["Core Web Vitals","INP","LCP","Jamstack","Velocidad Web"],
+    targetServiceUrl: '/auditoria-seguridad',
+    targetServiceLabel: 'Solicitar Diagnóstico Especializado',
+    content: "\n## La nueva métrica reina de Google: INP (Interaction to Next Paint)\n\nDesde la actualización de los algoritmos de Google, **la interactividad y la respuesta instantánea del usuario (INP)** determinan qué webs merecen las primeras posiciones orgánicas.\n\nSi un paciente hace clic en \"Pedir cita\" o un comensal pulsa \"Ver menú\" y la interfaz se congela durante más de 200 milisegundos, Google penaliza el dominio.\n\n---\n\n### Por qué los CMS clásicos fallan en INP\n\n- Exceso de archivos JavaScript sin optimizar de múltiples plugins.\n- Bloqueo del hilo principal de renderizado del navegador (*Main Thread Block*).\n- Fuentes web y banners de cookies mal implementados.\n\n---\n\n### La ingeniería de Dexvoi: Rendimiento al extremo\n\nEn Dexvoi compilamos el código con empaquetadores de última generación y aplicamos división de código (*code-splitting*), logrando **LCP inferior a 0.8s e INP bajo 50ms**.\n    "
+  },
+  {
     id: 'post-auto-1789213620965',
     slug: 'como-evitar-resenas-falsas-y-sabotaje-de-reputacion-en',
     title: "Cómo evitar reseñas falsas y sabotaje de reputación en Google Maps para Alta Gastronomía",
