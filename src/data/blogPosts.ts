@@ -2,6 +2,28 @@ import { BlogPost } from '../types/blog';
 
 export const INITIAL_BLOG_POSTS: BlogPost[] = [
   {
+    id: 'post-auto-1789304047090',
+    slug: 'inteligencia-de-datos-y-agentes-de-ia-en-motores-de-res',
+    title: "Inteligencia de Datos y Agentes de IA en Motores de Reservas sin Comisiones",
+    excerpt: "Por qué sustituir plataformas comisionistas por agentes conversacionales de IA propios multiplica el margen neto en restaurantes y clínicas.",
+    category: 'ia-reservas',
+    categoryLabel: 'IA & Automatización',
+    tags: ["IA Conversacional","Motores Propietarios","Sin Comisiones","Fidelización"],
+    author: {
+      name: 'Dexvoi Intelligence Team',
+      role: 'Especialistas en Blindaje & Rendimiento Digital',
+      badge: 'Verified Lead'
+    },
+    publishedAt: '2026-09-13T12:54:07.090Z',
+    readingTimeMinutes: 7,
+    featuredImage: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=80',
+    metaDescription: "Por qué sustituir plataformas comisionistas por agentes conversacionales de IA propios multiplica el margen neto en restaurantes y clínicas.",
+    keywords: ["IA Conversacional","Motores Propietarios","Sin Comisiones","Fidelización"],
+    targetServiceUrl: '/auditoria-seguridad',
+    targetServiceLabel: 'Solicitar Diagnóstico Especializado',
+    content: "\n## La soberanía sobre tus clientes: Por qué prescindir de comisionistas\n\nPagar entre un 15% y un 25% a plataformas agregadoras por reservas de clientes recurrentes erosiona el modelo de negocio de cualquier clínica o restaurante gastronómico.\n\n---\n\n### La solución de automatización autónoma Dexvoi\n\n- Integración directa en WhatsApp y web con comprensión de lenguaje natural.\n- Sincronización en tiempo real con agendas médicas o planos de sala sin latencia.\n- Propiedad íntegra de la base de datos de pacientes y comensales bajo estricto cumplimiento RGPD.\n    "
+  },
+  {
     id: 'post-auto-1789235818061',
     slug: 'core-web-vitals-inp-y-lcp-en-2026-como-dexvoi-logra-tie',
     title: "Core Web Vitals INP y LCP en 2026: Cómo Dexvoi logra tiempos de carga bajo 300ms",
