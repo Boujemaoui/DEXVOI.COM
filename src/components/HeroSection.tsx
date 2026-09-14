@@ -23,19 +23,19 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenAuditModal, onSc
           {/* Left Column: Core Copy & CTAs */}
           <div className="lg:col-span-7 space-y-7">
             {/* Live Operational Status Chip */}
-            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#1E293B] border border-[#0066FF]/40 shadow-[0_0_15px_rgba(0,102,255,0.2)]">
-              <span className="relative flex h-2.5 w-2.5">
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#1E293B] border border-[#0066FF]/40 shadow-[0_0_15px_rgba(0,102,255,0.2)] max-w-full">
+              <span className="relative flex h-2.5 w-2.5 shrink-0">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0066FF] opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#0066FF]"></span>
               </span>
-              <span className="font-mono text-xs font-bold text-gray-200 tracking-wider uppercase">
+              <span className="font-mono text-xs font-bold text-gray-200 tracking-wider uppercase whitespace-nowrap truncate">
                 {t.hero.badge}
               </span>
             </div>
 
             {/* Main Headline */}
-            <div className="space-y-2">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl xl:text-5xl font-extrabold text-white tracking-tight leading-[1.15]">
+            <div className="space-y-2 min-h-[72px] sm:min-h-[84px] md:min-h-[110px] flex flex-col justify-center">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl xl:text-5xl font-extrabold text-white tracking-tight leading-[1.15] text-balance">
                 {t.hero.titleLine1}{' '}
                 <span className="text-gray-200">{t.hero.titleLine2}</span>{' '}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F5A623] via-[#ffb955] to-[#ffd78a] drop-shadow-[0_2px_12px_rgba(245,166,35,0.3)]">

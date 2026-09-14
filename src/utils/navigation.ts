@@ -217,8 +217,8 @@ export function useAppRoute(): { route: AppRoute; blogSlug: string; navigate: (p
     window.addEventListener('popstate', handleLocationChange);
     window.addEventListener('locationchange', handleLocationChange);
 
-    // Initial sync
-    handleLocationChange();
+    // Sync metadata on mount without triggering an extra React re-render
+    updatePageMetadata(currentRoute);
 
     return () => {
       window.removeEventListener('popstate', handleLocationChange);
