@@ -30,6 +30,7 @@ import { ContactPage } from './pages/ContactPage';
 import { OsintAuditPage } from './pages/OsintAuditPage';
 import { BlogPage } from './pages/BlogPage';
 import { BlogPostPage } from './pages/BlogPostPage';
+import { NotFoundPage } from './pages/NotFoundPage';
 
 export default function App() {
   const { language } = useLanguage();
@@ -142,6 +143,13 @@ export default function App() {
       {(route === 'privacy' || route === 'terms' || route === 'cookies' || route === 'legal') && (
         <LegalPage
           initialTab={route as LegalTab}
+          onNavigateHome={() => navigateTo('/')}
+          onOpenAuditModal={() => setIsAuditModalOpen(true)}
+        />
+      )}
+
+      {route === '404' && (
+        <NotFoundPage
           onNavigateHome={() => navigateTo('/')}
           onOpenAuditModal={() => setIsAuditModalOpen(true)}
         />

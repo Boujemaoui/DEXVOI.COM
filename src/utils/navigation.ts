@@ -11,7 +11,8 @@ export type AppRoute =
   | 'pricing'
   | 'contact'
   | 'blog'
-  | 'blog-post';
+  | 'blog-post'
+  | '404';
 
 export interface RouteInfo {
   route: AppRoute;
@@ -86,6 +87,12 @@ export const ROUTE_MAP: Record<AppRoute, { path: string; aliases: string[]; titl
     aliases: [],
     title: 'Artículo de Inteligencia Técnica | DEXVOI',
     description: 'Guía técnica especializada de Dexvoi.'
+  },
+  '404': {
+    path: '/404',
+    aliases: ['/not-found', '/404.html'],
+    title: '404 - Perímetro No Localizado | DEXVOI',
+    description: 'El recurso o página solicitada no existe o ha sido reubicada dentro de la infraestructura de Dexvoi.'
   }
 };
 
@@ -96,6 +103,10 @@ export function getBlogSlugFromPath(pathname: string): string {
 
 export function matchPathToRoute(pathname: string): AppRoute {
   const cleanPath = pathname.replace(/\/$/, '').toLowerCase() || '/';
+
+  if (cleanPath === '/' || cleanPath === '') {
+    return 'home';
+  }
 
   if (cleanPath.startsWith('/blog/')) {
     return 'blog-post';
@@ -118,7 +129,8 @@ export function matchPathToRoute(pathname: string): AppRoute {
   if (cleanPath.startsWith('/precios')) return 'pricing';
   if (cleanPath.startsWith('/contacto')) return 'contact';
 
-  return 'home';
+  // Unknown path -> 404 Not Found
+  return '404';
 }
 
 export function updatePageMetadata(route: AppRoute) {
@@ -175,6 +187,19 @@ export function navigateTo(path: string, options: { replace?: boolean; scroll?: 
 
 export function useAppRoute(): { route: AppRoute; blogSlug: string; navigate: (path: string) => void } {
   const [currentRoute, setCurrentRoute] = useState<AppRoute>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const redirectParam = params.get('p');
+        const storedRedirect = sessionStorage.getItem('dexvoi_redirect_path');
+        const target = redirectParam || storedRedirect;
+        if (target) {
+          sessionStorage.removeItem('dexvoi_redirect_path');
+          window.history.replaceState({}, '', target);
+          return matchPathToRoute(target);
+        }
+      } catch (e) {}
+    }
     return matchPathToRoute(window.location.pathname);
   });
   const [blogSlug, setBlogSlug] = useState<string>(() => {
