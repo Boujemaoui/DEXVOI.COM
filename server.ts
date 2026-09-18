@@ -793,6 +793,7 @@ La mayoría de sitios corporativos presentan vulnerabilidades críticas en tres 
       `;
       let metaDescription = `Aprende cómo optimizar ${promptTopic} con las directrices técnicas y de seguridad de Dexvoi.`;
       let tags = ['Ciberseguridad', 'SEO', 'Dexvoi', 'Arquitectura Web'];
+      let generatedTranslations: Record<string, any> | undefined = undefined;
 
       // If Gemini is available, generate a deeply researched article
       if (process.env.GEMINI_API_KEY) {
@@ -802,16 +803,40 @@ La mayoría de sitios corporativos presentan vulnerabilidades críticas en tres 
 Redacta un artículo de blog técnico, profesional y optimizado para SEO sobre el siguiente tema: "${promptTopic}".
 Categoría: "${targetCategory}".
 
+Genera el artículo en Español (es) y además sus versiones traducidas y adaptadas para SEO en Francés (fr) e Inglés (en).
+
 Instrucciones estrictas:
 1. Formato de salida: Devuelve ÚNICAMENTE un objeto JSON válido, sin bloques de código extra ni texto adicional fuera del JSON.
 2. Campos del JSON:
 {
-  "title": "Título SEO atractivo, riguroso y sin clichés (máx 70 caracteres)",
-  "excerpt": "Resumen persuasivo del artículo (140-160 caracteres)",
-  "metaDescription": "Meta descripción optimizada para Google (máx 155 caracteres)",
-  "tags": ["3 a 5 etiquetas técnicas relevantes"],
+  "title": "Título SEO atractivo en español (máx 70 caracteres)",
+  "excerpt": "Resumen persuasivo en español (140-160 caracteres)",
+  "metaDescription": "Meta descripción en español optimizada para Google (máx 155 caracteres)",
+  "tags": ["3 a 5 etiquetas técnicas relevantes en español"],
   "readingTimeMinutes": 6,
-  "content": "Contenido completo en Markdown. Debe incluir subtítulos H2 (##), subtítulos H3 (###), listas con viñetas, tabla comparativa en markdown y una llamada a la acción hacia la auditoría gratuita de Dexvoi. Tono técnico, serio y de autoridad médica/corporativa."
+  "content": "Contenido completo en Markdown en español con H2, H3, viñetas, tabla comparativa y CTA a Dexvoi.",
+  "translations": {
+    "fr": {
+      "title": "Titre SEO professionnel en français",
+      "excerpt": "Résumé percutant en français",
+      "categoryLabel": "Catégorie en français",
+      "metaDescription": "Meta description optimisée en français",
+      "tags": ["étiquette 1", "étiquette 2", "étiquette 3"],
+      "keywords": ["mot-clé 1", "mot-clé 2"],
+      "targetServiceLabel": "Demander un Diagnostic Spécialisé",
+      "content": "Contenu complet rédigé en français impeccable (Markdown)."
+    },
+    "en": {
+      "title": "Professional SEO title in English",
+      "excerpt": "Compelling excerpt in English",
+      "categoryLabel": "Category in English",
+      "metaDescription": "Optimized meta description in English",
+      "tags": ["tag 1", "tag 2", "tag 3"],
+      "keywords": ["keyword 1", "keyword 2"],
+      "targetServiceLabel": "Request Technical Diagnosis",
+      "content": "Complete comprehensive article written in native English (Markdown)."
+    }
+  }
 }`;
 
           const response = await ai.models.generateContent({
@@ -831,6 +856,9 @@ Instrucciones estrictas:
           if (parsed.content) generatedContent = parsed.content;
           if (parsed.metaDescription) metaDescription = parsed.metaDescription;
           if (Array.isArray(parsed.tags)) tags = parsed.tags;
+          if (parsed.translations) {
+            generatedTranslations = parsed.translations;
+          }
         } catch (geminiError) {
           console.warn('Gemini blog generation fallback applied:', geminiError);
         }
@@ -857,7 +885,8 @@ Instrucciones estrictas:
         metaDescription,
         keywords: tags,
         targetServiceUrl: targetCategory === 'ciberseguridad' ? '/auditoria-seguridad' : '/servicios',
-        targetServiceLabel: 'Solicitar Auditoría Técnica Relacionada'
+        targetServiceLabel: 'Solicitar Auditoría Técnica Relacionada',
+        ...(generatedTranslations ? { translations: generatedTranslations } : {})
       };
 
       return res.json({ success: true, post: newPost });

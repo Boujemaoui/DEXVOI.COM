@@ -143,15 +143,37 @@ ${existingTitles.join('\n')}
 
 Devuelve ÚNICAMENTE un JSON válido (sin bloques de markdown ni texto adicional fuera del JSON) con los siguientes campos:
 {
-  "title": "Título riguroso, atractivo y optimizado para SEO (máx 70 caracteres)",
+  "title": "Título riguroso, atractivo y optimizado para SEO en español (máx 70 caracteres)",
   "slug": "slug-url-limpio-sin-acentos-y-con-guiones",
   "category": "${chosenCategory}",
   "categoryLabel": "${chosenCategory === 'ciberseguridad' ? 'Ciberseguridad & Compliance' : chosenCategory === 'seo-local' ? 'SEO Local & Google Maps' : chosenCategory === 'arquitectura-web' ? 'Arquitectura Web & Rendimiento' : 'IA & Automatización'}",
-  "excerpt": "Resumen conciso y persuasivo del artículo (máximo 160 caracteres)",
-  "metaDescription": "Meta descripción optimizada para Google (máximo 155 caracteres)",
-  "tags": ["3 a 5 tags técnicos"],
+  "excerpt": "Resumen conciso y persuasivo del artículo en español (máximo 160 caracteres)",
+  "metaDescription": "Meta descripción optimizada para Google en español (máximo 155 caracteres)",
+  "tags": ["3 a 5 tags técnicos en español"],
   "readingTimeMinutes": 7,
-  "content": "Contenido completo en Markdown con introducción, subtítulos H2 (##), subtítulos H3 (###), tabla comparativa de impacto, viñetas de checklist y llamada a la acción hacia la auditoría gratuita de Dexvoi."
+  "content": "Contenido completo en Markdown en español con introducción, subtítulos H2 (##), subtítulos H3 (###), tabla comparativa de impacto, viñetas de checklist y llamada a la acción hacia la auditoría gratuita de Dexvoi.",
+  "translations": {
+    "fr": {
+      "title": "Titre rigoureux et professionnel en français",
+      "excerpt": "Résumé concis et percutant en français",
+      "categoryLabel": "${chosenCategory === 'ciberseguridad' ? 'Cybersécurité & Conformité' : chosenCategory === 'seo-local' ? 'SEO Local & Google Maps' : chosenCategory === 'arquitectura-web' ? 'Architecture Web & Performance' : 'IA & Automatisation'}",
+      "metaDescription": "Meta description optimisée en français",
+      "tags": ["3 à 5 tags en français"],
+      "keywords": ["mots clés pertinents"],
+      "targetServiceLabel": "Demander un Diagnostic Spécialisé",
+      "content": "Contenu complet rédigé en français impeccable (Markdown)."
+    },
+    "en": {
+      "title": "Rigorous professional title in English",
+      "excerpt": "Concise compelling excerpt in English",
+      "categoryLabel": "${chosenCategory === 'ciberseguridad' ? 'Cybersecurity & Compliance' : chosenCategory === 'seo-local' ? 'Local SEO & Google Maps' : chosenCategory === 'arquitectura-web' ? 'Web Architecture & Performance' : 'AI & Automation'}",
+      "metaDescription": "Optimized meta description in English",
+      "tags": ["3 to 5 tags in English"],
+      "keywords": ["relevant keywords"],
+      "targetServiceLabel": "Request Technical Diagnosis",
+      "content": "Complete comprehensive article written in native English (Markdown)."
+    }
+  }
 }`;
 
     const res = await ai.models.generateContent({
@@ -267,7 +289,7 @@ async function generatePost() {
     keywords: ${JSON.stringify(chosenPost.tags)},
     targetServiceUrl: '/auditoria-seguridad',
     targetServiceLabel: 'Solicitar Diagnóstico Especializado',
-    content: ${JSON.stringify(chosenPost.content)}
+    content: ${JSON.stringify(chosenPost.content)}${chosenPost.translations ? `,\n    translations: ${JSON.stringify(chosenPost.translations, null, 6)}` : ''}
   },
 `;
 

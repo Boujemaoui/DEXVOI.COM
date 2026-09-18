@@ -12,6 +12,17 @@ export interface BlogAuthor {
   avatarUrl?: string;
 }
 
+export interface LocalizedBlogContent {
+  title: string;
+  excerpt: string;
+  content: string;
+  metaDescription: string;
+  tags: string[];
+  keywords: string[];
+  categoryLabel: string;
+  targetServiceLabel?: string;
+}
+
 export interface BlogPost {
   id: string;
   slug: string;
@@ -31,4 +42,12 @@ export interface BlogPost {
   keywords: string[];
   targetServiceUrl: string;
   targetServiceLabel: string;
+  /**
+   * Full authentic localized translations per language (fr, en, es)
+   */
+  translations?: {
+    fr?: LocalizedBlogContent;
+    en?: LocalizedBlogContent;
+    es?: LocalizedBlogContent;
+  };
 }

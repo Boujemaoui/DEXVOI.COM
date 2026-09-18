@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import Markdown from 'react-markdown';
 import { 
   ArrowLeft, Calendar, Clock, Shield, Share2, 
@@ -10,6 +10,9 @@ import { getPostBySlug, getRelatedPosts } from '../data/blogPosts';
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
 import { navigateTo } from '../utils/navigation';
+import { useLanguage } from '../i18n/LanguageContext';
+import { getLocalizedPost } from '../utils/blogLocalization';
+import { getLocalizedPath } from '../utils/seoMultilingual';
 
 interface BlogPostPageProps {
   slug: string;
@@ -18,21 +21,30 @@ interface BlogPostPageProps {
 }
 
 export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug, onOpenAuditModal }) => {
-  const [post, setPost] = useState<BlogPost | null>(null);
+  const { language } = useLanguage();
+  const [rawPost, setRawPost] = useState<BlogPost | null>(null);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const found = getPostBySlug(slug);
-    setPost(found || null);
+    setRawPost(found || null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [slug]);
 
-  // Inject JSON-LD Schema.org for SEO
+  // Derive localized post content based on current active language
+  const post = useMemo(() => {
+    if (!rawPost) return null;
+    return getLocalizedPost(rawPost, language);
+  }, [rawPost, language]);
+
+  // Inject JSON-LD Schema.org for SEO and sync document metadata
   useEffect(() => {
     if (!post) return;
 
-    // Update document title and meta
-    document.title = `${post.title} | Blog Dexvoi`;
+    // Update document title and meta to localized values
+    const localizedTitle = `${post.title} | Blog Dexvoi`;
+    document.title = localizedTitle;
+
     const descMeta = document.querySelector('meta[name="description"]');
     if (descMeta) {
       descMeta.setAttribute('content', post.metaDescription);
@@ -57,6 +69,8 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug, onOpenAuditMod
       document.head.appendChild(script);
     }
 
+    const localizedUrl = `https://dexvoi.com${getLocalizedPath('blog-post', language, post.slug)}`;
+
     const schemaData = {
       '@context': 'https://schema.org',
       '@type': 'BlogPosting',
@@ -65,9 +79,10 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug, onOpenAuditMod
       'image': post.featuredImage,
       'datePublished': post.publishedAt,
       'dateModified': post.publishedAt,
+      'inLanguage': language === 'fr' ? 'fr-FR' : language === 'en' ? 'en-US' : 'es-ES',
       'mainEntityOfPage': {
         '@type': 'WebPage',
-        '@id': `https://dexvoi.com/blog/${post.slug}`
+        '@id': localizedUrl
       },
       'author': {
         '@type': 'Organization',
@@ -91,22 +106,93 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug, onOpenAuditMod
       const el = document.getElementById(schemaId);
       if (el) el.remove();
     };
-  }, [post]);
+  }, [post, language]);
+
+  // UI Localized Strings dictionary for Blog Post frame
+  const uiStrings = useMemo(() => {
+    if (language === 'fr') {
+      return {
+        home: 'Accueil',
+        blog: 'Blog',
+        backToAll: 'Retour à tous les articles',
+        minRead: 'min de lecture',
+        shareWhatsApp: 'Partager sur WhatsApp',
+        shareLinkedIn: 'Partager sur LinkedIn',
+        shareTwitter: 'Partager sur X / Twitter',
+        copyLink: 'Copier le lien',
+        linkCopied: 'Lien copié !',
+        tagsLabel: 'Mots-clés :',
+        ctaEyebrow: 'Recommandation stratégique Dexvoi',
+        ctaTitle: 'Souhaitez-vous déployer cette architecture dans votre établissement ?',
+        ctaDesc: 'Nos ingénieurs analysent votre infrastructure, votre visibilité locale et vos protocoles de cybersécurité de manière personnalisée.',
+        ctaBtn: 'Diagnostic Gratuit',
+        relatedTitle: 'Articles Connexes',
+        notFoundTitle: 'Article introuvable',
+        notFoundDesc: 'L\'article recherché a été déplacé, reprogrammé ou l\'URL est incorrecte.',
+        returnToBlog: '← Retour au Blog',
+        dateFormatLocale: 'fr-FR'
+      };
+    }
+    if (language === 'en') {
+      return {
+        home: 'Home',
+        blog: 'Blog',
+        backToAll: 'Back to all articles',
+        minRead: 'min read',
+        shareWhatsApp: 'Share on WhatsApp',
+        shareLinkedIn: 'Share on LinkedIn',
+        shareTwitter: 'Share on X / Twitter',
+        copyLink: 'Copy link',
+        linkCopied: 'Link copied!',
+        tagsLabel: 'Tags:',
+        ctaEyebrow: 'Recommended action by Dexvoi',
+        ctaTitle: 'Ready to implement this solution in your business?',
+        ctaDesc: 'Our engineers conduct custom forensic analyses on your web architecture, local visibility, and security protocols.',
+        ctaBtn: 'Free Technical Diagnosis',
+        relatedTitle: 'Related Articles',
+        notFoundTitle: 'Article Not Found',
+        notFoundDesc: 'The article you are looking for has been rescheduled, updated, or the URL is invalid.',
+        returnToBlog: '← Return to Blog',
+        dateFormatLocale: 'en-US'
+      };
+    }
+    return {
+      home: 'Inicio',
+      blog: 'Blog',
+      backToAll: 'Volver a todos los artículos',
+      minRead: 'min de lectura',
+      shareWhatsApp: 'Compartir en WhatsApp',
+      shareLinkedIn: 'Compartir en LinkedIn',
+      shareTwitter: 'Compartir en X / Twitter',
+      copyLink: 'Copiar enlace',
+      linkCopied: '¡Enlace copiado!',
+      tagsLabel: 'Etiquetas:',
+      ctaEyebrow: 'Paso a la acción recomendado por Dexvoi',
+      ctaTitle: '¿Quieres implementar esta solución en tu negocio?',
+      ctaDesc: 'Nuestros ingenieros analizan tu infraestructura, posicionamiento local y protocolos de blindaje de forma personalizada.',
+      ctaBtn: 'Diagnóstico Gratuito',
+      relatedTitle: 'Artículos Relacionados',
+      notFoundTitle: 'Artículo no encontrado',
+      notFoundDesc: 'El artículo que buscas ha sido reprogramado, modificado o su URL es incorrecta.',
+      returnToBlog: '← Volver al Blog',
+      dateFormatLocale: 'es-ES'
+    };
+  }, [language]);
 
   if (!post) {
     return (
       <div className="min-h-screen bg-[#0A0F1F] text-[#e5e2e3]">
         <Navbar onOpenAuditModal={onOpenAuditModal} />
         <div className="max-w-3xl mx-auto px-4 pt-36 pb-20 text-center space-y-6">
-          <h1 className="text-2xl font-bold text-white">Artículo no encontrado</h1>
+          <h1 className="text-2xl font-bold text-white">{uiStrings.notFoundTitle}</h1>
           <p className="text-gray-400 text-sm">
-            El artículo que buscas ha sido reprogramado, modificado o su URL es incorrecta.
+            {uiStrings.notFoundDesc}
           </p>
           <button
-            onClick={() => navigateTo('/blog')}
-            className="metallic-btn px-6 py-2.5 rounded-xl font-mono text-xs uppercase"
+            onClick={() => navigateTo(getLocalizedPath('blog', language))}
+            className="metallic-btn px-6 py-2.5 rounded-xl font-mono text-xs uppercase cursor-pointer"
           >
-            ← Volver al Blog
+            {uiStrings.returnToBlog}
           </button>
         </div>
         <Footer />
@@ -114,11 +200,12 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug, onOpenAuditMod
     );
   }
 
-  const relatedPosts = getRelatedPosts(post.slug, post.category, 3);
-  const currentUrl = typeof window !== 'undefined' ? window.location.href : `https://dexvoi.com/blog/${post.slug}`;
+  const rawRelated = getRelatedPosts(post.slug, post.category, 3);
+  const relatedPosts = rawRelated.map(p => getLocalizedPost(p, language));
+  const currentUrl = typeof window !== 'undefined' ? window.location.href : `https://dexvoi.com${getLocalizedPath('blog-post', language, post.slug)}`;
 
   const handleShare = (platform: 'twitter' | 'linkedin' | 'whatsapp') => {
-    const text = encodeURIComponent(`${post.title} - Dexvoi Blog`);
+    const text = encodeURIComponent(`${post.title} - Dexvoi`);
     const url = encodeURIComponent(currentUrl);
     let shareUrl = '';
 
@@ -135,6 +222,9 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug, onOpenAuditMod
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const blogListUrl = getLocalizedPath('blog', language);
+  const homeUrl = getLocalizedPath('home', language);
+
   return (
     <div className="min-h-screen bg-[#0A0F1F] text-[#e5e2e3] font-sans antialiased selection:bg-[#0066FF] selection:text-white">
       <Navbar onOpenAuditModal={onOpenAuditModal} />
@@ -145,19 +235,19 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug, onOpenAuditMod
           {/* Breadcrumb Navigation */}
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs font-mono text-gray-400 mb-8 overflow-x-auto whitespace-nowrap">
             <a 
-              href="/" 
-              onClick={(e) => { e.preventDefault(); navigateTo('/'); }}
+              href={homeUrl} 
+              onClick={(e) => { e.preventDefault(); navigateTo(homeUrl); }}
               className="hover:text-white transition-colors"
             >
-              Inicio
+              {uiStrings.home}
             </a>
             <span>/</span>
             <a 
-              href="/blog" 
-              onClick={(e) => { e.preventDefault(); navigateTo('/blog'); }}
+              href={blogListUrl} 
+              onClick={(e) => { e.preventDefault(); navigateTo(blogListUrl); }}
               className="hover:text-white transition-colors"
             >
-              Blog
+              {uiStrings.blog}
             </a>
             <span>/</span>
             <span className="text-[#38BDF8] truncate max-w-[200px] sm:max-w-xs">{post.categoryLabel}</span>
@@ -165,11 +255,11 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug, onOpenAuditMod
 
           {/* Back Button */}
           <button
-            onClick={() => navigateTo('/blog')}
+            onClick={() => navigateTo(blogListUrl)}
             className="inline-flex items-center gap-2 text-xs font-mono text-gray-400 hover:text-white mb-6 group cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
-            <span>Volver a todos los artículos</span>
+            <span>{uiStrings.backToAll}</span>
           </button>
 
           {/* Category & Metadata */}
@@ -182,7 +272,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug, onOpenAuditMod
               <div className="flex items-center gap-3 text-xs text-gray-400 font-mono">
                 <span className="flex items-center gap-1">
                   <Calendar className="w-3.5 h-3.5 text-gray-500" />
-                  {new Date(post.publishedAt).toLocaleDateString('es-ES', {
+                  {new Date(post.publishedAt).toLocaleDateString(uiStrings.dateFormatLocale, {
                     day: 'numeric',
                     month: 'long',
                     year: 'numeric'
@@ -191,7 +281,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug, onOpenAuditMod
                 <span>•</span>
                 <span className="flex items-center gap-1">
                   <Clock className="w-3.5 h-3.5 text-gray-500" />
-                  {post.readingTimeMinutes} min de lectura
+                  {post.readingTimeMinutes} {uiStrings.minRead}
                 </span>
               </div>
             </div>
@@ -223,33 +313,33 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug, onOpenAuditMod
                 </div>
               </div>
 
-              {/* Social share mini */}
+              {/* Social share buttons */}
               <div className="flex items-center gap-1 sm:gap-2">
                 <button
                   onClick={() => handleShare('whatsapp')}
-                  title="Compartir en WhatsApp"
-                  className="p-2 rounded-lg bg-[#131B33] hover:bg-emerald-950/60 text-gray-400 hover:text-emerald-400 transition-colors"
+                  title={uiStrings.shareWhatsApp}
+                  className="p-2 rounded-lg bg-[#131B33] hover:bg-emerald-950/60 text-gray-400 hover:text-emerald-400 transition-colors cursor-pointer"
                 >
                   <MessageCircle className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => handleShare('linkedin')}
-                  title="Compartir en LinkedIn"
-                  className="p-2 rounded-lg bg-[#131B33] hover:bg-blue-950/60 text-gray-400 hover:text-blue-400 transition-colors"
+                  title={uiStrings.shareLinkedIn}
+                  className="p-2 rounded-lg bg-[#131B33] hover:bg-blue-950/60 text-gray-400 hover:text-blue-400 transition-colors cursor-pointer"
                 >
                   <Linkedin className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => handleShare('twitter')}
-                  title="Compartir en X / Twitter"
-                  className="p-2 rounded-lg bg-[#131B33] hover:bg-sky-950/60 text-gray-400 hover:text-sky-400 transition-colors"
+                  title={uiStrings.shareTwitter}
+                  className="p-2 rounded-lg bg-[#131B33] hover:bg-sky-950/60 text-gray-400 hover:text-sky-400 transition-colors cursor-pointer"
                 >
                   <Twitter className="w-4 h-4" />
                 </button>
                 <button
                   onClick={handleCopyLink}
-                  title="Copiar enlace"
-                  className="p-2 rounded-lg bg-[#131B33] hover:bg-[#1E293B] text-gray-400 hover:text-white transition-colors"
+                  title={copied ? uiStrings.linkCopied : uiStrings.copyLink}
+                  className="p-2 rounded-lg bg-[#131B33] hover:bg-[#1E293B] text-gray-400 hover:text-white transition-colors cursor-pointer"
                 >
                   {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Link2 className="w-4 h-4" />}
                 </button>
@@ -276,7 +366,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug, onOpenAuditMod
 
           {/* Tags */}
           <div className="mt-12 pt-6 border-t border-gray-800 flex flex-wrap items-center gap-2">
-            <span className="text-xs font-mono text-gray-500 mr-2">Etiquetas:</span>
+            <span className="text-xs font-mono text-gray-500 mr-2">{uiStrings.tagsLabel}</span>
             {post.tags.map((tag) => (
               <span
                 key={tag}
@@ -292,13 +382,13 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug, onOpenAuditMod
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-[#F5A623] text-xs font-mono font-bold uppercase tracking-wider">
                 <BookmarkCheck className="w-4 h-4" />
-                <span>Paso a la acción recomendado por Dexvoi</span>
+                <span>{uiStrings.ctaEyebrow}</span>
               </div>
               <h3 className="text-lg sm:text-xl font-bold text-white">
-                ¿Quieres implementar esta solución en tu negocio?
+                {uiStrings.ctaTitle}
               </h3>
               <p className="text-xs sm:text-sm text-gray-300 max-w-lg">
-                Nuestros ingenieros analizan tu infraestructura, posicionamiento local y protocolos de blindaje de forma personalizada.
+                {uiStrings.ctaDesc}
               </p>
             </div>
 
@@ -307,7 +397,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug, onOpenAuditMod
                 onClick={onOpenAuditModal}
                 className="metallic-btn px-5 py-3 rounded-xl font-mono text-xs uppercase font-bold flex items-center justify-center gap-2 shadow-lg cursor-pointer whitespace-nowrap"
               >
-                <span>Diagnóstico Gratuito</span>
+                <span>{uiStrings.ctaBtn}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -317,35 +407,38 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug, onOpenAuditMod
           {relatedPosts.length > 0 && (
             <div className="mt-16 pt-12 border-t border-gray-800">
               <h3 className="text-xl font-bold text-white mb-6 font-mono">
-                Artículos Relacionados
+                {uiStrings.relatedTitle}
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {relatedPosts.map((rel) => (
-                  <div
-                    key={rel.id}
-                    onClick={() => navigateTo(`/blog/${rel.slug}`)}
-                    className="p-4 rounded-xl bg-[#0D1426] border border-gray-800 hover:border-[#0066FF]/40 transition-all cursor-pointer group space-y-3"
-                  >
-                    <div className="h-32 rounded-lg overflow-hidden relative bg-gray-900">
-                      <img
-                        src={rel.featuredImage}
-                        alt={rel.title}
-                        referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                      />
+                {relatedPosts.map((rel) => {
+                  const relLink = getLocalizedPath('blog-post', language, rel.slug);
+                  return (
+                    <div
+                      key={rel.id}
+                      onClick={() => navigateTo(relLink)}
+                      className="p-4 rounded-xl bg-[#0D1426] border border-gray-800 hover:border-[#0066FF]/40 transition-all cursor-pointer group space-y-3"
+                    >
+                      <div className="h-32 rounded-lg overflow-hidden relative bg-gray-900">
+                        <img
+                          src={rel.featuredImage}
+                          alt={rel.title}
+                          referrerPolicy="no-referrer"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                      </div>
+                      <div className="text-[11px] font-mono text-[#38BDF8] uppercase font-bold">
+                        {rel.categoryLabel}
+                      </div>
+                      <h4 className="text-sm font-bold text-white group-hover:text-[#38BDF8] transition-colors line-clamp-2">
+                        {rel.title}
+                      </h4>
+                      <p className="text-xs text-gray-400 line-clamp-2">
+                        {rel.excerpt}
+                      </p>
                     </div>
-                    <div className="text-[11px] font-mono text-[#38BDF8] uppercase font-bold">
-                      {rel.categoryLabel}
-                    </div>
-                    <h4 className="text-sm font-bold text-white group-hover:text-[#38BDF8] transition-colors line-clamp-2">
-                      {rel.title}
-                    </h4>
-                    <p className="text-xs text-gray-400 line-clamp-2">
-                      {rel.excerpt}
-                    </p>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}

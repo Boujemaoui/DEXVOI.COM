@@ -9,6 +9,9 @@ import { Footer } from '../components/Footer';
 import { getPublishedPosts, getScheduledPosts, saveCustomPost } from '../data/blogPosts';
 import { BlogPost, BlogCategory } from '../types/blog';
 import { navigateTo } from '../utils/navigation';
+import { useLanguage } from '../i18n/LanguageContext';
+import { getLocalizedPost } from '../utils/blogLocalization';
+import { getLocalizedPath } from '../utils/seoMultilingual';
 
 interface BlogPageProps {
   onNavigateHome: () => void;
@@ -16,6 +19,7 @@ interface BlogPageProps {
 }
 
 export const BlogPage: React.FC<BlogPageProps> = ({ onOpenAuditModal }) => {
+  const { language } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState<BlogCategory>('todos');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'published' | 'queue'>('published');
@@ -36,9 +40,14 @@ export const BlogPage: React.FC<BlogPageProps> = ({ onOpenAuditModal }) => {
     );
   }, []);
 
-  // Fetch posts
-  const publishedPosts = useMemo(() => getPublishedPosts(), [isGenerating]);
-  const scheduledPosts = useMemo(() => getScheduledPosts(), [isGenerating]);
+  // Fetch raw posts and localize them based on current language
+  const publishedPosts = useMemo(() => {
+    return getPublishedPosts().map(post => getLocalizedPost(post, language));
+  }, [isGenerating, language]);
+
+  const scheduledPosts = useMemo(() => {
+    return getScheduledPosts().map(post => getLocalizedPost(post, language));
+  }, [isGenerating, language]);
 
   // Filter posts
   const filteredPosts = useMemo(() => {
@@ -61,81 +70,44 @@ export const BlogPage: React.FC<BlogPageProps> = ({ onOpenAuditModal }) => {
     setGenerationError(null);
 
     try {
-      const topics = [
-        {
-          topic: 'Cabeceras HTTP de Seguridad para Clínicas y Restaurantes: HSTS, CSP y Permissions-Policy',
-          category: 'ciberseguridad' as const,
-          categoryLabel: 'Ciberseguridad & Compliance',
-          tags: ['Cabeceras HTTP', 'HSTS', 'CSP', 'Seguridad Web']
-        },
-        {
-          topic: 'Cómo evitar reseñas falsas y sabotaje de reputación en Google Maps para Alta Gastronomía',
-          category: 'seo-local' as const,
-          categoryLabel: 'SEO Local & Google Maps',
-          tags: ['Reputación Digital', 'Google Maps', 'Reseñas', 'SEO']
-        },
-        {
-          topic: 'Core Web Vitals INP y LCP en 2026: Cómo Dexvoi logra tiempos de carga bajo 300ms',
-          category: 'arquitectura-web' as const,
-          categoryLabel: 'Arquitectura Web & Rendimiento',
-          tags: ['Core Web Vitals', 'INP', 'LCP', 'Jamstack']
-        },
-        {
-          topic: 'Agentes de IA y Chatbots con Cero Latencia: Automatización de Citas sin Intermediarios',
-          category: 'ia-reservas' as const,
-          categoryLabel: 'IA & Automatización',
-          tags: ['IA Conversacional', 'Chatbots', 'Reservas', 'Automatización']
-        }
-      ];
-
-      // Pick a random topic or ask server
-      const selectedTopic = topics[Math.floor(Math.random() * topics.length)];
-
-      const res = await fetch('/api/blog/generate', {
+      const response = await fetch('/api/admin/generate-blog-post', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          topic: selectedTopic.topic,
-          category: selectedTopic.category
-        })
+        body: JSON.stringify({ autoPublish: true })
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        if (data.post) {
-          saveCustomPost(data.post);
-          setGenerationSuccess(`¡Artículo generado y publicado con éxito! "${data.post.title}"`);
-          return;
-        }
+      if (response.ok) {
+        const data = await response.json();
+        setGenerationSuccess(`¡Artículo generado y publicado con éxito! "${data.post?.title || 'Nuevo Post'}"`);
+        return;
       }
 
-      // Client-side fallback if server offline
-      const timestamp = new Date().toISOString();
-      const slug = `${selectedTopic.category}-${Date.now()}`;
+      // Fallback local generator simulation if server endpoint is offline
+      const timestamp = Date.now();
       const fallbackPost: BlogPost = {
-        id: `ai-post-${Date.now()}`,
-        slug,
-        title: selectedTopic.topic,
-        excerpt: `Análisis técnico detallado y recomendaciones prácticas redactadas por la IA de Dexvoi sobre ${selectedTopic.topic.toLowerCase()}.`,
-        category: selectedTopic.category,
-        categoryLabel: selectedTopic.categoryLabel,
-        tags: selectedTopic.tags,
+        id: `post-local-${timestamp}`,
+        slug: `estrategias-ciberseguridad-dexvoi-${timestamp}`,
+        title: `Blindaje Digital 2026: Diagnóstico de Seguridad e Infraestructura para Empresas`,
+        excerpt: `Análisis exhaustivo de vulnerabilidades perimetrales, cabeceras HTTP y protección contra ataques en entornos de alto tráfico.`,
+        category: 'ciberseguridad',
+        categoryLabel: 'Ciberseguridad',
+        tags: ['Blindaje Digital', 'Cabeceras HTTP', 'Seguridad Web', 'Dexvoi'],
         author: {
-          name: 'Dexvoi Intelligence Agent',
-          role: 'Motor Autónomo de Análisis & SEO',
-          badge: 'AI Autonomous Publisher'
+          name: 'Dexvoi Intelligence Team',
+          role: 'Especialistas en Blindaje & Rendimiento Digital',
+          badge: 'Verified Lead'
         },
-        publishedAt: timestamp,
+        publishedAt: new Date().toISOString(),
         readingTimeMinutes: 5,
-        featuredImage: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&q=80',
-        metaDescription: `Descubre todo sobre ${selectedTopic.topic.toLowerCase()} en esta guía técnica de Dexvoi.`,
-        keywords: selectedTopic.tags,
+        featuredImage: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80',
+        metaDescription: `Análisis exhaustivo de vulnerabilidades perimetrales, cabeceras HTTP y protección contra ataques en entornos de alto tráfico.`,
+        keywords: ['Ciberseguridad', 'Auditoría OSINT', 'Blindaje Web'],
         targetServiceUrl: '/auditoria-seguridad',
-        targetServiceLabel: 'Solicitar Diagnóstico Técnico Relacionado',
+        targetServiceLabel: 'Solicitar Diagnóstico Especializado',
         content: `
-## Introducción y Contexto Estratégico
+## Seguridad Proactiva y Blindaje Perimetral en 2026
 
-En un mercado digital hipercompetitivo, dominar los aspectos fundamentales de la infraestructura tecnológica ya no es opcional. Las empresas de servicios de alto valor (como clínicas y restaurantes) deben priorizar la excelencia en seguridad, velocidad y posicionamiento orgánico.
+En el entorno digital actual, las empresas no pueden permitirse brechas de seguridad ni caídas de servicio. La protección de los datos de clientes e historiales requiere una arquitectura web sólida y encriptación de nivel bancario.
 
 ---
 
@@ -167,12 +139,92 @@ Muchos negocios cometen el error de confiar en soluciones genéricas o plantilla
     }
   };
 
+  // UI Strings according to language
+  const ui = useMemo(() => {
+    if (language === 'fr') {
+      return {
+        badge: 'Intelligence Technologique & Cybersécurité',
+        titlePart1: 'Architecture Web, SEO Local et',
+        titleHighlight: 'Protection de Sécurité',
+        subtitle: 'Guides techniques, analyses forensiques et stratégies de haute précision conçues pour directeurs de cliniques privées, restaurants gastronomiques et entreprises d\'élite.',
+        tabPublished: 'Publiés',
+        tabQueue: 'File d\'attente éditoriale',
+        searchPlaceholder: 'Rechercher par mot-clé, sujet ou technologie...',
+        allArticles: 'Tous les Articles',
+        catCyber: 'Cybersécurité',
+        catSeo: 'SEO Local',
+        catWeb: 'Architecture Web',
+        catAi: 'IA & Réservations',
+        noArticlesTitle: 'Aucun article trouvé',
+        noArticlesDesc: 'Essayez un autre mot-clé ou sélectionnez une autre catégorie.',
+        readMore: 'Lire',
+        minRead: 'min de lecture',
+        scheduledBadge: 'Programmé',
+        dateLocale: 'fr-FR',
+        ctaBottomTitle: 'Votre infrastructure respecte-t-elle les standards de sécurité et de SEO 2026 ?',
+        ctaBottomDesc: 'Nous réalisons un diagnostic périmétrique en 5 points sans engagement. Vérifiez en-têtes HTTP, vulnérabilités OSINT et positionnement Google Maps.',
+        ctaBottomBtn: 'Demander un Diagnostic Gratuit',
+        ctaBottomScanner: 'Voir Scanner OSINT Périmétrique'
+      };
+    }
+    if (language === 'en') {
+      return {
+        badge: 'Technological Intelligence & Cybersecurity',
+        titlePart1: 'Web Architecture, Local SEO and',
+        titleHighlight: 'Security Hardening',
+        subtitle: 'Technical white papers, forensic audits, and high-impact digital roadmaps designed for clinic directors, Michelin-caliber restaurants, and elite enterprises.',
+        tabPublished: 'Published',
+        tabQueue: 'Editorial Queue',
+        searchPlaceholder: 'Search by keyword, topic, or technology...',
+        allArticles: 'All Articles',
+        catCyber: 'Cybersecurity',
+        catSeo: 'Local SEO',
+        catWeb: 'Web Architecture',
+        catAi: 'AI & Bookings',
+        noArticlesTitle: 'No articles found',
+        noArticlesDesc: 'Try another search query or select a different category.',
+        readMore: 'Read',
+        minRead: 'min read',
+        scheduledBadge: 'Scheduled',
+        dateLocale: 'en-US',
+        ctaBottomTitle: 'Does your web platform meet 2026 security & SEO benchmarks?',
+        ctaBottomDesc: 'We perform a non-intrusive 5-point perimeter diagnosis. Verify HTTP headers, OSINT vulnerabilities, and Google Maps visibility.',
+        ctaBottomBtn: 'Request Free Technical Diagnosis',
+        ctaBottomScanner: 'View Perimeter OSINT Scanner'
+      };
+    }
+    return {
+      badge: 'Inteligencia Tecnológica & Ciberseguridad',
+      titlePart1: 'Arquitectura Web, SEO Local y',
+      titleHighlight: 'Blindaje de Seguridad',
+      subtitle: 'Guías técnicas, análisis forenses y estrategias de alto impacto diseñadas para directores de clínicas médicas, restaurantes de élite y empresas de servicios premium.',
+      tabPublished: 'Publicados',
+      tabQueue: 'Cola Editorial',
+      searchPlaceholder: 'Buscar por palabra clave, temática o tecnología...',
+      allArticles: 'Todos los Artículos',
+      catCyber: 'Ciberseguridad',
+      catSeo: 'SEO Local',
+      catWeb: 'Arquitectura Web',
+      catAi: 'IA & Reservas',
+      noArticlesTitle: 'No se encontraron artículos',
+      noArticlesDesc: 'Intenta con otra búsqueda o selecciona otra categoría temática.',
+      readMore: 'Leer',
+      minRead: 'min de lectura',
+      scheduledBadge: 'Programado',
+      dateLocale: 'es-ES',
+      ctaBottomTitle: '¿Tu web cumple con los estándares de seguridad y SEO de 2026?',
+      ctaBottomDesc: 'Realizamos un diagnóstico perimetral de 5 puntos sin compromiso. Comprueba cabeceras HTTP, vulnerabilidades OSINT y puntuación en Google Maps.',
+      ctaBottomBtn: 'Solicitar Diagnóstico Gratuito',
+      ctaBottomScanner: 'Ver Scanner OSINT Perimetral'
+    };
+  }, [language]);
+
   const categories: { key: BlogCategory; label: string; icon: React.ReactNode }[] = [
-    { key: 'todos', label: 'Todos los Artículos', icon: <Layers className="w-4 h-4" /> },
-    { key: 'ciberseguridad', label: 'Ciberseguridad', icon: <Shield className="w-4 h-4 text-emerald-400" /> },
-    { key: 'seo-local', label: 'SEO Local', icon: <TrendingUp className="w-4 h-4 text-[#F5A623]" /> },
-    { key: 'arquitectura-web', label: 'Arquitectura Web', icon: <Cpu className="w-4 h-4 text-[#0066FF]" /> },
-    { key: 'ia-reservas', label: 'IA & Reservas', icon: <Bot className="w-4 h-4 text-purple-400" /> }
+    { key: 'todos', label: ui.allArticles, icon: <Layers className="w-4 h-4" /> },
+    { key: 'ciberseguridad', label: ui.catCyber, icon: <Shield className="w-4 h-4 text-emerald-400" /> },
+    { key: 'seo-local', label: ui.catSeo, icon: <TrendingUp className="w-4 h-4 text-[#F5A623]" /> },
+    { key: 'arquitectura-web', label: ui.catWeb, icon: <Cpu className="w-4 h-4 text-[#0066FF]" /> },
+    { key: 'ia-reservas', label: ui.catAi, icon: <Bot className="w-4 h-4 text-purple-400" /> }
   ];
 
   return (
@@ -183,19 +235,19 @@ Muchos negocios cometen el error de confiar en soluciones genéricas o plantilla
         {/* Header / Hero */}
         <div className="text-center max-w-3xl mx-auto space-y-4 mb-12">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0066FF]/10 border border-[#0066FF]/30 text-[#0066FF] font-mono text-xs uppercase tracking-wider">
-            <BookOpen className="w-3.5 h-3.5" />
-            <span>Dexvoi Knowledge Base & Blog</span>
+            <BookOpen className="w-4 h-4 text-[#F5A623]" />
+            <span>{ui.badge}</span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
-            Arquitectura Web, SEO Local y <br className="hidden sm:inline" />
+            {ui.titlePart1} <br className="hidden sm:inline" />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0066FF] via-[#38BDF8] to-[#F5A623]">
-              Blindaje de Seguridad
+              {ui.titleHighlight}
             </span>
           </h1>
 
           <p className="text-gray-400 text-base sm:text-lg leading-relaxed">
-            Guías técnicas, análisis forenses y estrategias de alto impacto diseñadas para directores de clínicas médicas, restaurantes de élite y empresas de servicios premium.
+            {ui.subtitle}
           </p>
         </div>
 
@@ -251,72 +303,58 @@ Muchos negocios cometen el error de confiar en soluciones genéricas o plantilla
           </div>
         )}
 
-        {/* Navigation Bar / Tabs */}
-        {isAiStudio ? (
-          <div className="flex items-center justify-between border-b border-gray-800 pb-4 mb-8">
-            <div className="flex items-center gap-4 text-sm font-mono">
+        {/* Filters and Search Bar */}
+        <div className="space-y-6 mb-10">
+          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+            
+            {/* View Mode: Published vs Editorial Queue */}
+            <div className="flex items-center p-1 rounded-xl bg-[#0D1426] border border-gray-800 self-start">
               <button
                 onClick={() => setActiveTab('published')}
-                className={`pb-2 transition-colors relative cursor-pointer ${
-                  activeTab === 'published' ? 'text-[#0066FF] font-bold' : 'text-gray-400 hover:text-white'
+                className={`px-4 py-2 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
+                  activeTab === 'published'
+                    ? 'bg-[#0066FF] text-white shadow'
+                    : 'text-gray-400 hover:text-white'
                 }`}
               >
-                Artículos en Vivo ({publishedPosts.length})
-                {activeTab === 'published' && (
-                  <div className="absolute bottom-[-17px] left-0 w-full h-[2px] bg-[#0066FF]"></div>
-                )}
+                {ui.tabPublished} ({publishedPosts.length})
               </button>
               <button
                 onClick={() => setActiveTab('queue')}
-                className={`pb-2 transition-colors relative cursor-pointer ${
-                  activeTab === 'queue' ? 'text-[#F5A623] font-bold' : 'text-gray-400 hover:text-white'
+                className={`px-4 py-2 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  activeTab === 'queue'
+                    ? 'bg-[#0066FF] text-white shadow'
+                    : 'text-gray-400 hover:text-white'
                 }`}
               >
-                Cola de Publicación Programada ({scheduledPosts.length})
-                {activeTab === 'queue' && (
-                  <div className="absolute bottom-[-17px] left-0 w-full h-[2px] bg-[#F5A623]"></div>
-                )}
+                <Clock className="w-3 h-3 text-[#F5A623]" />
+                <span>{ui.tabQueue}</span>
+                <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-[#F5A623]/20 text-[#F5A623] border border-[#F5A623]/30">
+                  {scheduledPosts.length}
+                </span>
               </button>
             </div>
 
-            <div className="text-xs font-mono text-gray-500 hidden sm:block">
-              {filteredPosts.length} {filteredPosts.length === 1 ? 'artículo' : 'artículos'} encontrados
+            {/* Search Input */}
+            <div className="relative w-full md:w-80">
+              <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={ui.searchPlaceholder}
+                className="w-full bg-[#0D1426] border border-gray-800 rounded-xl pl-10 pr-4 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#0066FF] transition-colors"
+              />
             </div>
-          </div>
-        ) : (
-          <div className="flex items-center justify-between border-b border-gray-800 pb-4 mb-8">
-            <div className="text-sm font-mono text-gray-300 font-semibold flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#0066FF]"></span>
-              <span>Artículos de Inteligencia Técnica ({publishedPosts.length})</span>
-            </div>
-            <div className="text-xs font-mono text-gray-500 hidden sm:block">
-              {filteredPosts.length} {filteredPosts.length === 1 ? 'artículo' : 'artículos'} disponibles
-            </div>
-          </div>
-        )}
-
-        {/* Search & Categories */}
-        <div className="space-y-4 mb-10">
-          {/* Search Bar */}
-          <div className="relative max-w-xl">
-            <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Buscar por palabra clave, temática o etiqueta (ej. RGPD, Google Maps, Jamstack)..."
-              className="w-full bg-[#131B33]/60 border border-gray-800 focus:border-[#0066FF] rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none transition-colors"
-            >
-            </input>
           </div>
 
-          {/* Categories Buttons */}
-          <div className="flex flex-wrap items-center gap-2">
+          {/* Category Chips */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
             {categories.map((cat) => (
               <button
                 key={cat.key}
                 onClick={() => setSelectedCategory(cat.key)}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2 transition-all cursor-pointer ${
+                className={`px-4 py-2 rounded-xl text-xs font-mono font-medium whitespace-nowrap flex items-center gap-2 transition-all cursor-pointer ${
                   selectedCategory === cat.key
                     ? 'bg-[#0066FF] text-white shadow-lg shadow-[#0066FF]/20 border border-[#0066FF]'
                     : 'bg-[#131B33]/60 text-gray-400 hover:text-white border border-gray-800 hover:border-gray-700'
@@ -333,97 +371,100 @@ Muchos negocios cometen el error de confiar en soluciones genéricas o plantilla
         {filteredPosts.length === 0 ? (
           <div className="text-center py-16 px-4 rounded-2xl bg-[#131B33]/30 border border-gray-800 space-y-3">
             <BookOpen className="w-10 h-10 text-gray-500 mx-auto" />
-            <h3 className="text-lg font-bold text-white">No se encontraron artículos</h3>
+            <h3 className="text-lg font-bold text-white">{ui.noArticlesTitle}</h3>
             <p className="text-sm text-gray-400 max-w-md mx-auto">
-              Intenta con otra búsqueda o selecciona otra categoría temática.
+              {ui.noArticlesDesc}
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredPosts.map((post) => (
-              <article
-                key={post.id}
-                onClick={() => navigateTo(`/blog/${post.slug}`)}
-                className="group flex flex-col rounded-2xl bg-[#0D1426] border border-gray-800 hover:border-[#0066FF]/50 transition-all duration-300 overflow-hidden cursor-pointer hover:shadow-[0_0_30px_rgba(0,102,255,0.15)] hover:-translate-y-1"
-              >
-                {/* Image */}
-                <div className="h-48 w-full relative overflow-hidden bg-gray-900">
-                  <img
-                    src={post.featuredImage}
-                    alt={post.title}
-                    referrerPolicy="no-referrer"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0D1426] via-transparent to-black/30"></div>
+            {filteredPosts.map((post) => {
+              const postPath = getLocalizedPath('blog-post', language, post.slug);
+              return (
+                <article
+                  key={post.id}
+                  onClick={() => navigateTo(postPath)}
+                  className="group flex flex-col rounded-2xl bg-[#0D1426] border border-gray-800 hover:border-[#0066FF]/50 transition-all duration-300 overflow-hidden cursor-pointer hover:shadow-[0_0_30px_rgba(0,102,255,0.15)] hover:-translate-y-1"
+                >
+                  {/* Image */}
+                  <div className="h-48 w-full relative overflow-hidden bg-gray-900">
+                    <img
+                      src={post.featuredImage}
+                      alt={post.title}
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0D1426] via-transparent to-black/30"></div>
 
-                  <div className="absolute top-3 left-3">
-                    <span className="px-2.5 py-1 rounded-md text-[11px] font-mono font-bold uppercase tracking-wider bg-[#0A0F1F]/80 backdrop-blur-md border border-white/10 text-[#38BDF8]">
-                      {post.categoryLabel}
-                    </span>
-                  </div>
-
-                  {activeTab === 'queue' && (
-                    <div className="absolute top-3 right-3">
-                      <span className="px-2 py-1 rounded-md text-[10px] font-mono font-bold bg-[#F5A623]/20 border border-[#F5A623]/40 text-[#F5A623] backdrop-blur-sm flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        Programado
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Content Body */}
-                <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
-                  <div className="space-y-2">
-                    {/* Meta info */}
-                    <div className="flex items-center gap-3 text-xs text-gray-400 font-mono">
-                      <span className="flex items-center gap-1">
-                        <Calendar className="w-3.5 h-3.5 text-gray-500" />
-                        {new Date(post.publishedAt).toLocaleDateString('es-ES', {
-                          day: '2-digit',
-                          month: 'short',
-                          year: 'numeric'
-                        })}
-                      </span>
-                      <span>•</span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5 text-gray-500" />
-                        {post.readingTimeMinutes} min de lectura
+                    <div className="absolute top-3 left-3">
+                      <span className="px-2.5 py-1 rounded-md text-[11px] font-mono font-bold uppercase tracking-wider bg-[#0A0F1F]/80 backdrop-blur-md border border-white/10 text-[#38BDF8]">
+                        {post.categoryLabel}
                       </span>
                     </div>
 
-                    {/* Title */}
-                    <h2 className="text-lg font-bold text-white group-hover:text-[#38BDF8] transition-colors line-clamp-2 leading-snug">
-                      {post.title}
-                    </h2>
-
-                    {/* Excerpt */}
-                    <p className="text-xs text-gray-400 line-clamp-3 leading-relaxed">
-                      {post.excerpt}
-                    </p>
-                  </div>
-
-                  {/* Tags & Action Link */}
-                  <div className="pt-3 border-t border-gray-800/80 flex items-center justify-between">
-                    <div className="flex flex-wrap gap-1.5">
-                      {post.tags.slice(0, 2).map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-2 py-0.5 rounded text-[10px] font-mono bg-[#1E293B] text-gray-300"
-                        >
-                          #{tag}
+                    {activeTab === 'queue' && (
+                      <div className="absolute top-3 right-3">
+                        <span className="px-2 py-1 rounded-md text-[10px] font-mono font-bold bg-[#F5A623]/20 border border-[#F5A623]/40 text-[#F5A623] backdrop-blur-sm flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {ui.scheduledBadge}
                         </span>
-                      ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Content Container */}
+                  <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                    <div className="space-y-2">
+                      {/* Meta Info */}
+                      <div className="flex items-center gap-3 text-xs text-gray-400 font-mono">
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-3.5 h-3.5 text-gray-500" />
+                          {new Date(post.publishedAt).toLocaleDateString(ui.dateLocale, {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric'
+                          })}
+                        </span>
+                        <span>•</span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3.5 h-3.5 text-gray-500" />
+                          {post.readingTimeMinutes} {ui.minRead}
+                        </span>
+                      </div>
+
+                      {/* Title */}
+                      <h2 className="text-lg font-bold text-white group-hover:text-[#38BDF8] transition-colors line-clamp-2 leading-snug">
+                        {post.title}
+                      </h2>
+
+                      {/* Excerpt */}
+                      <p className="text-xs text-gray-400 line-clamp-3 leading-relaxed">
+                        {post.excerpt}
+                      </p>
                     </div>
 
-                    <span className="text-xs font-mono font-bold text-[#0066FF] group-hover:text-white flex items-center gap-1 transition-colors">
-                      Leer <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                    </span>
+                    {/* Tags & Action Link */}
+                    <div className="pt-3 border-t border-gray-800/80 flex items-center justify-between">
+                      <div className="flex flex-wrap gap-1.5">
+                        {post.tags.slice(0, 2).map((tag) => (
+                          <span
+                            key={tag}
+                            className="px-2 py-0.5 rounded text-[10px] font-mono bg-[#1E293B] text-gray-300"
+                          >
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      <span className="text-xs font-mono font-bold text-[#0066FF] group-hover:text-white flex items-center gap-1 transition-colors">
+                        {ui.readMore} <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         )}
 
@@ -434,11 +475,11 @@ Muchos negocios cometen el error de confiar en soluciones genéricas o plantilla
           </div>
 
           <h3 className="text-2xl font-extrabold text-white">
-            ¿Tu web cumple con los estándares de seguridad y SEO de 2026?
+            {ui.ctaBottomTitle}
           </h3>
 
           <p className="text-sm text-gray-300 max-w-xl mx-auto leading-relaxed">
-            Realizamos un diagnóstico perimetral de 5 puntos sin compromiso. Comprueba cabeceras HTTP, vulnerabilidades OSINT y puntuación en Google Maps.
+            {ui.ctaBottomDesc}
           </p>
 
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -447,17 +488,17 @@ Muchos negocios cometen el error de confiar en soluciones genéricas o plantilla
               className="metallic-btn px-6 py-3 rounded-xl font-mono text-xs uppercase font-bold tracking-wider flex items-center gap-2 cursor-pointer shadow-lg"
             >
               <Shield className="w-4 h-4 text-[#F5A623]" />
-              <span>Solicitar Diagnóstico Gratuito</span>
+              <span>{ui.ctaBottomBtn}</span>
             </button>
             <a
-              href="/auditoria-seguridad"
+              href={getLocalizedPath('security', language)}
               onClick={(e) => {
                 e.preventDefault();
-                navigateTo('/auditoria-seguridad');
+                navigateTo(getLocalizedPath('security', language));
               }}
               className="px-6 py-3 rounded-xl border border-gray-700 hover:border-white text-gray-300 hover:text-white font-mono text-xs uppercase tracking-wider flex items-center gap-2 transition-colors"
             >
-              <span>Ver Scanner OSINT Perimetral</span>
+              <span>{ui.ctaBottomScanner}</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
           </div>
