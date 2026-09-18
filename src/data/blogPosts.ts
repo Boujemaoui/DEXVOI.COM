@@ -1,4 +1,5 @@
 import { BlogPost } from '../types/blog';
+import { BLOG_POST_SLUGS, BLOG_POST_TRANSLATIONS } from './blogTranslations';
 
 export const INITIAL_BLOG_POSTS: BlogPost[] = [
   {
@@ -411,19 +412,55 @@ export function getScheduledPosts(): BlogPost[] {
 }
 
 /**
- * Finds a blog post by its URL slug
+ * Finds a blog post by its URL slug across Spanish, French, or English
  */
 export function getPostBySlug(slug: string): BlogPost | undefined {
+  if (!slug) return undefined;
   const clean = slug.toLowerCase().trim();
-  return getAllPosts().find(p => p.slug.toLowerCase() === clean);
+  const all = getAllPosts();
+
+  // 1. Direct match with canonical post slug
+  const direct = all.find(p => p.slug.toLowerCase() === clean);
+  if (direct) return direct;
+
+  // 2. Lookup in BLOG_POST_SLUGS mapping (es, fr, en)
+  for (const [canonicalKey, mapping] of Object.entries(BLOG_POST_SLUGS)) {
+    if (
+      mapping.es.toLowerCase() === clean ||
+      mapping.fr.toLowerCase() === clean ||
+      mapping.en.toLowerCase() === clean
+    ) {
+      const match = all.find(p => p.slug.toLowerCase() === canonicalKey.toLowerCase() || p.id === canonicalKey);
+      if (match) return match;
+    }
+  }
+
+  // 3. Fallback check inside post inline translations or BLOG_POST_TRANSLATIONS dictionary
+  return all.find(p => {
+    if (p.translations) {
+      if (p.translations.fr?.slug?.toLowerCase() === clean) return true;
+      if (p.translations.en?.slug?.toLowerCase() === clean) return true;
+      if (p.translations.es?.slug?.toLowerCase() === clean) return true;
+    }
+    const dict = BLOG_POST_TRANSLATIONS[p.slug];
+    if (dict) {
+      if (dict.fr?.slug?.toLowerCase() === clean) return true;
+      if (dict.en?.slug?.toLowerCase() === clean) return true;
+    }
+    return false;
+  });
 }
 
 /**
- * Gets related posts from the same category or tags
+ * Gets related posts from the same category or tags, excluding the active post
  */
 export function getRelatedPosts(currentSlug: string, category: string, limit = 3): BlogPost[] {
+  const currentPost = getPostBySlug(currentSlug);
+  const currentId = currentPost?.id;
+  const cleanSlug = currentSlug.toLowerCase().trim();
+
   return getPublishedPosts()
-    .filter(p => p.slug !== currentSlug)
+    .filter(p => (currentId ? p.id !== currentId : true) && p.slug.toLowerCase() !== cleanSlug)
     .filter(p => p.category === category || p.tags.some(t => t.toLowerCase().includes('ciberseguridad') || t.toLowerCase().includes('seo')))
     .slice(0, limit);
 }

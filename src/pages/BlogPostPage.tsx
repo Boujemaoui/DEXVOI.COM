@@ -414,10 +414,11 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug, onOpenAuditMod
                 {relatedPosts.map((rel) => {
                   const relLink = getLocalizedPath('blog-post', language, rel.slug);
                   return (
-                    <div
+                    <a
                       key={rel.id}
-                      onClick={() => navigateTo(relLink)}
-                      className="p-4 rounded-xl bg-[#0D1426] border border-gray-800 hover:border-[#0066FF]/40 transition-all cursor-pointer group space-y-3"
+                      href={relLink}
+                      onClick={(e) => { e.preventDefault(); navigateTo(relLink); }}
+                      className="p-4 rounded-xl bg-[#0D1426] border border-gray-800 hover:border-[#0066FF]/40 transition-all cursor-pointer group space-y-3 block"
                     >
                       <div className="h-32 rounded-lg overflow-hidden relative bg-gray-900">
                         <img
@@ -436,7 +437,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug, onOpenAuditMod
                       <p className="text-xs text-gray-400 line-clamp-2">
                         {rel.excerpt}
                       </p>
-                    </div>
+                    </a>
                   );
                 })}
               </div>

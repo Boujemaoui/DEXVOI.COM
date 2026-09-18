@@ -1,5 +1,6 @@
 import { Language } from '../i18n/translations';
 import { AppRoute } from './navigation';
+import { getPostSlugForLanguage } from './blogLocalization';
 
 export interface RouteLocalization {
   route: AppRoute;
@@ -238,11 +239,13 @@ export const LOCALIZED_ROUTES: Record<AppRoute, RouteLocalization> = {
 
 /**
  * Returns the localized path for a given route and language.
- * Handles blog-post slugs properly: e.g. /es/blog/mi-articulo, /fr/blog/mi-articulo
+ * Handles blog-post slugs properly, translating slugs per language:
+ * e.g. /es/blog/inteligencia-de-datos..., /fr/blog/intelligence-des-donnees..., /en/blog/data-intelligence...
  */
 export function getLocalizedPath(route: AppRoute, lang: Language, blogSlug?: string): string {
   if (route === 'blog-post' && blogSlug) {
-    return `/${lang}/blog/${blogSlug}`;
+    const localizedSlug = getPostSlugForLanguage(blogSlug, lang);
+    return `/${lang}/blog/${localizedSlug}`;
   }
   const config = LOCALIZED_ROUTES[route];
   if (!config) return `/${lang}`;

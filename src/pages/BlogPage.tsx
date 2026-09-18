@@ -381,10 +381,14 @@ Muchos negocios cometen el error de confiar en soluciones genéricas o plantilla
             {filteredPosts.map((post) => {
               const postPath = getLocalizedPath('blog-post', language, post.slug);
               return (
-                <article
+                <a
                   key={post.id}
-                  onClick={() => navigateTo(postPath)}
-                  className="group flex flex-col rounded-2xl bg-[#0D1426] border border-gray-800 hover:border-[#0066FF]/50 transition-all duration-300 overflow-hidden cursor-pointer hover:shadow-[0_0_30px_rgba(0,102,255,0.15)] hover:-translate-y-1"
+                  href={postPath}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigateTo(postPath);
+                  }}
+                  className="group flex flex-col rounded-2xl bg-[#0D1426] border border-gray-800 hover:border-[#0066FF]/50 transition-all duration-300 overflow-hidden cursor-pointer hover:shadow-[0_0_30px_rgba(0,102,255,0.15)] hover:-translate-y-1 block text-left"
                 >
                   {/* Image */}
                   <div className="h-48 w-full relative overflow-hidden bg-gray-900">
@@ -462,7 +466,7 @@ Muchos negocios cometen el error de confiar en soluciones genéricas o plantilla
                       </span>
                     </div>
                   </div>
-                </article>
+                </a>
               );
             })}
           </div>

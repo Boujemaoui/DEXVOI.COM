@@ -5,10 +5,65 @@ export interface PostTranslationDictionary {
   en: LocalizedBlogContent;
 }
 
+export interface PostSlugMapping {
+  es: string;
+  fr: string;
+  en: string;
+}
+
+export const BLOG_POST_SLUGS: Record<string, PostSlugMapping> = {
+  'inteligencia-de-datos-y-agentes-de-ia-en-motores-de-res': {
+    es: 'inteligencia-de-datos-y-agentes-de-ia-en-motores-de-res',
+    fr: 'intelligence-des-donnees-et-agents-ia-moteurs-de-reservation',
+    en: 'data-intelligence-and-ai-agents-commission-free-booking'
+  },
+  'core-web-vitals-inp-y-lcp-en-2026-como-dexvoi-logra-tie': {
+    es: 'core-web-vitals-inp-y-lcp-en-2026-como-dexvoi-logra-tie',
+    fr: 'core-web-vitals-inp-et-lcp-en-2026-chargement-sous-300ms',
+    en: 'core-web-vitals-inp-and-lcp-in-2026-load-times-under-300ms'
+  },
+  'como-evitar-resenas-falsas-y-sabotaje-de-reputacion-en': {
+    es: 'como-evitar-resenas-falsas-y-sabotaje-de-reputacion-en',
+    fr: 'comment-eviter-faux-avis-et-sabotage-reputation-google-maps',
+    en: 'how-to-prevent-fake-reviews-and-reputation-sabotage-google-maps'
+  },
+  'cabeceras-http-de-seguridad-para-clinicas-y-restaurante': {
+    es: 'cabeceras-http-de-seguridad-para-clinicas-y-restaurante',
+    fr: 'en-tetes-http-de-securite-pour-cliniques-et-restaurants',
+    en: 'security-http-headers-for-private-clinics-and-restaurants'
+  },
+  'ciberseguridad-clinicas-privadas-guia-rgpd-blindaje': {
+    es: 'ciberseguridad-clinicas-privadas-guia-rgpd-blindaje',
+    fr: 'cybersecurite-cliniques-privees-guide-rgpd-protection',
+    en: 'cybersecurity-private-clinics-gdpr-data-defense-guide'
+  },
+  'seo-local-restaurantes-google-maps-2026': {
+    es: 'seo-local-restaurantes-google-maps-2026',
+    fr: 'seo-local-restaurants-google-maps-pack-local-2026',
+    en: 'local-seo-restaurants-google-maps-local-pack-2026'
+  },
+  'por-que-wordpress-es-un-peligro-para-negocios-de-elite': {
+    es: 'por-que-wordpress-es-un-peligro-para-negocios-de-elite',
+    fr: 'pourquoi-wordpress-est-un-danger-pour-entreprises-elite',
+    en: 'why-wordpress-is-a-threat-to-elite-enterprises-clinics'
+  },
+  'auditoria-osint-que-es-y-como-previene-fugas-de-datos': {
+    es: 'auditoria-osint-que-es-y-como-previene-fugas-de-datos',
+    fr: 'audit-osint-definition-prevention-fuites-de-donnees',
+    en: 'perimeter-osint-audit-what-it-is-preventing-data-leaks'
+  },
+  'sistemas-de-reservas-con-ia-vs-plataformas-de-comision': {
+    es: 'sistemas-de-reservas-con-ia-vs-plataformas-de-comision',
+    fr: 'systemes-de-reservation-ia-vs-plateformes-de-commission',
+    en: 'proprietary-ai-booking-systems-vs-commission-platforms'
+  }
+};
+
 export const BLOG_POST_TRANSLATIONS: Record<string, PostTranslationDictionary> = {
   // 1. inteligencia-de-datos-y-agentes-de-ia-en-motores-de-res
   'inteligencia-de-datos-y-agentes-de-ia-en-motores-de-res': {
     fr: {
+      slug: 'intelligence-des-donnees-et-agents-ia-moteurs-de-reservation',
       title: "Intelligence des Données et Agents IA dans les Moteurs de Réservation Sans Commission",
       excerpt: "Pourquoi remplacer les plateformes commissionnaires par vos propres agents conversationnels IA démultiplie la marge nette des cliniques et restaurants.",
       categoryLabel: "IA & Automatisation",
@@ -39,6 +94,7 @@ En déployant un agent conversationnel d'IA propriétaire signé **Dexvoi**, vot
       `.trim()
     },
     en: {
+      slug: 'data-intelligence-and-ai-agents-commission-free-booking',
       title: "Data Intelligence and AI Agents in Commission-Free Booking Engines",
       excerpt: "Why replacing third-party commission platforms with proprietary conversational AI agents multiplies net margins for clinics and fine dining restaurants.",
       categoryLabel: "AI & Automation",
@@ -73,6 +129,7 @@ With **Dexvoi** proprietary AI booking engines, your enterprise retains 100% of 
   // 2. core-web-vitals-inp-y-lcp-en-2026-como-dexvoi-logra-tie
   'core-web-vitals-inp-y-lcp-en-2026-como-dexvoi-logra-tie': {
     fr: {
+      slug: 'core-web-vitals-inp-et-lcp-en-2026-chargement-sous-300ms',
       title: "Core Web Vitals INP et LCP en 2026 : Comment Dexvoi Atteint des Temps Sous 300ms",
       excerpt: "Comment optimiser l'Interaction to Next Paint (INP) et le Largest Contentful Paint (LCP) pour décrocher 100/100 sur Google PageSpeed.",
       categoryLabel: "Architecture Web & Performance",
@@ -103,6 +160,7 @@ Chez **Dexvoi**, nos plateformes sont conçues sur une architecture statique et 
       `.trim()
     },
     en: {
+      slug: 'core-web-vitals-inp-and-lcp-in-2026-load-times-under-300ms',
       title: "Core Web Vitals INP & LCP in 2026: How Dexvoi Delivers Sub-300ms Load Times",
       excerpt: "How to optimize Interaction to Next Paint (INP) and Largest Contentful Paint (LCP) to achieve flawless 100/100 Google PageSpeed scores.",
       categoryLabel: "Web Architecture & Performance",
@@ -137,6 +195,7 @@ At **Dexvoi**, we architect decoupled, static edge web platforms with automated 
   // 3. como-evitar-resenas-falsas-y-sabotaje-de-reputacion-en
   'como-evitar-resenas-falsas-y-sabotaje-de-reputacion-en': {
     fr: {
+      slug: 'comment-eviter-faux-avis-et-sabotage-reputation-google-maps',
       title: "Comment Éviter les Faux Avis et le Sabotage de Réputation sur Google Maps en Haute Gastronomie",
       excerpt: "Stratégies juridiques et techniques pour détecter, contester et supprimer les avis malveillants sur Google Business Profile pour restaurants étoilés.",
       categoryLabel: "SEO Local & Google Maps",
@@ -167,6 +226,7 @@ Chez **Dexvoi**, nous déployons des systèmes qui dirigent en continu les retou
       `.trim()
     },
     en: {
+      slug: 'how-to-prevent-fake-reviews-and-reputation-sabotage-google-maps',
       title: "How to Prevent Fake Reviews and Reputation Sabotage on Google Maps for Fine Dining",
       excerpt: "Legal and technical frameworks to detect, contest, and remove malicious reviews on Google Business Profile for luxury dining establishments.",
       categoryLabel: "Local SEO & Google Maps",
@@ -201,6 +261,7 @@ Unscrupulous competitors or automated review bots frequently target top-ranked p
   // 4. cabeceras-http-de-seguridad-para-clinicas-y-restaurante
   'cabeceras-http-de-seguridad-para-clinicas-y-restaurante': {
     fr: {
+      slug: 'en-tetes-http-de-securite-pour-cliniques-et-restaurants',
       title: "En-têtes HTTP de Sécurité pour Cliniques et Restaurants : HSTS, CSP et Permissions-Policy",
       excerpt: "Guide technique pour directeurs médicaux et restaurateurs : configuration des en-têtes HSTS, CSP et permissions de sécurité périmétrique.",
       categoryLabel: "Cybersécurité & Conformité",
@@ -232,6 +293,7 @@ Chez **Dexvoi**, nous configurons ces défenses directement dans l'infrastructur
       `.trim()
     },
     en: {
+      slug: 'security-http-headers-for-private-clinics-and-restaurants',
       title: "HTTP Security Headers for Clinics and Restaurants: HSTS, CSP & Permissions-Policy",
       excerpt: "Technical manual for clinic directors and restaurateurs: configuring HSTS, CSP, and perimeter permissions to block modern cyberattacks.",
       categoryLabel: "Cybersecurity & Compliance",
@@ -267,6 +329,7 @@ At **Dexvoi**, we inject enterprise-grade headers directly into edge network lay
   // 5. ciberseguridad-clinicas-privadas-guia-rgpd-blindaje
   'ciberseguridad-clinicas-privadas-guia-rgpd-blindaje': {
     fr: {
+      slug: 'cybersecurite-cliniques-privees-guide-rgpd-protection',
       title: "Cybersécurité des Cliniques Privées : Protection des Dossiers Médicaux et Conformité RGPD",
       excerpt: "Les centres médicaux et esthétiques subissent plus de 34 % des attaques ciblant les bases de données de santé. Guide pour protéger vos dossiers et éviter de lourdes sanctions.",
       categoryLabel: "Cybersécurité & Conformité",
@@ -311,6 +374,7 @@ Nos audits périmétriques OSINT sur des centres médicaux en France, en Espagne
       `.trim()
     },
     en: {
+      slug: 'cybersecurity-private-clinics-gdpr-data-defense-guide',
       title: "Cybersecurity in Private Clinics: Protecting Medical Records & GDPR Compliance",
       excerpt: "Private health and aesthetic centers face over 34% of targeted database breaches. Technical playbook to protect patient records and avoid massive fines.",
       categoryLabel: "Cybersecurity & Compliance",
@@ -359,6 +423,7 @@ Through external OSINT evaluations across medical facilities in Europe and North
   // 6. seo-local-restaurantes-google-maps-2026
   'seo-local-restaurantes-google-maps-2026': {
     fr: {
+      slug: 'seo-local-restaurants-google-maps-pack-local-2026',
       title: "Dominer le Local Pack de Google Maps : Stratégies SEO pour Restaurants Étoilés en 2026",
       excerpt: "Figurer dans le Top 3 de Google Maps génère jusqu'à 82 % des réservations directes sans commission. Maîtrisez la géolocalisation, Schema et la réputation.",
       categoryLabel: "SEO Local & Google Maps",
@@ -395,6 +460,7 @@ Un convive consultant un menu sur smartphone abandonne le site si le temps de r�
       `.trim()
     },
     en: {
+      slug: 'local-seo-restaurants-google-maps-local-pack-2026',
       title: "Dominating the Google Maps Local Pack: Local SEO Playbook for Fine Dining in 2026",
       excerpt: "Ranking in the Top 3 of Google Maps drives up to 82% of commission-free direct table reservations. Master geocoding, Schema markup, and digital reputation.",
       categoryLabel: "Local SEO & Google Maps",
@@ -435,6 +501,7 @@ Mobile diners expect near-instant page responsiveness. A 1-second delay spikes b
   // 7. por-que-wordpress-es-un-peligro-para-negocios-de-elite
   'por-que-wordpress-es-un-peligro-para-negocios-de-elite': {
     fr: {
+      slug: 'pourquoi-wordpress-est-un-danger-pour-entreprises-elite',
       title: "Pourquoi WordPress Représente un Risque Critique pour les Entreprises d'Élite et Cliniques",
       excerpt: "90 % des sites web piratés utilisent WordPress. Analyse de la dette technique, de la fragilité des plugins et de la supériorité de l'architecture découplée.",
       categoryLabel: "Architecture Web & Performance",
@@ -465,6 +532,7 @@ Chez **Dexvoi**, nous concevons des plateformes exploitant les standards technol
       `.trim()
     },
     en: {
+      slug: 'why-wordpress-is-a-threat-to-elite-enterprises-clinics',
       title: "Why WordPress Is a Critical Liability for Elite Enterprises and Private Clinics",
       excerpt: "90% of hacked websites run on WordPress. In-depth analysis of technical debt, plugin fragility, and why decoupled architecture is the future.",
       categoryLabel: "Web Architecture & Performance",
@@ -499,6 +567,7 @@ At **Dexvoi**, we build decoupled static architectures hosted across global cont
   // 8. auditoria-osint-que-es-y-como-previene-fugas-de-datos
   'auditoria-osint-que-es-y-como-previene-fugas-de-datos': {
     fr: {
+      slug: 'audit-osint-definition-prevention-fuites-de-donnees',
       title: "Audit OSINT Périmétrique : Ce Que Votre Domaine Public Révèle aux Cybercriminels",
       excerpt: "L'Intelligence en Sources Ouvertes (OSINT) permet d'auditer l'empreinte numérique externe de votre entreprise sans toucher à vos serveurs.",
       categoryLabel: "Hacking Éthique & OSINT",
@@ -526,6 +595,7 @@ L'audit périmétrique mené par **Dexvoi** applique les méthodes rigoureuses d
       `.trim()
     },
     en: {
+      slug: 'perimeter-osint-audit-what-it-is-preventing-data-leaks',
       title: "Perimeter OSINT Audit: What Your Public Domain Reveals to Cybercriminals",
       excerpt: "Open Source Intelligence (OSINT) audits your organization's external digital footprint without touching internal servers. Know what attackers see before they strike.",
       categoryLabel: "Ethical Hacking & OSINT",
@@ -557,6 +627,7 @@ A **Dexvoi** perimeter audit applies offensive Red Team methodologies: inspectin
   // 9. sistemas-de-reservas-con-ia-vs-plataformas-de-comision
   'sistemas-de-reservas-con-ia-vs-plataformas-de-comision': {
     fr: {
+      slug: 'systemes-de-reservation-ia-vs-plateformes-de-commission',
       title: "Moteurs de Réservation avec IA Propriétaires vs. Plateformes à Commission : Le Dilemme des 20 %",
       excerpt: "Pourquoi continuer à payer des commissions récurrentes pour vos propres clients ? Découvrez comment les moteurs avec IA augmentent votre marge et fidélisent.",
       categoryLabel: "IA & Automatisation",
@@ -585,6 +656,7 @@ Grâce aux architectures développées par **Dexvoi**, votre établissement disp
       `.trim()
     },
     en: {
+      slug: 'proprietary-ai-booking-systems-vs-commission-platforms',
       title: "Proprietary AI Booking Engines vs. Commission Platforms: The 20% Dilemma",
       excerpt: "Why keep paying recurring commissions on your own returning clientele? Discover how proprietary AI booking engines maximize margins and loyalty.",
       categoryLabel: "AI & Automation",

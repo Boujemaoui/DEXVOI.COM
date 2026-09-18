@@ -194,49 +194,289 @@
     <priority>0.8</priority>
   </url>
 
-  <!-- BLOG POST 1 -->
+  <!-- BLOG POST 1: Ciberseguridad Clínicas Privadas -->
   <url>
     <loc>https://dexvoi.com/es/blog/ciberseguridad-clinicas-privadas-guia-rgpd-blindaje</loc>
     <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/ciberseguridad-clinicas-privadas-guia-rgpd-blindaje"/>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/ciberseguridad-clinicas-privadas-guia-rgpd-blindaje"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/ciberseguridad-clinicas-privadas-guia-rgpd-blindaje"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/cybersecurite-cliniques-privees-guide-rgpd-protection"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/cybersecurity-private-clinics-gdpr-data-defense-guide"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/ciberseguridad-clinicas-privadas-guia-rgpd-blindaje"/>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://dexvoi.com/fr/blog/cybersecurite-cliniques-privees-guide-rgpd-protection</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/ciberseguridad-clinicas-privadas-guia-rgpd-blindaje"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/cybersecurite-cliniques-privees-guide-rgpd-protection"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/cybersecurity-private-clinics-gdpr-data-defense-guide"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/ciberseguridad-clinicas-privadas-guia-rgpd-blindaje"/>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://dexvoi.com/en/blog/cybersecurity-private-clinics-gdpr-data-defense-guide</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/ciberseguridad-clinicas-privadas-guia-rgpd-blindaje"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/cybersecurite-cliniques-privees-guide-rgpd-protection"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/cybersecurity-private-clinics-gdpr-data-defense-guide"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/ciberseguridad-clinicas-privadas-guia-rgpd-blindaje"/>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
-  <!-- BLOG POST 2 -->
+  <!-- BLOG POST 2: SEO Local Restaurantes Google Maps -->
   <url>
     <loc>https://dexvoi.com/es/blog/seo-local-restaurantes-google-maps-2026</loc>
     <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/seo-local-restaurantes-google-maps-2026"/>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/seo-local-restaurantes-google-maps-2026"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/seo-local-restaurantes-google-maps-2026"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/seo-local-restaurants-google-maps-pack-local-2026"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/local-seo-restaurants-google-maps-local-pack-2026"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/seo-local-restaurantes-google-maps-2026"/>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://dexvoi.com/fr/blog/seo-local-restaurants-google-maps-pack-local-2026</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/seo-local-restaurantes-google-maps-2026"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/seo-local-restaurants-google-maps-pack-local-2026"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/local-seo-restaurants-google-maps-local-pack-2026"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/seo-local-restaurantes-google-maps-2026"/>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://dexvoi.com/en/blog/local-seo-restaurants-google-maps-local-pack-2026</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/seo-local-restaurantes-google-maps-2026"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/seo-local-restaurants-google-maps-pack-local-2026"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/local-seo-restaurants-google-maps-local-pack-2026"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/seo-local-restaurantes-google-maps-2026"/>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
-  <!-- BLOG POST 3 -->
+  <!-- BLOG POST 3: WordPress Riesgo Negocios Élite -->
   <url>
     <loc>https://dexvoi.com/es/blog/por-que-wordpress-es-un-peligro-para-negocios-de-elite</loc>
     <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/por-que-wordpress-es-un-peligro-para-negocios-de-elite"/>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/por-que-wordpress-es-un-peligro-para-negocios-de-elite"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/por-que-wordpress-es-un-peligro-para-negocios-de-elite"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/pourquoi-wordpress-est-un-danger-pour-entreprises-elite"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/why-wordpress-is-a-threat-to-elite-enterprises-clinics"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/por-que-wordpress-es-un-peligro-para-negocios-de-elite"/>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://dexvoi.com/fr/blog/pourquoi-wordpress-est-un-danger-pour-entreprises-elite</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/por-que-wordpress-es-un-peligro-para-negocios-de-elite"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/pourquoi-wordpress-est-un-danger-pour-entreprises-elite"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/why-wordpress-is-a-threat-to-elite-enterprises-clinics"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/por-que-wordpress-es-un-peligro-para-negocios-de-elite"/>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://dexvoi.com/en/blog/why-wordpress-is-a-threat-to-elite-enterprises-clinics</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/por-que-wordpress-es-un-peligro-para-negocios-de-elite"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/pourquoi-wordpress-est-un-danger-pour-entreprises-elite"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/why-wordpress-is-a-threat-to-elite-enterprises-clinics"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/por-que-wordpress-es-un-peligro-para-negocios-de-elite"/>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
-  <!-- BLOG POST 4 -->
+  <!-- BLOG POST 4: Auditoría OSINT Prevención Fugas -->
   <url>
     <loc>https://dexvoi.com/es/blog/auditoria-osint-que-es-y-como-previene-fugas-de-datos</loc>
     <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/auditoria-osint-que-es-y-como-previene-fugas-de-datos"/>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/auditoria-osint-que-es-y-como-previene-fugas-de-datos"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/auditoria-osint-que-es-y-como-previene-fugas-de-datos"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/audit-osint-definition-prevention-fuites-de-donnees"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/perimeter-osint-audit-what-it-is-preventing-data-leaks"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/auditoria-osint-que-es-y-como-previene-fugas-de-datos"/>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://dexvoi.com/fr/blog/audit-osint-definition-prevention-fuites-de-donnees</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/auditoria-osint-que-es-y-como-previene-fugas-de-datos"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/audit-osint-definition-prevention-fuites-de-donnees"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/perimeter-osint-audit-what-it-is-preventing-data-leaks"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/auditoria-osint-que-es-y-como-previene-fugas-de-datos"/>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://dexvoi.com/en/blog/perimeter-osint-audit-what-it-is-preventing-data-leaks</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/auditoria-osint-que-es-y-como-previene-fugas-de-datos"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/audit-osint-definition-prevention-fuites-de-donnees"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/perimeter-osint-audit-what-it-is-preventing-data-leaks"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/auditoria-osint-que-es-y-como-previene-fugas-de-datos"/>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- BLOG POST 5: Inteligencia de Datos y Agentes IA -->
+  <url>
+    <loc>https://dexvoi.com/es/blog/inteligencia-de-datos-y-agentes-de-ia-en-motores-de-res</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/inteligencia-de-datos-y-agentes-de-ia-en-motores-de-res"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/intelligence-des-donnees-et-agents-ia-moteurs-de-reservation"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/data-intelligence-and-ai-agents-commission-free-booking"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/inteligencia-de-datos-y-agentes-de-ia-en-motores-de-res"/>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://dexvoi.com/fr/blog/intelligence-des-donnees-et-agents-ia-moteurs-de-reservation</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/inteligencia-de-datos-y-agentes-de-ia-en-motores-de-res"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/intelligence-des-donnees-et-agents-ia-moteurs-de-reservation"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/data-intelligence-and-ai-agents-commission-free-booking"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/inteligencia-de-datos-y-agentes-de-ia-en-motores-de-res"/>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://dexvoi.com/en/blog/data-intelligence-and-ai-agents-commission-free-booking</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/inteligencia-de-datos-y-agentes-de-ia-en-motores-de-res"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/intelligence-des-donnees-et-agents-ia-moteurs-de-reservation"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/data-intelligence-and-ai-agents-commission-free-booking"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/inteligencia-de-datos-y-agentes-de-ia-en-motores-de-res"/>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- BLOG POST 6: Core Web Vitals INP y LCP -->
+  <url>
+    <loc>https://dexvoi.com/es/blog/core-web-vitals-inp-y-lcp-en-2026-como-dexvoi-logra-tie</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/core-web-vitals-inp-y-lcp-en-2026-como-dexvoi-logra-tie"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/core-web-vitals-inp-et-lcp-en-2026-chargement-sous-300ms"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/core-web-vitals-inp-and-lcp-in-2026-load-times-under-300ms"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/core-web-vitals-inp-y-lcp-en-2026-como-dexvoi-logra-tie"/>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://dexvoi.com/fr/blog/core-web-vitals-inp-et-lcp-en-2026-chargement-sous-300ms</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/core-web-vitals-inp-y-lcp-en-2026-como-dexvoi-logra-tie"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/core-web-vitals-inp-et-lcp-en-2026-chargement-sous-300ms"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/core-web-vitals-inp-and-lcp-in-2026-load-times-under-300ms"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/core-web-vitals-inp-y-lcp-en-2026-como-dexvoi-logra-tie"/>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://dexvoi.com/en/blog/core-web-vitals-inp-and-lcp-in-2026-load-times-under-300ms</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/core-web-vitals-inp-y-lcp-en-2026-como-dexvoi-logra-tie"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/core-web-vitals-inp-et-lcp-en-2026-chargement-sous-300ms"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/core-web-vitals-inp-and-lcp-in-2026-load-times-under-300ms"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/core-web-vitals-inp-y-lcp-en-2026-como-dexvoi-logra-tie"/>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- BLOG POST 7: Reseñas Falsas y Sabotaje -->
+  <url>
+    <loc>https://dexvoi.com/es/blog/como-evitar-resenas-falsas-y-sabotaje-de-reputacion-en</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/como-evitar-resenas-falsas-y-sabotaje-de-reputacion-en"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/comment-eviter-faux-avis-et-sabotage-reputation-google-maps"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/how-to-prevent-fake-reviews-and-reputation-sabotage-google-maps"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/como-evitar-resenas-falsas-y-sabotaje-de-reputacion-en"/>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://dexvoi.com/fr/blog/comment-eviter-faux-avis-et-sabotage-reputation-google-maps</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/como-evitar-resenas-falsas-y-sabotaje-de-reputacion-en"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/comment-eviter-faux-avis-et-sabotage-reputation-google-maps"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/how-to-prevent-fake-reviews-and-reputation-sabotage-google-maps"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/como-evitar-resenas-falsas-y-sabotaje-de-reputacion-en"/>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://dexvoi.com/en/blog/how-to-prevent-fake-reviews-and-reputation-sabotage-google-maps</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/como-evitar-resenas-falsas-y-sabotaje-de-reputacion-en"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/comment-eviter-faux-avis-et-sabotage-reputation-google-maps"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/how-to-prevent-fake-reviews-and-reputation-sabotage-google-maps"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/como-evitar-resenas-falsas-y-sabotaje-de-reputacion-en"/>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- BLOG POST 8: Cabeceras HTTP de Seguridad -->
+  <url>
+    <loc>https://dexvoi.com/es/blog/cabeceras-http-de-seguridad-para-clinicas-y-restaurante</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/cabeceras-http-de-seguridad-para-clinicas-y-restaurante"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/en-tetes-http-de-securite-pour-cliniques-et-restaurants"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/security-http-headers-for-private-clinics-and-restaurants"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/cabeceras-http-de-seguridad-para-clinicas-y-restaurante"/>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://dexvoi.com/fr/blog/en-tetes-http-de-securite-pour-cliniques-et-restaurants</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/cabeceras-http-de-seguridad-para-clinicas-y-restaurante"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/en-tetes-http-de-securite-pour-cliniques-et-restaurants"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/security-http-headers-for-private-clinics-and-restaurants"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/cabeceras-http-de-seguridad-para-clinicas-y-restaurante"/>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://dexvoi.com/en/blog/security-http-headers-for-private-clinics-and-restaurants</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/cabeceras-http-de-seguridad-para-clinicas-y-restaurante"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/en-tetes-http-de-securite-pour-cliniques-et-restaurants"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/security-http-headers-for-private-clinics-and-restaurants"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/cabeceras-http-de-seguridad-para-clinicas-y-restaurante"/>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- BLOG POST 9: Sistemas de Reservas con IA vs Plataformas de Comisión -->
+  <url>
+    <loc>https://dexvoi.com/es/blog/sistemas-de-reservas-con-ia-vs-plataformas-de-comision</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/sistemas-de-reservas-con-ia-vs-plataformas-de-comision"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/systemes-de-reservation-ia-vs-plateformes-de-commission"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/proprietary-ai-booking-systems-vs-commission-platforms"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/sistemas-de-reservas-con-ia-vs-plataformas-de-comision"/>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://dexvoi.com/fr/blog/systemes-de-reservation-ia-vs-plateformes-de-commission</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/sistemas-de-reservas-con-ia-vs-plataformas-de-comision"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/systemes-de-reservation-ia-vs-plateformes-de-commission"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/proprietary-ai-booking-systems-vs-commission-platforms"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/sistemas-de-reservas-con-ia-vs-plataformas-de-comision"/>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://dexvoi.com/en/blog/proprietary-ai-booking-systems-vs-commission-platforms</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/sistemas-de-reservas-con-ia-vs-plataformas-de-comision"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr/blog/systemes-de-reservation-ia-vs-plateformes-de-commission"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dexvoi.com/en/blog/proprietary-ai-booking-systems-vs-commission-platforms"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/sistemas-de-reservas-con-ia-vs-plataformas-de-comision"/>
     <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

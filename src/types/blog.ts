@@ -13,6 +13,7 @@ export interface BlogAuthor {
 }
 
 export interface LocalizedBlogContent {
+  slug?: string;
   title: string;
   excerpt: string;
   content: string;
