@@ -3,13 +3,14 @@ import { Shield, Menu, X, ArrowRight, Lock, CreditCard, BookOpen } from 'lucide-
 import { navigateTo } from '../utils/navigation';
 import { useLanguage } from '../i18n/LanguageContext';
 import { LanguageSelector } from './LanguageSelector';
+import { getLocalizedPath } from '../utils/seoMultilingual';
 
 interface NavbarProps {
   onOpenAuditModal: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -23,8 +24,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
 
   const scrollToSection = (id: string) => {
     setMobileMenuOpen(false);
-    if (window.location.pathname !== '/') {
-      navigateTo(`/#${id}`);
+    const currentPath = window.location.pathname;
+    const homePaths = ['/', '/es', '/fr', '/en'];
+    if (!homePaths.includes(currentPath)) {
+      const homeLocalized = getLocalizedPath('home', language);
+      navigateTo(`${homeLocalized}#${id}`);
       setTimeout(() => {
         const element = document.getElementById(id);
         if (element) {
@@ -40,12 +44,19 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
   };
 
   const handleBrandClick = () => {
-    if (window.location.pathname !== '/') {
-      navigateTo('/');
+    const homeLocalized = getLocalizedPath('home', language);
+    if (window.location.pathname !== homeLocalized && window.location.pathname !== '/') {
+      navigateTo(homeLocalized);
     } else {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
+
+  const servicesPath = getLocalizedPath('services', language);
+  const securityPath = getLocalizedPath('security', language);
+  const pricingPath = getLocalizedPath('pricing', language);
+  const contactPath = getLocalizedPath('contact', language);
+  const blogPath = getLocalizedPath('blog', language);
 
   return (
     <header
@@ -59,18 +70,25 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Brand Logo */}
         <div className="flex items-center gap-3 cursor-pointer" onClick={handleBrandClick}>
-          <div className="w-10 h-10 rounded bg-[#1E293B] border border-[#0066FF]/40 flex items-center justify-center relative overflow-hidden group shadow-[0_0_15px_rgba(0,102,255,0.2)]">
-            <div className="absolute inset-0 bg-[#0066FF]/10 group-hover:bg-[#0066FF]/20 transition-colors"></div>
-            <Shield className="w-5 h-5 text-[#F5A623] relative z-10" />
-            <div className="absolute bottom-0 w-full h-[2px] bg-[#0066FF]"></div>
+          <div className="w-10 h-10 rounded-xl bg-[#0F172A] border border-[#0066FF]/50 flex items-center justify-center relative overflow-hidden group shadow-[0_0_15px_rgba(0,102,255,0.25)] p-0.5">
+            <img 
+              src="/favicon.png" 
+              alt="Dexvoi Shield" 
+              className="w-full h-full object-contain relative z-10 drop-shadow-[0_0_8px_rgba(0,102,255,0.6)] group-hover:scale-105 transition-transform"
+              referrerPolicy="no-referrer"
+            />
+            <div className="absolute bottom-0 w-full h-[2px] bg-gradient-to-r from-[#0066FF] to-[#F5A623]"></div>
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-bold text-lg tracking-wider text-white font-mono">
+              <span className="font-mono font-bold text-white text-lg tracking-wider">
                 DEX<span className="text-[#F5A623]">VOI</span>
               </span>
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#0066FF]/10 text-[#0066FF] border border-[#0066FF]/30">
+                PRO
+              </span>
             </div>
-            <p className="text-[10px] text-gray-400 font-mono tracking-widest uppercase">
+            <p className="text-[10px] text-gray-400 font-mono hidden sm:block">
               {t.nav.brandTagline}
             </p>
           </div>
@@ -85,11 +103,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
             <span className="text-[#0066FF] font-mono text-xs">01.</span> {t.nav.diagnosis}
           </button>
           <a
-            href="/servicios"
+            href={servicesPath}
             onClick={(e) => {
               if (!e.ctrlKey && !e.metaKey) {
                 e.preventDefault();
-                navigateTo('/servicios');
+                navigateTo(servicesPath);
               }
             }}
             className="hover:text-white transition-colors flex items-center gap-1.5 py-1 cursor-pointer"
@@ -109,11 +127,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
             <span className="text-[#0066FF] font-mono text-xs">04.</span> {t.nav.aiAgents}
           </button>
           <a
-            href="/auditoria-seguridad"
+            href={securityPath}
             onClick={(e) => {
               if (!e.ctrlKey && !e.metaKey) {
                 e.preventDefault();
-                navigateTo('/auditoria-seguridad');
+                navigateTo(securityPath);
               }
             }}
             className="text-[#F5A623] hover:text-[#ffd78a] transition-colors flex items-center gap-1.5 py-1 font-mono font-bold text-xs"
@@ -125,11 +143,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
             </span>
           </a>
           <a
-            href="/precios"
+            href={pricingPath}
             onClick={(e) => {
               if (!e.ctrlKey && !e.metaKey) {
                 e.preventDefault();
-                navigateTo('/precios');
+                navigateTo(pricingPath);
               }
             }}
             className="text-white hover:text-[#38BDF8] transition-colors flex items-center gap-1.5 py-1 font-mono font-bold text-xs px-2.5 py-1 rounded bg-[#635BFF]/20 border border-[#635BFF]/50"
@@ -138,11 +156,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
             <span>{t.nav.pricing}</span>
           </a>
           <a
-            href="/blog"
+            href={blogPath}
             onClick={(e) => {
               if (!e.ctrlKey && !e.metaKey) {
                 e.preventDefault();
-                navigateTo('/blog');
+                navigateTo(blogPath);
               }
             }}
             className="hover:text-white text-gray-300 transition-colors flex items-center gap-1.5 py-1 font-mono text-xs cursor-pointer"
@@ -215,11 +233,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
               <ArrowRight className="w-4 h-4 text-gray-600" />
             </button>
             <a
-              href="/servicios"
+              href={servicesPath}
               onClick={(e) => {
                 e.preventDefault();
                 setMobileMenuOpen(false);
-                navigateTo('/servicios');
+                navigateTo(servicesPath);
               }}
               className="text-left py-2 text-gray-300 hover:text-white flex items-center justify-between"
             >
@@ -241,11 +259,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
               <ArrowRight className="w-4 h-4 text-gray-600" />
             </button>
             <a
-              href="/auditoria-seguridad"
+              href={securityPath}
               onClick={(e) => {
                 e.preventDefault();
                 setMobileMenuOpen(false);
-                navigateTo('/auditoria-seguridad');
+                navigateTo(securityPath);
               }}
               className="text-left py-2 text-[#F5A623] font-bold flex items-center justify-between"
             >
@@ -255,11 +273,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
               </span>
             </a>
             <a
-              href="/precios"
+              href={pricingPath}
               onClick={(e) => {
                 e.preventDefault();
                 setMobileMenuOpen(false);
-                navigateTo('/precios');
+                navigateTo(pricingPath);
               }}
               className="text-left py-2.5 px-3 rounded-lg bg-[#635BFF]/20 border border-[#635BFF]/50 text-white font-bold flex items-center justify-between"
             >
@@ -272,11 +290,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
               </span>
             </a>
             <a
-              href="/contacto"
+              href={contactPath}
               onClick={(e) => {
                 e.preventDefault();
                 setMobileMenuOpen(false);
-                navigateTo('/contacto');
+                navigateTo(contactPath);
               }}
               className="text-left py-2 text-[#38BDF8] flex items-center justify-between"
             >
@@ -284,11 +302,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
               <ArrowRight className="w-4 h-4 text-gray-600" />
             </a>
             <a
-              href="/blog"
+              href={blogPath}
               onClick={(e) => {
                 e.preventDefault();
                 setMobileMenuOpen(false);
-                navigateTo('/blog');
+                navigateTo(blogPath);
               }}
               className="text-left py-2 text-white font-medium flex items-center justify-between"
             >
@@ -317,4 +335,3 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
     </header>
   );
 };
-

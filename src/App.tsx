@@ -3,14 +3,13 @@ import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
 import { ProblemSection } from './components/ProblemSection';
 import { ServicesSection } from './components/ServicesSection';
+import { MethodologySection } from './components/MethodologySection';
 import { BookingSystemSection } from './components/BookingSystemSection';
 import { AiAgentsSection } from './components/AiAgentsSection';
-import { MethodologySection } from './components/MethodologySection';
-import { TestimonialsSection } from './components/TestimonialsSection';
 import { ScannerSection } from './components/ScannerSection';
-import { OsintSecurityAuditor } from './components/OsintSecurityAuditor';
-import { ContactCTASection } from './components/ContactCTASection';
 import { PricingSection } from './components/PricingSection';
+import { TestimonialsSection } from './components/TestimonialsSection';
+import { ContactCTASection } from './components/ContactCTASection';
 import { Footer } from './components/Footer';
 import { AuditModal } from './components/AuditModal';
 import { PdfReportModal } from './components/PdfReportModal';
@@ -19,10 +18,11 @@ import { VirtualAssistantChat } from './components/VirtualAssistantChat';
 import { LegalModal, LegalTab } from './components/LegalModal';
 import { ConsentBanner } from './components/ConsentBanner';
 import { OsintSecurityAuditResult } from './types';
-import { Home, Grid, Shield, Mail, Zap, CreditCard } from 'lucide-react';
-import { useAppRoute, navigateTo } from './utils/navigation';
+import { Home, Grid, Shield, Mail, CreditCard } from 'lucide-react';
+import { useAppRoute, navigateTo, updatePageMetadata } from './utils/navigation';
 import { useLanguage } from './i18n/LanguageContext';
 import { initGA, trackPageView } from './utils/analytics';
+import { getLocalizedPath } from './utils/seoMultilingual';
 import { LegalPage } from './pages/LegalPage';
 import { ServicesPage } from './pages/ServicesPage';
 import { PricingPage } from './pages/PricingPage';
@@ -52,19 +52,26 @@ export default function App() {
     initGA();
   }, []);
 
+  // Synchronize SEO titles, descriptions, canonical and hreflang tags
   useEffect(() => {
+    updatePageMetadata(route, language, blogSlug);
     trackPageView(window.location.pathname, document.title);
-  }, [route]);
+  }, [route, language, blogSlug]);
 
   const handleOpenLegalModal = (tab: LegalTab = 'privacy') => {
     setLegalModalTab(tab);
     setIsLegalModalOpen(true);
   };
 
+  const navigateHomeLocalized = () => {
+    navigateTo(getLocalizedPath('home', language));
+  };
+
   const scrollToSection = (id: string, tabName: 'inicio' | 'servicios' | 'scanner' | 'precios' | 'contacto') => {
     setActiveTab(tabName);
     if (route !== 'home') {
-      navigateTo(`/#${id}`);
+      const homePath = getLocalizedPath('home', language);
+      navigateTo(`${homePath}#${id}`);
       setTimeout(() => {
         const el = document.getElementById(id);
         if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -91,14 +98,14 @@ export default function App() {
       {/* Route-based Render */}
       {route === 'services' && (
         <ServicesPage
-          onNavigateHome={() => navigateTo('/')}
+          onNavigateHome={navigateHomeLocalized}
           onOpenAuditModal={() => setIsAuditModalOpen(true)}
         />
       )}
 
       {route === 'pricing' && (
         <PricingPage
-          onNavigateHome={() => navigateTo('/')}
+          onNavigateHome={navigateHomeLocalized}
           onOpenPdfModal={(tier) => {
             setPdfModalTier(tier);
             setIsPdfModalOpen(true);
@@ -109,14 +116,14 @@ export default function App() {
 
       {route === 'contact' && (
         <ContactPage
-          onNavigateHome={() => navigateTo('/')}
+          onNavigateHome={navigateHomeLocalized}
           onOpenAuditModal={() => setIsAuditModalOpen(true)}
         />
       )}
 
       {route === 'blog' && (
         <BlogPage
-          onNavigateHome={() => navigateTo('/')}
+          onNavigateHome={navigateHomeLocalized}
           onOpenAuditModal={() => setIsAuditModalOpen(true)}
         />
       )}
@@ -124,14 +131,14 @@ export default function App() {
       {route === 'blog-post' && (
         <BlogPostPage
           slug={blogSlug}
-          onNavigateHome={() => navigateTo('/')}
+          onNavigateHome={navigateHomeLocalized}
           onOpenAuditModal={() => setIsAuditModalOpen(true)}
         />
       )}
 
       {route === 'security' && (
         <OsintAuditPage
-          onNavigateHome={() => navigateTo('/')}
+          onNavigateHome={navigateHomeLocalized}
           onOpenPurchaseModal={(result, target) => {
             setOsintAuditResult(result);
             setOsintTargetDomain(target);
@@ -143,14 +150,14 @@ export default function App() {
       {(route === 'privacy' || route === 'terms' || route === 'cookies' || route === 'legal') && (
         <LegalPage
           initialTab={route as LegalTab}
-          onNavigateHome={() => navigateTo('/')}
+          onNavigateHome={navigateHomeLocalized}
           onOpenAuditModal={() => setIsAuditModalOpen(true)}
         />
       )}
 
       {route === '404' && (
         <NotFoundPage
-          onNavigateHome={() => navigateTo('/')}
+          onNavigateHome={navigateHomeLocalized}
           onOpenAuditModal={() => setIsAuditModalOpen(true)}
         />
       )}
@@ -162,91 +169,72 @@ export default function App() {
 
           {/* Main Content Sections */}
           <main id="main-content">
-            {/* Section 1: Hero */}
-            <HeroSection
+            {/* Section 00: Hero */}
+            <HeroSection 
               onOpenAuditModal={() => setIsAuditModalOpen(true)}
               onScrollToScanner={() => scrollToSection('scanner', 'scanner')}
             />
 
-            {/* Section 2: The Problem */}
-            <ProblemSection
-              onOpenAuditModal={() => setIsAuditModalOpen(true)}
-            />
+            {/* Section 01: Core Diagnostic */}
+            <ProblemSection onOpenAuditModal={() => setIsAuditModalOpen(true)} />
 
-            {/* Section 3: Services (The 3 Pillars) */}
-            <ServicesSection
-              onOpenAuditModal={() => setIsAuditModalOpen(true)}
-            />
+            {/* Section 02: Three Pillars Architecture */}
+            <ServicesSection onOpenAuditModal={() => setIsAuditModalOpen(true)} />
 
-            {/* Section 4: Advanced Booking Systems (Sistemas de Gestión de Reservas Avanzadas) */}
-            <BookingSystemSection
+            {/* Section 03: Fast Direct Booking Systems */}
+            <BookingSystemSection 
               onOpenAuditModal={() => setIsAuditModalOpen(true)}
               onContactClick={() => scrollToSection('contacto', 'contacto')}
             />
 
-            {/* Section 5: Advanced AI Agents (Agentes Avanzados con IA) */}
-            <AiAgentsSection
+            {/* Section 04: AI Conversational & Voice Agents */}
+            <AiAgentsSection 
               onOpenAuditModal={() => setIsAuditModalOpen(true)}
               onContactClick={() => scrollToSection('contacto', 'contacto')}
             />
 
-            {/* Section 6: Methodology (El Arquitecto) */}
-            <MethodologySection
-              onOpenAuditModal={() => setIsAuditModalOpen(true)}
-            />
+            {/* Section 05: Methodology */}
+            <MethodologySection onOpenAuditModal={() => setIsAuditModalOpen(true)} />
 
-            {/* Section 6: Testimonials & Case Studies */}
-            <TestimonialsSection />
+            {/* Section 06: Live Perimeter OSINT Scanner */}
+            <ScannerSection onSelectAuditWithUrl={handleSelectAuditWithUrl} />
 
-            {/* Section 6: Interactive Fast Scanner */}
-            <ScannerSection
-              onSelectAuditWithUrl={handleSelectAuditWithUrl}
-            />
-
-            {/* Section 7: Standalone Real-time OSINT & Security Headers Auditor (29€ Pago Único) */}
-            <OsintSecurityAuditor
-              onOpenPurchaseModal={(result, target) => {
-                setOsintAuditResult(result);
-                setOsintTargetDomain(target);
-                setIsOsintModalOpen(true);
-              }}
-            />
-
-            {/* Section 8: Planes de Pago & Auditoría (19€, 49€, 99€ con Stripe Oficial) */}
-            <PricingSection
+            {/* Section 07: Transparent Fixed Pricing */}
+            <PricingSection 
+              onOpenAuditModal={() => setIsAuditModalOpen(true)} 
               onOpenPdfModal={(tier) => {
                 setPdfModalTier(tier);
                 setIsPdfModalOpen(true);
               }}
-              onOpenAuditModal={() => setIsAuditModalOpen(true)}
             />
 
-            {/* Section 9: Final CTA & Contact Form */}
-            <ContactCTASection
-              initialUrl={selectedUrlForAudit}
-              initialFindings={selectedFindings}
+            {/* Section 08: Client Testimonials */}
+            <TestimonialsSection />
+
+            {/* Section 09: High-Priority Direct Contact */}
+            <ContactCTASection 
+              initialUrl={selectedUrlForAudit} 
+              initialFindings={selectedFindings} 
             />
           </main>
+
+          {/* Footer */}
+          <Footer onOpenLegalModal={handleOpenLegalModal} />
         </>
       )}
 
-      {/* Persistent Footer on all views */}
-      <Footer onOpenLegalModal={handleOpenLegalModal} />
-
-      {/* Global Audit Modal */}
-      <AuditModal
-        isOpen={isAuditModalOpen}
-        onClose={() => setIsAuditModalOpen(false)}
+      {/* Global Interactive Elements */}
+      <AuditModal 
+        isOpen={isAuditModalOpen} 
+        onClose={() => setIsAuditModalOpen(false)} 
       />
 
-      {/* PDF Detailed Report & Payment Modal (Step 6: 19€, 49€, 99€) */}
       <PdfReportModal
         isOpen={isPdfModalOpen}
         onClose={() => setIsPdfModalOpen(false)}
         defaultTier={pdfModalTier}
       />
 
-      {/* Standalone OSINT Security Audit Purchase Modal (29€ Pago Único) */}
       <OsintPurchaseModal
         isOpen={isOsintModalOpen}
         onClose={() => setIsOsintModalOpen(false)}
@@ -254,23 +242,21 @@ export default function App() {
         targetDomain={osintTargetDomain}
       />
 
-      {/* Full Legal Modal (Privacidad, Términos, Cookies, Aviso Legal, OSINT) */}
       <LegalModal
         isOpen={isLegalModalOpen}
         onClose={() => setIsLegalModalOpen(false)}
         initialTab={legalModalTab}
       />
 
-      {/* RGPD / LOPDGDD Consent & Terms Acceptance Banner */}
       <ConsentBanner
         onOpenLegalModal={handleOpenLegalModal}
       />
 
-      {/* Dexvoi Virtual Assistant Chatbot (FR / EN / ES) */}
-      <VirtualAssistantChat
-        onOpenAuditModal={() => setIsAuditModalOpen(true)}
-        onOpenPdfModal={(tier) => {
-          setPdfModalTier(tier || 'complete');
+      <VirtualAssistantChat 
+        onOpenAuditModal={() => {
+          setIsAuditModalOpen(true);
+        }}
+        onOpenPdfModal={() => {
           setIsPdfModalOpen(true);
         }}
         onOpenOsintModal={() => {
@@ -278,11 +264,11 @@ export default function App() {
         }}
       />
 
-      {/* Mobile Bottom Navigation Bar */}
+      {/* Mobile Bottom Navigation Bar with localized URLs */}
       <nav className="lg:hidden fixed bottom-0 left-0 w-full z-40 bg-[#0D1326]/95 backdrop-blur-md border-t border-gray-800/80 px-2 py-1.5 flex items-center justify-around font-mono text-[10px]">
         <button
           onClick={() => {
-            if (route !== 'home') navigateTo('/');
+            if (route !== 'home') navigateTo(getLocalizedPath('home', language));
             else scrollToSection('hero', 'inicio');
           }}
           className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all cursor-pointer ${
@@ -294,7 +280,7 @@ export default function App() {
         </button>
 
         <button
-          onClick={() => navigateTo('/servicios')}
+          onClick={() => navigateTo(getLocalizedPath('services', language))}
           className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all cursor-pointer ${
             route === 'services' ? 'text-[#0066FF] font-bold' : 'text-gray-400 hover:text-gray-200'
           }`}
@@ -304,7 +290,7 @@ export default function App() {
         </button>
 
         <button
-          onClick={() => navigateTo('/auditoria-seguridad')}
+          onClick={() => navigateTo(getLocalizedPath('security', language))}
           className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all cursor-pointer ${
             route === 'security' ? 'text-emerald-400 font-bold' : 'text-gray-400 hover:text-gray-200'
           }`}
@@ -314,7 +300,7 @@ export default function App() {
         </button>
 
         <button
-          onClick={() => navigateTo('/precios')}
+          onClick={() => navigateTo(getLocalizedPath('pricing', language))}
           className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all cursor-pointer ${
             route === 'pricing' ? 'text-[#635BFF] font-bold' : 'text-gray-400 hover:text-gray-200'
           }`}
@@ -324,7 +310,7 @@ export default function App() {
         </button>
 
         <button
-          onClick={() => navigateTo('/contacto')}
+          onClick={() => navigateTo(getLocalizedPath('contact', language))}
           className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all cursor-pointer ${
             route === 'contact' ? 'text-[#F5A623] font-bold' : 'text-gray-400 hover:text-gray-200'
           }`}

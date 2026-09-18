@@ -1,16 +1,17 @@
 import React from 'react';
-import { Shield, Award, ArrowUp } from 'lucide-react';
+import { Award, ArrowUp } from 'lucide-react';
 import { LegalTab } from './LegalModal';
 import { navigateTo } from '../utils/navigation';
 import { useLanguage } from '../i18n/LanguageContext';
 import { LanguageSelector } from './LanguageSelector';
+import { getLocalizedPath } from '../utils/seoMultilingual';
 
 interface FooterProps {
   onOpenLegalModal?: (tab: LegalTab) => void;
 }
 
 export const Footer: React.FC<FooterProps> = () => {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -22,6 +23,17 @@ export const Footer: React.FC<FooterProps> = () => {
     navigateTo(path);
   };
 
+  const homePath = getLocalizedPath('home', language);
+  const servicesPath = getLocalizedPath('services', language);
+  const securityPath = getLocalizedPath('security', language);
+  const pricingPath = getLocalizedPath('pricing', language);
+  const contactPath = getLocalizedPath('contact', language);
+  const blogPath = getLocalizedPath('blog', language);
+  const privacyPath = getLocalizedPath('privacy', language);
+  const termsPath = getLocalizedPath('terms', language);
+  const cookiesPath = getLocalizedPath('cookies', language);
+  const legalPath = getLocalizedPath('legal', language);
+
   return (
     <footer id="main-footer" className="w-full bg-[#080C19] border-t border-gray-800 text-gray-400 font-mono text-xs relative z-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -31,9 +43,14 @@ export const Footer: React.FC<FooterProps> = () => {
           
           {/* Brand Col */}
           <div className="md:col-span-1 space-y-4">
-            <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigateTo('/')}>
-              <div className="w-8 h-8 rounded bg-[#1E293B] border border-[#0066FF]/40 flex items-center justify-center">
-                <Shield className="w-4 h-4 text-[#F5A623]" />
+            <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => navigateTo(homePath)}>
+              <div className="w-8 h-8 rounded-lg bg-[#0F172A] border border-[#0066FF]/50 flex items-center justify-center p-0.5 shadow-[0_0_10px_rgba(0,102,255,0.2)]">
+                <img 
+                  src="/favicon-32x32.png" 
+                  alt="Dexvoi Shield" 
+                  className="w-full h-full object-contain drop-shadow-[0_0_6px_rgba(0,102,255,0.5)]"
+                  referrerPolicy="no-referrer"
+                />
               </div>
               <span className="font-bold text-white text-base tracking-wider font-mono">
                 DEX<span className="text-[#F5A623]">VOI</span>
@@ -56,8 +73,8 @@ export const Footer: React.FC<FooterProps> = () => {
             <ul className="space-y-2 text-xs">
               <li>
                 <a 
-                  href="/servicios" 
-                  onClick={(e) => handleLinkClick(e, '/servicios')}
+                  href={servicesPath} 
+                  onClick={(e) => handleLinkClick(e, servicesPath)}
                   className="hover:text-[#0066FF] transition-colors"
                 >
                   01. {t.services.pillar1Title}
@@ -65,8 +82,8 @@ export const Footer: React.FC<FooterProps> = () => {
               </li>
               <li>
                 <a 
-                  href="/servicios" 
-                  onClick={(e) => handleLinkClick(e, '/servicios')}
+                  href={servicesPath} 
+                  onClick={(e) => handleLinkClick(e, servicesPath)}
                   className="hover:text-[#0066FF] transition-colors"
                 >
                   02. {t.services.pillar2Title}
@@ -74,8 +91,8 @@ export const Footer: React.FC<FooterProps> = () => {
               </li>
               <li>
                 <a 
-                  href="/servicios" 
-                  onClick={(e) => handleLinkClick(e, '/servicios')}
+                  href={servicesPath} 
+                  onClick={(e) => handleLinkClick(e, servicesPath)}
                   className="hover:text-[#0066FF] transition-colors"
                 >
                   03. {t.services.pillar3Title}
@@ -83,8 +100,8 @@ export const Footer: React.FC<FooterProps> = () => {
               </li>
               <li>
                 <a 
-                  href="/auditoria-seguridad" 
-                  onClick={(e) => handleLinkClick(e, '/auditoria-seguridad')}
+                  href={securityPath} 
+                  onClick={(e) => handleLinkClick(e, securityPath)}
                   className="text-[#F5A623] hover:underline"
                 >
                   04. OSINT Security Audit (29€)
@@ -92,8 +109,8 @@ export const Footer: React.FC<FooterProps> = () => {
               </li>
               <li>
                 <a 
-                  href="/precios" 
-                  onClick={(e) => handleLinkClick(e, '/precios')}
+                  href={pricingPath} 
+                  onClick={(e) => handleLinkClick(e, pricingPath)}
                   className="text-[#635BFF] hover:underline"
                 >
                   05. {t.pricing.title}
@@ -101,8 +118,8 @@ export const Footer: React.FC<FooterProps> = () => {
               </li>
               <li>
                 <a 
-                  href="/blog" 
-                  onClick={(e) => handleLinkClick(e, '/blog')}
+                  href={blogPath} 
+                  onClick={(e) => handleLinkClick(e, blogPath)}
                   className="text-[#38BDF8] hover:underline flex items-center gap-1"
                 >
                   06. Blog & Guías Técnicas
@@ -123,8 +140,8 @@ export const Footer: React.FC<FooterProps> = () => {
               <li><span className="text-gray-300">{t.footer.sectorHospitality}</span></li>
               <li className="pt-2">
                 <a 
-                  href="/contacto" 
-                  onClick={(e) => handleLinkClick(e, '/contacto')}
+                  href={contactPath} 
+                  onClick={(e) => handleLinkClick(e, contactPath)}
                   className="text-[#38BDF8] hover:underline block"
                 >
                   → {t.footer.contactArchitect}
@@ -161,36 +178,36 @@ export const Footer: React.FC<FooterProps> = () => {
 
           <div className="flex flex-wrap items-center gap-4 sm:gap-6">
             <a
-              href="/privacidad"
-              onClick={(e) => handleLinkClick(e, '/privacidad')}
+              href={privacyPath}
+              onClick={(e) => handleLinkClick(e, privacyPath)}
               className="hover:text-white transition-colors"
             >
               {t.footer.privacy}
             </a>
             <a
-              href="/condiciones"
-              onClick={(e) => handleLinkClick(e, '/condiciones')}
+              href={termsPath}
+              onClick={(e) => handleLinkClick(e, termsPath)}
               className="hover:text-white transition-colors"
             >
               {t.footer.terms}
             </a>
             <a
-              href="/cookies"
-              onClick={(e) => handleLinkClick(e, '/cookies')}
+              href={cookiesPath}
+              onClick={(e) => handleLinkClick(e, cookiesPath)}
               className="hover:text-white transition-colors"
             >
               {t.footer.cookies}
             </a>
             <a
-              href="/aviso-legal"
-              onClick={(e) => handleLinkClick(e, '/aviso-legal')}
+              href={legalPath}
+              onClick={(e) => handleLinkClick(e, legalPath)}
               className="hover:text-white transition-colors"
             >
               {t.footer.legal}
             </a>
             <a
-              href="/auditoria-seguridad"
-              onClick={(e) => handleLinkClick(e, '/auditoria-seguridad')}
+              href={securityPath}
+              onClick={(e) => handleLinkClick(e, securityPath)}
               className="hover:text-white transition-colors text-[#F5A623]"
             >
               {t.footer.ethicalAudit}
@@ -209,4 +226,3 @@ export const Footer: React.FC<FooterProps> = () => {
     </footer>
   );
 };
-

@@ -23,6 +23,19 @@ export const BlogPage: React.FC<BlogPageProps> = ({ onOpenAuditModal }) => {
   const [generationSuccess, setGenerationSuccess] = useState<string | null>(null);
   const [generationError, setGenerationError] = useState<string | null>(null);
 
+  // Exclusively display internal post generator controls within AI Studio or local dev environment
+  const isAiStudio = useMemo(() => {
+    if (typeof window === 'undefined') return false;
+    const host = window.location.hostname.toLowerCase();
+    const search = window.location.search;
+    return (
+      host.includes('run.app') ||
+      host.includes('localhost') ||
+      host.includes('127.0.0.1') ||
+      new URLSearchParams(search).get('studio') === '1'
+    );
+  }, []);
+
   // Fetch posts
   const publishedPosts = useMemo(() => getPublishedPosts(), [isGenerating]);
   const scheduledPosts = useMemo(() => getScheduledPosts(), [isGenerating]);
@@ -186,86 +199,101 @@ Muchos negocios cometen el error de confiar en soluciones genéricas o plantilla
           </p>
         </div>
 
-        {/* Automation Status Card */}
-        <div className="p-4 sm:p-6 rounded-2xl bg-[#131B33]/80 border border-[#0066FF]/30 mb-10 shadow-[0_0_25px_rgba(0,102,255,0.15)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34D399]"></span>
-              <span className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">
-                Sistema de Publicación Automatizada Activo
-              </span>
+        {/* Internal AI Studio Admin Generator Panel (Hidden on Public Web) */}
+        {isAiStudio && (
+          <div className="p-4 sm:p-6 rounded-2xl bg-[#131B33]/90 border border-[#0066FF]/40 mb-10 shadow-[0_0_25px_rgba(0,102,255,0.2)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_#22D3EE]"></span>
+                <span className="text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider">
+                  Panel Exclusivo AI Studio // Motor de Redacción
+                </span>
+              </div>
+              <p className="text-sm text-gray-300">
+                Entorno privado de administración. Genera artículos técnicos bajo demanda con la IA de Dexvoi sin exponer controles en la web pública.
+              </p>
             </div>
-            <p className="text-sm text-gray-300">
-              Publicaciones programadas: <strong className="text-white">2 artículos diarios</strong> (09:00 y 18:00 CET) optimizados con <span className="text-[#F5A623] font-mono">Schema.org / JSON-LD</span> para posicionamiento orgánico.
-            </p>
-          </div>
 
-          <div className="flex items-center gap-3 w-full md:w-auto">
-            <button
-              onClick={handleGenerateAiPost}
-              disabled={isGenerating}
-              className="w-full md:w-auto metallic-btn px-4 py-2.5 rounded-xl font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer shadow-lg disabled:opacity-50"
-            >
-              {isGenerating ? (
-                <>
-                  <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#F5A623]" />
-                  <span>Redactando con IA...</span>
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-3.5 h-3.5 text-[#F5A623]" />
-                  <span>Generar Nuevo Post con IA</span>
-                </>
-              )}
-            </button>
+            <div className="flex items-center gap-3 w-full md:w-auto">
+              <button
+                id="btn-ai-studio-generate-post"
+                onClick={handleGenerateAiPost}
+                disabled={isGenerating}
+                className="w-full md:w-auto metallic-btn px-4 py-2.5 rounded-xl font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer shadow-lg disabled:opacity-50"
+              >
+                {isGenerating ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#F5A623]" />
+                    <span>Redactando con IA...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-3.5 h-3.5 text-[#F5A623]" />
+                    <span>Generar Nuevo Post con IA</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Notifications */}
-        {generationSuccess && (
+        {/* Notifications (AI Studio only) */}
+        {isAiStudio && generationSuccess && (
           <div className="mb-6 p-4 rounded-xl bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 text-sm flex items-center gap-3">
             <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-400" />
             <span>{generationSuccess}</span>
           </div>
         )}
-        {generationError && (
+        {isAiStudio && generationError && (
           <div className="mb-6 p-4 rounded-xl bg-red-950/40 border border-red-500/40 text-red-300 text-sm flex items-center gap-3">
             <AlertCircle className="w-5 h-5 shrink-0 text-red-400" />
             <span>{generationError}</span>
           </div>
         )}
 
-        {/* Tabs: Publicados vs En Cola */}
-        <div className="flex items-center justify-between border-b border-gray-800 pb-4 mb-8">
-          <div className="flex items-center gap-4 text-sm font-mono">
-            <button
-              onClick={() => setActiveTab('published')}
-              className={`pb-2 transition-colors relative cursor-pointer ${
-                activeTab === 'published' ? 'text-[#0066FF] font-bold' : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              Artículos en Vivo ({publishedPosts.length})
-              {activeTab === 'published' && (
-                <div className="absolute bottom-[-17px] left-0 w-full h-[2px] bg-[#0066FF]"></div>
-              )}
-            </button>
-            <button
-              onClick={() => setActiveTab('queue')}
-              className={`pb-2 transition-colors relative cursor-pointer ${
-                activeTab === 'queue' ? 'text-[#F5A623] font-bold' : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              Cola de Publicación Programada ({scheduledPosts.length})
-              {activeTab === 'queue' && (
-                <div className="absolute bottom-[-17px] left-0 w-full h-[2px] bg-[#F5A623]"></div>
-              )}
-            </button>
-          </div>
+        {/* Navigation Bar / Tabs */}
+        {isAiStudio ? (
+          <div className="flex items-center justify-between border-b border-gray-800 pb-4 mb-8">
+            <div className="flex items-center gap-4 text-sm font-mono">
+              <button
+                onClick={() => setActiveTab('published')}
+                className={`pb-2 transition-colors relative cursor-pointer ${
+                  activeTab === 'published' ? 'text-[#0066FF] font-bold' : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                Artículos en Vivo ({publishedPosts.length})
+                {activeTab === 'published' && (
+                  <div className="absolute bottom-[-17px] left-0 w-full h-[2px] bg-[#0066FF]"></div>
+                )}
+              </button>
+              <button
+                onClick={() => setActiveTab('queue')}
+                className={`pb-2 transition-colors relative cursor-pointer ${
+                  activeTab === 'queue' ? 'text-[#F5A623] font-bold' : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                Cola de Publicación Programada ({scheduledPosts.length})
+                {activeTab === 'queue' && (
+                  <div className="absolute bottom-[-17px] left-0 w-full h-[2px] bg-[#F5A623]"></div>
+                )}
+              </button>
+            </div>
 
-          <div className="text-xs font-mono text-gray-500 hidden sm:block">
-            {filteredPosts.length} {filteredPosts.length === 1 ? 'artículo' : 'artículos'} encontrados
+            <div className="text-xs font-mono text-gray-500 hidden sm:block">
+              {filteredPosts.length} {filteredPosts.length === 1 ? 'artículo' : 'artículos'} encontrados
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="flex items-center justify-between border-b border-gray-800 pb-4 mb-8">
+            <div className="text-sm font-mono text-gray-300 font-semibold flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-[#0066FF]"></span>
+              <span>Artículos de Inteligencia Técnica ({publishedPosts.length})</span>
+            </div>
+            <div className="text-xs font-mono text-gray-500 hidden sm:block">
+              {filteredPosts.length} {filteredPosts.length === 1 ? 'artículo' : 'artículos'} disponibles
+            </div>
+          </div>
+        )}
 
         {/* Search & Categories */}
         <div className="space-y-4 mb-10">
