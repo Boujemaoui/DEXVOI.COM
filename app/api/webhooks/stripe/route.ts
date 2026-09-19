@@ -1,0 +1,99 @@
+export const runtime = 'edge';
+
+import Stripe from 'stripe';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+  apiVersion: '2025-02-24.acacia' as any,
+  httpClient: Stripe.createFetchHttpClient(),
+});
+
+export async function POST(request: Request): Promise<Response> {
+  // 1. Manejo del cuerpo en bruto (CRÍTICO para Cloudflare / Edge)
+  // La primera operación debe ser request.text() sin modificar para verificar la firma de Stripe
+  const body = await request.text();
+
+  const signature = request.headers.get('stripe-signature');
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+  if (!signature) {
+    console.error('❌ [Stripe Webhook] Cabecera stripe-signature no encontrada.');
+    return new Response(
+      JSON.stringify({ error: 'Falta la cabecera stripe-signature.' }),
+      { status: 400, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+
+  if (!webhookSecret) {
+    console.error('❌ [Stripe Webhook] STRIPE_WEBHOOK_SECRET no configurado en las variables de entorno.');
+    return new Response(
+      JSON.stringify({ error: 'STRIPE_WEBHOOK_SECRET no configurado en el servidor.' }),
+      { status: 400, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+
+  let event: Stripe.Event;
+
+  // 2. Verificación de la firma con constructEventAsync (Obligatorio en Cloudflare con Web Crypto)
+  try {
+    event = await stripe.webhooks.constructEventAsync(body, signature, webhookSecret);
+  } catch (err: any) {
+    console.error('❌ [Stripe Webhook] Error en la verificación de la firma:', err.message);
+    return new Response(
+      JSON.stringify({ error: `Fallo de verificación de firma: ${err.message}` }),
+      { status: 400, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+
+  // 3. Lógica al recibir checkout.session.completed
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object as Stripe.Checkout.Session;
+
+    // Extraer email del cliente
+    const customerEmail = session.customer_details?.email || 'Email no disponible';
+
+    // Extraer ID de la sesión
+    const sessionId = session.id;
+
+    // Extraer producto comprado desde los line_items
+    let lineItems = (session as any).line_items?.data;
+
+    // Si los line_items no vienen expandidos en el payload directo, recuperarlos usando la API de Stripe
+    if (!lineItems && session.id && process.env.STRIPE_SECRET_KEY) {
+      try {
+        const expandedSession = await stripe.checkout.sessions.retrieve(session.id, {
+          expand: ['line_items'],
+        });
+        lineItems = expandedSession.line_items?.data;
+      } catch (expandError: any) {
+        console.warn('⚠️ [Stripe Webhook] No se pudieron expandir los line_items vía API:', expandError.message);
+      }
+    }
+
+    // Identificar el producto / importe (19€, 49€ o 99€)
+    const amountTotal = session.amount_total ? `${session.amount_total / 100}€` : 'No especificado';
+    const purchasedProduct =
+      lineItems?.[0]?.description ||
+      lineItems?.[0]?.price?.nickname ||
+      (session.amount_total === 1900
+        ? 'Informe Básico (19€)'
+        : session.amount_total === 4900
+        ? 'Informe Completo (49€)'
+        : session.amount_total === 9900
+        ? 'Auditoría Premium con Consultoría (99€)'
+        : `Plan Dexvoi (${amountTotal})`);
+
+    // Por ahora, registrar en consola los datos extraídos
+    console.log('📦 [Stripe Webhook] checkout.session.completed procesado con éxito:');
+    console.log('   👤 Email del cliente:', customerEmail);
+    console.log('   🆔 ID de la sesión:', sessionId);
+    console.log('   🏷️ Producto comprado:', purchasedProduct);
+    console.log('   💰 Importe total:', amountTotal);
+    console.log('   📋 Detalle line_items:', JSON.stringify(lineItems || []));
+  }
+
+  // 4. Respuesta exitosa
+  return new Response(
+    JSON.stringify({ received: true }),
+    { status: 200, headers: { 'Content-Type': 'application/json' } }
+  );
+}

@@ -4,6 +4,7 @@ import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI } from '@google/genai';
 import dotenv from 'dotenv';
 import { Resend } from 'resend';
+import Stripe from 'stripe';
 import { runRealSecurityAudit } from './server/securityAudit';
 
 dotenv.config();
@@ -400,6 +401,76 @@ Is this correct? Reply YES for my system to launch the automated analysis.`,
 async function startServer() {
   const app = express();
   const PORT = 3000;
+
+  // Stripe Webhook Endpoint (Raw Body Handling - CRITICAL: must receive unparsed raw body)
+  app.post('/api/webhooks/stripe', express.raw({ type: 'application/json' }), async (req, res) => {
+    const signature = req.headers['stripe-signature'];
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+    if (!signature || typeof signature !== 'string') {
+      console.error('❌ [Stripe Webhook] Cabecera stripe-signature no encontrada.');
+      return res.status(400).json({ error: 'Falta la cabecera stripe-signature.' });
+    }
+
+    if (!webhookSecret) {
+      console.error('❌ [Stripe Webhook] STRIPE_WEBHOOK_SECRET no configurado en las variables de entorno.');
+      return res.status(400).json({ error: 'STRIPE_WEBHOOK_SECRET no configurado en el servidor.' });
+    }
+
+    const stripeKey = process.env.STRIPE_SECRET_KEY;
+    const stripeClient = new Stripe(stripeKey || '');
+
+    let event: Stripe.Event;
+    try {
+      event = await stripeClient.webhooks.constructEventAsync(
+        req.body,
+        signature,
+        webhookSecret
+      );
+    } catch (err: any) {
+      console.error('❌ [Stripe Webhook] Error en la verificación de la firma:', err.message);
+      return res.status(400).json({ error: `Fallo de verificación de firma: ${err.message}` });
+    }
+
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object as Stripe.Checkout.Session;
+      const customerEmail = session.customer_details?.email || 'Email no disponible';
+      const sessionId = session.id;
+
+      let lineItems = (session as any).line_items?.data;
+      if (!lineItems && session.id && stripeKey) {
+        try {
+          const expandedSession = await stripeClient.checkout.sessions.retrieve(session.id, {
+            expand: ['line_items'],
+          });
+          lineItems = expandedSession.line_items?.data;
+        } catch (expandError: any) {
+          console.warn('⚠️ [Stripe Webhook] No se pudieron expandir los line_items vía API:', expandError.message);
+        }
+      }
+
+      const amountTotal = session.amount_total ? `${session.amount_total / 100}€` : 'No especificado';
+      const purchasedProduct =
+        lineItems?.[0]?.description ||
+        lineItems?.[0]?.price?.nickname ||
+        (session.amount_total === 1900
+          ? 'Informe Básico (19€)'
+          : session.amount_total === 4900
+          ? 'Informe Completo (49€)'
+          : session.amount_total === 9900
+          ? 'Auditoría Premium con Consultoría (99€)'
+          : `Plan Dexvoi (${amountTotal})`);
+
+      console.log('📦 [Stripe Webhook] checkout.session.completed procesado con éxito:');
+      console.log('   👤 Email del cliente:', customerEmail);
+      console.log('   🆔 ID de la sesión:', sessionId);
+      console.log('   🏷️ Producto comprado:', purchasedProduct);
+      console.log('   💰 Importe total:', amountTotal);
+      console.log('   📋 Detalle line_items:', JSON.stringify(lineItems || []));
+    }
+
+    return res.status(200).json({ received: true });
+  });
 
   app.use(express.json());
 
