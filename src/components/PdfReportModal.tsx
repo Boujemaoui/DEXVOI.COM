@@ -190,8 +190,15 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
     }
 
     let targetStripeUrl = currentTier.stripeUrl;
+    const queryParams: string[] = [];
     if (email) {
-      targetStripeUrl += (targetStripeUrl.includes('?') ? '&' : '?') + `prefilled_email=${encodeURIComponent(email)}`;
+      queryParams.push(`prefilled_email=${encodeURIComponent(email.trim())}`);
+    }
+    if (website) {
+      queryParams.push(`client_reference_id=${encodeURIComponent(website.trim())}`);
+    }
+    if (queryParams.length > 0) {
+      targetStripeUrl += (targetStripeUrl.includes('?') ? '&' : '?') + queryParams.join('&');
     }
 
     window.open(targetStripeUrl, '_blank', 'noopener,noreferrer');
@@ -200,13 +207,42 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
     setIsPaid(true);
   };
 
-  const handleDownloadSample = () => {
+  const [isDownloadingSample, setIsDownloadingSample] = useState(false);
+
+  const handleDownloadSample = async () => {
+    setIsDownloadingSample(true);
+    try {
+      const res = await fetch('/api/audit/generate-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          target: website || 'dexvoi.com',
+          tier: selectedTier,
+          email: email || 'cliente@dexvoi.com',
+        }),
+      });
+
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `DEXVOI-Auditoria-Oficial-${selectedTier.toUpperCase()}.pdf`;
+        link.click();
+        URL.revokeObjectURL(url);
+        setIsDownloadingSample(false);
+        return;
+      }
+    } catch {
+      // Fallback below
+    }
+
     const reportContent = `DEXVOI - ${language === 'fr' ? 'RAPPORT STRATÉGIQUE D’ARCHITECTURE DIGITALE' : language === 'en' ? 'STRATEGIC DIGITAL ARCHITECTURE REPORT' : 'INFORME ESTRATÉGICO DE ARQUITECTURA DIGITAL'}
 ==================================================================
 ${language === 'fr' ? 'Type' : language === 'en' ? 'Tier' : 'Tipo'}: ${tiers[selectedTier].name}
 ${language === 'fr' ? 'Montant' : language === 'en' ? 'Amount' : 'Precio'}: ${tiers[selectedTier].price}
 ${language === 'fr' ? 'Web analysé' : language === 'en' ? 'Target Web' : 'Web analizada'}: ${website || 'domain.com'}
-Email: ${email}
+Email: ${email || 'cliente@dexvoi.com'}
 ${language === 'fr' ? 'Date' : language === 'en' ? 'Date' : 'Fecha'}: ${new Date().toLocaleDateString()}
 
 1. ${language === 'fr' ? 'SÉCURITÉ & BLINDAGE DIGITALE (85/100)' : language === 'en' ? 'DIGITAL DEFENSIVE SECURITY (85/100)' : 'SEGURIDAD Y BLINDAJE DIGITAL (85/100)'}
@@ -235,6 +271,7 @@ Support: info@dexvoi.com | WhatsApp: +212 600-000000`;
     link.download = `DEXVOI-AUDIT-${selectedTier.toUpperCase()}.txt`;
     link.click();
     URL.revokeObjectURL(url);
+    setIsDownloadingSample(false);
   };
 
   return (
@@ -291,10 +328,15 @@ Support: info@dexvoi.com | WhatsApp: +212 600-000000`;
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
               <button
                 onClick={handleDownloadSample}
-                className="metallic-btn px-6 py-3 rounded-lg font-mono text-xs uppercase font-bold flex items-center gap-2 cursor-pointer"
+                disabled={isDownloadingSample}
+                className="metallic-btn px-6 py-3 rounded-lg font-mono text-xs uppercase font-bold flex items-center gap-2 cursor-pointer disabled:opacity-60"
               >
                 <Download className="w-4 h-4 text-[#0A0F1F]" />
-                <span>{language === 'fr' ? 'Télécharger la copie immédiate' : language === 'en' ? 'Download Instant Copy' : 'Descargar Copia Inmediata'}</span>
+                <span>
+                  {isDownloadingSample
+                    ? (language === 'fr' ? 'Génération du PDF...' : language === 'en' ? 'Generating Official PDF...' : 'Generando PDF Oficial...')
+                    : (language === 'fr' ? 'Télécharger la copie immédiate (PDF)' : language === 'en' ? 'Download Instant Copy (PDF)' : 'Descargar Copia Inmediata (PDF)')}
+                </span>
               </button>
 
               <button

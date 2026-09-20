@@ -1,4 +1,5 @@
 import Stripe from 'stripe';
+import { executeAndDeliverAudit } from '../../../server/auditDelivery';
 
 export interface EventContext<Env, P extends string, Data> {
   request: Request;
@@ -13,6 +14,8 @@ export interface EventContext<Env, P extends string, Data> {
 export interface CloudflareEnv {
   STRIPE_SECRET_KEY?: string;
   STRIPE_WEBHOOK_SECRET?: string;
+  RESEND_API_KEY?: string;
+  NOTIFICATION_EMAIL?: string;
 }
 
 /**
@@ -109,6 +112,24 @@ export async function onRequestPost(context: EventContext<CloudflareEnv, any, an
     console.log('   🏷️ Producto comprado:', purchasedProduct);
     console.log('   💰 Importe total:', amountTotal);
     console.log('   📋 Detalle line_items:', JSON.stringify(lineItems || []));
+
+    // Ejecutar escaneo en segundo plano y entrega por email mediante context.waitUntil
+    if (context.waitUntil) {
+      context.waitUntil(
+        executeAndDeliverAudit(session, lineItems, stripe)
+          .then((auditResult) => {
+            console.log('🎉 [Cloudflare Pages Webhook] Auditoría ejecutada y enviada al cliente:', auditResult);
+          })
+          .catch((auditError) => {
+            console.error('❌ [Cloudflare Pages Webhook] Error en entrega de auditoría:', auditError);
+          })
+      );
+    } else {
+      // Fallback sin waitUntil
+      executeAndDeliverAudit(session, lineItems, stripe).catch((err) => {
+        console.error('❌ [Cloudflare Pages Webhook] Error asíncrono:', err);
+      });
+    }
   }
 
   // 4. Respuesta exitosa
