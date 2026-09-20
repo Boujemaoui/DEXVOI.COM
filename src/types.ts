@@ -3,16 +3,27 @@ export interface ScanResult {
   businessType: 'clinica' | 'restaurante' | 'otro';
   timestamp: string;
   overallScore: number;
+  grade?: 'A+' | 'A' | 'B' | 'C' | 'D' | 'F';
   speed: {
     score: number;
     loadTimeSeconds: number;
+    responseTimeMs?: number;
+    pageSizeFormatted?: string;
+    compression?: string;
+    rating?: string;
     fcp: number; // first contentful paint in ms
     mobileOptimized: boolean;
     recommendation: string;
   };
   security: {
     score: number;
-    sslGrade: 'A+' | 'A' | 'B' | 'F';
+    sslGrade: 'A+' | 'A' | 'B' | 'C' | 'D' | 'F';
+    sslIssuer?: string;
+    sslDaysRemaining?: number;
+    tlsProtocol?: string;
+    hstsConfigured?: boolean;
+    cspConfigured?: boolean;
+    xFrameConfigured?: boolean;
     dataProtectionCompliant: boolean;
     vulnerabilitiesDetected: number;
     headersConfigured: boolean;
@@ -20,12 +31,16 @@ export interface ScanResult {
   };
   seoLocal: {
     score: number;
+    titleText?: string;
+    metaDescriptionStatus?: string;
     googleMapsIndexed: boolean;
     localRankEstimate: string;
     schemaMarkupDetected: boolean;
     recommendation: string;
   };
   keyFindings: string[];
+  issues?: AuditIssue[];
+  rawAuditResult?: OsintSecurityAuditResult;
 }
 
 export interface PillarService {

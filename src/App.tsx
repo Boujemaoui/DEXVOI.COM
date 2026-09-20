@@ -197,7 +197,18 @@ export default function App() {
             <MethodologySection onOpenAuditModal={() => setIsAuditModalOpen(true)} />
 
             {/* Section 06: Live Perimeter OSINT Scanner */}
-            <ScannerSection onSelectAuditWithUrl={handleSelectAuditWithUrl} />
+            <ScannerSection 
+              onSelectAuditWithUrl={handleSelectAuditWithUrl}
+              onOpenPdfModal={(tier) => {
+                setPdfModalTier(tier);
+                setIsPdfModalOpen(true);
+              }}
+              onOpenOsintModal={(result, target) => {
+                setOsintAuditResult(result);
+                setOsintTargetDomain(target);
+                setIsOsintModalOpen(true);
+              }}
+            />
 
             {/* Section 07: Transparent Fixed Pricing */}
             <PricingSection 
