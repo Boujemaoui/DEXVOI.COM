@@ -13,10 +13,12 @@ import {
   FileText, 
   ExternalLink, 
   Cpu, 
-  HardDrive 
+  HardDrive,
+  Download
 } from 'lucide-react';
 import { ScanResult, OsintSecurityAuditResult, AuditIssue } from '../types';
 import { runClientSecurityAudit } from '../services/clientSecurityAudit';
+import { downloadOfficialAuditPdf } from '../services/clientPdfReport';
 import { useLanguage } from '../i18n/LanguageContext';
 import { navigateTo } from '../utils/navigation';
 
@@ -38,6 +40,36 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
   const [scanStep, setScanStep] = useState(0);
   const [scanLog, setScanLog] = useState<string[]>([]);
   const [result, setResult] = useState<ScanResult | null>(null);
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+  const [pdfSuccessMessage, setPdfSuccessMessage] = useState<string | null>(null);
+
+  const handleDownloadPdf = async () => {
+    if (!result) return;
+    setIsDownloadingPdf(true);
+    setPdfSuccessMessage(null);
+    try {
+      const ok = await downloadOfficialAuditPdf({
+        target: result.url,
+        auditResult: result.rawAuditResult,
+        customerEmail: 'cliente@dexvoi.com',
+        tier: 'free',
+      });
+      if (ok) {
+        setPdfSuccessMessage(
+          language === 'fr'
+            ? 'Rapport officiel Dexvoi téléchargé (PDF 5 pages).'
+            : language === 'en'
+            ? 'Official Dexvoi audit report downloaded (5-page PDF).'
+            : 'Informe oficial Dexvoi descargado con éxito (PDF 5 páginas).'
+        );
+        setTimeout(() => setPdfSuccessMessage(null), 7000);
+      }
+    } catch (err) {
+      console.error('Error downloading PDF:', err);
+    } finally {
+      setIsDownloadingPdf(false);
+    }
+  };
 
   const scanSteps = language === 'fr' ? [
     'Connexion aux nœuds de périphérie et résolution DNS...',
@@ -486,19 +518,51 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
                   </p>
                 </div>
 
-                <div className="p-3 bg-[#0A0F1F] rounded-lg border border-amber-500/40 text-center font-mono">
-                  <div className="text-[10px] text-gray-400 uppercase">{language === 'fr' ? 'STATUT DU SERVEUR' : language === 'en' ? 'PERIMETER STATUS' : 'ESTADO PERIMETRAL'}</div>
-                  <div className={`text-sm font-bold ${
-                    result.overallScore >= 80 ? 'text-emerald-400' : result.overallScore >= 50 ? 'text-[#F5A623]' : 'text-red-400'
-                  }`}>
-                    {result.overallScore >= 80 
-                      ? (language === 'fr' ? 'INFRASTRUCTURE SOLIDE' : language === 'en' ? 'SOLID INFRASTRUCTURE' : 'INFRAESTRUCTURA SÓLIDA')
-                      : result.overallScore >= 50
-                      ? (language === 'fr' ? 'VULNÉRABLE AUX FUITES' : language === 'en' ? 'VULNERABLE TO BOUNCE' : 'VULNERABLE A FUGAS')
-                      : (language === 'fr' ? 'RISQUE CRITIQUE DÉTECTÉ' : language === 'en' ? 'CRITICAL RISK DETECTED' : 'RIESGO CRÍTICO DETECTADO')}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
+                  <div className="p-3 bg-[#0A0F1F] rounded-lg border border-amber-500/40 text-center font-mono">
+                    <div className="text-[10px] text-gray-400 uppercase">{language === 'fr' ? 'STATUT DU SERVEUR' : language === 'en' ? 'PERIMETER STATUS' : 'ESTADO PERIMETRAL'}</div>
+                    <div className={`text-sm font-bold ${
+                      result.overallScore >= 80 ? 'text-emerald-400' : result.overallScore >= 50 ? 'text-[#F5A623]' : 'text-red-400'
+                    }`}>
+                      {result.overallScore >= 80 
+                        ? (language === 'fr' ? 'INFRASTRUCTURE SOLIDE' : language === 'en' ? 'SOLID INFRASTRUCTURE' : 'INFRAESTRUCTURA SÓLIDA')
+                        : result.overallScore >= 50
+                        ? (language === 'fr' ? 'VULNÉRABLE AUX FUITES' : language === 'en' ? 'VULNERABLE TO BOUNCE' : 'VULNERABLE A FUGAS')
+                        : (language === 'fr' ? 'RISQUE CRITIQUE DÉTECTÉ' : language === 'en' ? 'CRITICAL RISK DETECTED' : 'RIESGO CRÍTICO DETECTADO')}
+                    </div>
                   </div>
+
+                  <button
+                    onClick={handleDownloadPdf}
+                    disabled={isDownloadingPdf}
+                    className="px-4 py-3 rounded-lg bg-gradient-to-r from-[#F5A623] to-[#E09015] hover:from-[#FFAE33] hover:to-[#F5A623] text-black font-bold font-mono text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#F5A623]/20 transition-all cursor-pointer disabled:opacity-60"
+                    title="Descargar informe oficial en PDF con branding Dexvoi"
+                  >
+                    {isDownloadingPdf ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin text-black" />
+                        <span>{language === 'fr' ? 'Génération...' : language === 'en' ? 'Generating...' : 'Generando PDF...'}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Download className="w-3.5 h-3.5 text-black" />
+                        <span>{language === 'fr' ? 'Télécharger Rapport PDF' : language === 'en' ? 'Download PDF Report' : 'Descargar Informe PDF'}</span>
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
+
+              {/* PDF Download Success Alert */}
+              {pdfSuccessMessage && (
+                <div className="p-3.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs font-mono flex items-center justify-between gap-3 animate-in fade-in">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>{pdfSuccessMessage}</span>
+                  </div>
+                  <span className="text-[10px] text-emerald-400/80 uppercase font-bold tracking-wider">DEXVOI OFFICIAL AUDIT</span>
+                </div>
+              )}
 
               {/* 3 Metrics Breakdowns with REAL measured values */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -647,32 +711,51 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
               </div>
 
               {/* Action Strip: Direct CTAs */}
-              <div className="p-5 rounded-xl bg-gradient-to-r from-[#1E293B] to-[#131B33] border border-[#F5A623]/40 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="p-5 rounded-xl bg-gradient-to-r from-[#1E293B] to-[#131B33] border border-[#F5A623]/40 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
                 <div className="text-xs text-gray-200 font-mono">
                   <strong className="text-white block font-sans font-bold text-sm mb-0.5">
                     {language === 'fr' ? `Voulez-vous sécuriser et accélérer ${result.url} ?` : language === 'en' ? `Ready to secure and accelerate ${result.url}?` : `¿Quieres blindar y acelerar ${result.url}?`}
                   </strong>
                   {language === 'fr'
-                    ? 'Téléchargez le rapport officiel en PDF ou confiez la remédiation à l’Architecte Digital.'
+                    ? 'Téléchargez le rapport officiel en PDF (5 pages, gratuit) avec la marque Dexvoi ou confiez la remédiation à l’Architecte Digital.'
                     : language === 'en'
-                    ? 'Download the official PDF report or hire our Digital Architect for turnkey remediation.'
-                    : 'Descarga el informe oficial en PDF o delega la reparación técnica en el Arquitecto Digital.'}
+                    ? 'Download the official PDF report (5 pages, free) with Dexvoi brand identity or hire our Digital Architect.'
+                    : 'Descarga el informe oficial en PDF (5 páginas, gratuito) con el diseño y marca Dexvoi o delega la reparación en el Arquitecto Digital.'}
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3 shrink-0">
+                <div className="flex flex-wrap items-center gap-3 shrink-0 w-full lg:w-auto">
+                  <button
+                    onClick={handleDownloadPdf}
+                    disabled={isDownloadingPdf}
+                    className="flex-1 sm:flex-initial px-5 py-2.5 rounded-lg bg-gradient-to-r from-[#F5A623] to-[#E09015] hover:from-[#FFAE33] hover:to-[#F5A623] text-black font-bold font-mono text-xs flex items-center justify-center gap-2 shadow-md shadow-[#F5A623]/20 transition-all cursor-pointer disabled:opacity-60"
+                  >
+                    {isDownloadingPdf ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin text-black" />
+                        <span>{language === 'fr' ? 'Génération du PDF...' : language === 'en' ? 'Generating PDF...' : 'Generando PDF...'}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Download className="w-3.5 h-3.5 text-black" />
+                        <span>{language === 'fr' ? 'Télécharger PDF (Gratuit)' : language === 'en' ? 'Download PDF (Free)' : 'Descargar PDF (Gratis)'}</span>
+                      </>
+                    )}
+                  </button>
+
                   {onOpenPdfModal && (
                     <button
                       onClick={() => onOpenPdfModal('complete')}
                       className="px-4 py-2.5 rounded-lg bg-[#1E293B] hover:bg-[#283548] border border-gray-700 text-white font-mono text-xs flex items-center gap-1.5 transition-all cursor-pointer"
+                      title="Auditoría forense de más de 20 páginas con análisis profundo de vulnerabilidades"
                     >
-                      <FileText className="w-3.5 h-3.5 text-[#F5A623]" />
-                      <span>{language === 'fr' ? 'Rapport PDF (19€)' : language === 'en' ? 'PDF Report (19€)' : 'Informe PDF (19€)'}</span>
+                      <FileText className="w-3.5 h-3.5 text-[#0066FF]" />
+                      <span>{language === 'fr' ? 'Audit Forensique (20+ p.)' : language === 'en' ? 'Forensic Audit (20+ p.)' : 'Auditoría Forense (20+ p.)'}</span>
                     </button>
                   )}
 
                   <button
                     onClick={() => onSelectAuditWithUrl(result.url, result.keyFindings)}
-                    className="metallic-btn px-6 py-3 rounded-lg font-mono text-xs uppercase tracking-wider whitespace-nowrap flex items-center gap-2 cursor-pointer"
+                    className="metallic-btn px-5 py-2.5 rounded-lg font-mono text-xs uppercase tracking-wider whitespace-nowrap flex items-center gap-2 cursor-pointer"
                   >
                     <span>{t.scanner.ctaApplyAudit}</span>
                     <ArrowRight className="w-3.5 h-3.5" />

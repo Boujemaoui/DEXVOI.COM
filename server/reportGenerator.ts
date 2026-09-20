@@ -1,7 +1,7 @@
 import { jsPDF } from 'jspdf';
 import { OsintSecurityAuditResult } from '../src/types.ts';
 
-export type AuditPlanTier = 'basic' | 'complete' | 'premium';
+export type AuditPlanTier = 'free' | 'basic' | 'complete' | 'premium';
 
 export interface GeneratePdfOptions {
   auditResult: OsintSecurityAuditResult;
@@ -23,9 +23,9 @@ const COLOR_WARNING = { r: 245, g: 158, b: 11 };
 const COLOR_SUCCESS = { r: 16, g: 185, b: 129 };
 
 /**
- * Genera el informe forense oficial en PDF de Dexvoi adaptado a la profundidad del plan adquirido:
- * - basic (19€): 5 páginas
- * - complete (49€): 21 páginas (20+ páginas)
+ * Genera el informe forense oficial en PDF de Dexvoi adaptado a la profundidad del plan:
+ * - free / basic (19€): 5 páginas de diagnóstico técnico y remediación
+ * - complete (49€): 21 páginas (20+ páginas forenses)
  * - premium (99€): 22 páginas (20+ páginas + Sesión Estratégica 1-a-1)
  */
 export function generateAuditPdf(options: GeneratePdfOptions): Buffer {
@@ -37,13 +37,19 @@ export function generateAuditPdf(options: GeneratePdfOptions): Buffer {
     format: 'a4',
   });
 
-  const totalPages = tier === 'basic' ? 5 : tier === 'complete' ? 21 : 22;
+  const totalPages = (tier === 'basic' || tier === 'free') ? 5 : tier === 'complete' ? 21 : 22;
   const pageWidth = 210;
   const pageHeight = 297;
   const margin = 15;
   const contentWidth = pageWidth - margin * 2;
 
   const tierInfo = {
+    free: {
+      name: 'Auditoría Exprés Oficial Dexvoi (Gratuita)',
+      badge: 'DIAGNÓSTICO TÉCNICO OFICIAL DEXVOI (5 PÁGINAS)',
+      pages: '5 Páginas',
+      desc: 'Informe Oficial de Diagnóstico Perimetral: Velocidad Core Web Vitals, SSL/TLS, Cabeceras HTTP y Google Maps',
+    },
     basic: {
       name: 'Plan Básico (19€)',
       badge: 'STARTER AUDIT (5 PÁGINAS)',
@@ -517,9 +523,9 @@ export function generateAuditPdf(options: GeneratePdfOptions): Buffer {
   drawFooter(4);
 
   // ==========================================
-  // PÁGINA 5 (BÁSICO) O PÁGINA FINAL DE ACCIÓN
+  // PÁGINA 5 (BÁSICO / GRATUITO) O PÁGINA FINAL DE ACCIÓN
   // ==========================================
-  if (tier === 'basic') {
+  if (tier === 'basic' || tier === 'free') {
     doc.addPage();
     setDarkBg();
     drawHeader(5, '04. Problemas Priorizados & Soluciones Concretas Dexvoi');

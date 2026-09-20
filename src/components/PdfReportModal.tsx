@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, FileText, CheckCircle2, Lock, ArrowRight, Download, CreditCard } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
+import { downloadOfficialAuditPdf } from '../services/clientPdfReport';
 
 interface PdfReportModalProps {
   isOpen: boolean;
@@ -212,66 +213,16 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
   const handleDownloadSample = async () => {
     setIsDownloadingSample(true);
     try {
-      const res = await fetch('/api/audit/generate-pdf', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          target: website || 'dexvoi.com',
-          tier: selectedTier,
-          email: email || 'cliente@dexvoi.com',
-        }),
+      await downloadOfficialAuditPdf({
+        target: website || 'dexvoi.com',
+        customerEmail: email || 'cliente@dexvoi.com',
+        tier: selectedTier,
       });
-
-      if (res.ok) {
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `DEXVOI-Auditoria-Oficial-${selectedTier.toUpperCase()}.pdf`;
-        link.click();
-        URL.revokeObjectURL(url);
-        setIsDownloadingSample(false);
-        return;
-      }
-    } catch {
-      // Fallback below
+    } catch (err) {
+      console.error('Error downloading PDF in modal:', err);
+    } finally {
+      setIsDownloadingSample(false);
     }
-
-    const reportContent = `DEXVOI - ${language === 'fr' ? 'RAPPORT STRATÉGIQUE D’ARCHITECTURE DIGITALE' : language === 'en' ? 'STRATEGIC DIGITAL ARCHITECTURE REPORT' : 'INFORME ESTRATÉGICO DE ARQUITECTURA DIGITAL'}
-==================================================================
-${language === 'fr' ? 'Type' : language === 'en' ? 'Tier' : 'Tipo'}: ${tiers[selectedTier].name}
-${language === 'fr' ? 'Montant' : language === 'en' ? 'Amount' : 'Precio'}: ${tiers[selectedTier].price}
-${language === 'fr' ? 'Web analysé' : language === 'en' ? 'Target Web' : 'Web analizada'}: ${website || 'domain.com'}
-Email: ${email || 'cliente@dexvoi.com'}
-${language === 'fr' ? 'Date' : language === 'en' ? 'Date' : 'Fecha'}: ${new Date().toLocaleDateString()}
-
-1. ${language === 'fr' ? 'SÉCURITÉ & BLINDAGE DIGITALE (85/100)' : language === 'en' ? 'DIGITAL DEFENSIVE SECURITY (85/100)' : 'SEGURIDAD Y BLINDAJE DIGITAL (85/100)'}
-- SSL: TLS 1.3
-- Headers: HSTS, CSP, X-Frame-Options configured
-- Anti-bot / Anti-scraping rate limiting active
-
-2. ${language === 'fr' ? 'PERFORMANCE CORE WEB VITALS (88/100)' : language === 'en' ? 'CORE WEB VITALS SPEED (88/100)' : 'RENDIMIENTO Y VELOCIDAD CORE WEB VITALS (88/100)'}
-- First Contentful Paint (FCP): 1.1s
-- Largest Contentful Paint (LCP): 1.8s
-- Cumulative Layout Shift (CLS): 0.02
-
-3. ${language === 'fr' ? 'RÉFÉRENCEMENT LOCAL GOOGLE MAPS (90/100)' : language === 'en' ? 'LOCAL SEO & GOOGLE MAPS (90/100)' : 'POSICIONAMIENTO SEO LOCAL Y GOOGLE MAPS (90/100)'}
-- Google Business Profile optimization
-- High-intent local search ranking Top 3
-- Automated 24/7 calendar conversion lift: +120%
-
-==================================================================
-DEXVOI - Madrid · Casablanca · London
-Support: info@dexvoi.com | WhatsApp: +212 600-000000`;
-
-    const blob = new Blob([reportContent], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `DEXVOI-AUDIT-${selectedTier.toUpperCase()}.txt`;
-    link.click();
-    URL.revokeObjectURL(url);
-    setIsDownloadingSample(false);
   };
 
   return (
