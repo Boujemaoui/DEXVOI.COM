@@ -7,16 +7,32 @@ import { OsintSecurityAuditResult } from '../src/types.ts';
 // In-memory cache for recent checkout targets submitted via /api/lead or checkout modal
 export const pendingAuditTargets = new Map<string, { website: string; timestamp: number }>();
 
-// Clean up stale entries older than 24 hours
-const cleanupInterval = setInterval(() => {
+// Clean up stale entries older than 24 hours on demand without any global scope timers
+export function cleanStalePendingTargets(): void {
   const cutoff = Date.now() - 24 * 60 * 60 * 1000;
   for (const [key, value] of pendingAuditTargets.entries()) {
     if (value.timestamp < cutoff) {
       pendingAuditTargets.delete(key);
     }
   }
-}, 60 * 60 * 1000);
-cleanupInterval.unref();
+}
+
+/**
+ * Creates and returns a cleanup timer that is safely scoped inside an active handler.
+ * Returns a disposal function to clear the timer when the handler finishes.
+ * NEVER call this in module/global scope.
+ */
+export function createScopedCleanupTimer(intervalMs: number = 60 * 60 * 1000): () => void {
+  const timer = setInterval(() => {
+    cleanStalePendingTargets();
+  }, intervalMs);
+
+  if (typeof (timer as any)?.unref === 'function') {
+    (timer as any).unref();
+  }
+
+  return () => clearInterval(timer);
+}
 
 export interface ProcessAuditDeliveryResult {
   success: boolean;
@@ -34,6 +50,9 @@ export interface ProcessAuditDeliveryResult {
  * Extracts target website URL from various Stripe checkout session properties
  */
 export function extractTargetWebsite(session: Stripe.Checkout.Session, customerEmail: string): string {
+  // Purge any expired items on demand (no global interval needed)
+  cleanStalePendingTargets();
+
   // 1. Check custom_fields from Stripe Payment Link
   const customFields = (session as any).custom_fields;
   if (Array.isArray(customFields)) {
