@@ -368,8 +368,8 @@ function generateClientSidePdf(
   doc.setTextColor(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b);
   doc.text(`• Título On-Page: ${auditResult?.seo?.title?.text?.slice(0, 60) || target}`, margin + 4, 43);
   doc.text(`• Robots.txt: ${auditResult?.seo?.robotsTxt?.exists ? 'Detectado y Accesible' : 'Falta o Bloqueado'}`, margin + 4, 51);
-  doc.text(`• Sitemap XML: ${auditResult?.seo?.sitemap?.exists ? 'Sitemap Activo' : 'No Detectado Públicamente'}`, margin + 4, 59);
-  doc.text(`• URL Canónica: https://${target}/`, margin + 4, 67);
+  doc.text(`• Sitemap XML: ${auditResult?.seo?.sitemap?.exists ? ('Detectado y verificado' + (auditResult?.seo?.sitemap?.url ? ' (' + auditResult.seo.sitemap.url + ')' : '')) : 'No Detectado Públicamente'}`, margin + 4, 59);
+  doc.text(`• URL Canónica: ${auditResult?.seo?.canonicalUrl || `https://${target}/`}`, margin + 4, 67);
 
   // Tactics
   drawCard(margin, 88, contentWidth, 90, 'ESTRATEGIA RECOMENDADA PARA EL TOP 3 EN GOOGLE MAPS');

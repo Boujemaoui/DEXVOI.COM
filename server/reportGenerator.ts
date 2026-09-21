@@ -486,15 +486,21 @@ export function generateAuditPdf(options: GeneratePdfOptions): Buffer {
   const h1Txt = auditResult.seo?.h1.count !== undefined
     ? `${auditResult.seo.h1.count} etiqueta(s) H1 detectada(s)`
     : '1 H1 detectado';
-  const sitemapTxt = auditResult.seo?.sitemap.exists ? 'Detectado y accesible' : 'NO ENCONTRADO en /sitemap.xml';
-  const robotsTxt = auditResult.seo?.robotsTxt.exists ? 'Detectado y accesible' : 'NO ENCONTRADO en /robots.txt';
+  const sitemapTxt = auditResult.seo?.sitemap.exists
+    ? `Detectado y verificado (${auditResult.seo.sitemap.url || 'sitemap.xml'})`
+    : 'NO ENCONTRADO en rutas estándar ni robots.txt';
+  const robotsTxt = auditResult.seo?.robotsTxt.exists ? 'Detectado y accesible (/robots.txt)' : 'NO ENCONTRADO en /robots.txt';
+  const canonicalTxt = auditResult.seo?.canonicalUrl
+    ? `Configurada (${auditResult.seo.canonicalUrl.slice(0, 40)}${auditResult.seo.canonicalUrl.length > 40 ? '...' : ''})`
+    : 'No declarada explícitamente en <link rel="canonical">';
 
   doc.text(`• Etiqueta <title> Principal: ${titleTxt}`, margin + 4, 43);
-  doc.text(`• Meta Descripción para Buscadores: ${descTxt}`, margin + 4, 49);
-  doc.text(`• Estructura Jerárquica de Encabezados: ${h1Txt} y ${auditResult.seo?.h2Count || 0} etiquetas H2`, margin + 4, 55);
-  doc.text(`• Archivo Robots.txt: ${robotsTxt}`, margin + 4, 61);
-  doc.text(`• Mapa del Sitio XML (sitemap.xml): ${sitemapTxt}`, margin + 4, 67);
-  doc.text(`• OpenGraph Social & WhatsApp Card: ${auditResult.seo?.openGraph.hasTitle && auditResult.seo?.openGraph.hasImage ? 'Completo con imagen' : 'Incompleto (Sin vista previa)'}`, margin + 4, 73);
+  doc.text(`• Meta Descripción para Buscadores: ${descTxt}`, margin + 4, 48);
+  doc.text(`• Jerarquía Semántica H1 / H2: ${h1Txt} y ${auditResult.seo?.h2Count || 0} etiquetas H2`, margin + 4, 53);
+  doc.text(`• Enlace Canónico (rel="canonical"): ${canonicalTxt}`, margin + 4, 58);
+  doc.text(`• Archivo Robots.txt: ${robotsTxt}`, margin + 4, 63);
+  doc.text(`• Mapa del Sitio XML: ${sitemapTxt}`, margin + 4, 68);
+  doc.text(`• OpenGraph Social & WhatsApp Card: ${auditResult.seo?.openGraph.hasTitle && auditResult.seo?.openGraph.hasImage ? 'Completo con imagen y título' : 'Incompleto (Sin vista previa enriquecida)'}`, margin + 4, 73);
 
   // Local SEO Roadmap Card
   const seoY = 90;
