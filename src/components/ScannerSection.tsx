@@ -135,14 +135,21 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
         });
 
         const contentType = response.headers.get('content-type') || '';
-        if (response.ok && contentType.includes('application/json')) {
+        if (contentType.includes('application/json')) {
           const data = await response.json();
-          if (data && !data.error && data.score !== undefined) {
+          if (response.ok && data && !data.error && data.score !== undefined) {
             finalData = data;
+          } else if (!response.ok && data?.error) {
+            throw new Error(data.error);
           }
+        } else if (!response.ok) {
+          throw new Error(`Error en el servidor de escaneo (${response.status})`);
         }
-      } catch (netErr) {
-        console.warn('API audit fetch failed, trying client DoH fallback:', netErr);
+      } catch (netErr: any) {
+        if (netErr?.message && !netErr.message.includes('fetch')) {
+          throw netErr;
+        }
+        console.warn('API audit fetch failed, trying direct scan:', netErr);
       }
 
       // 2. Client-side fallback via DoH if server API is unavailable

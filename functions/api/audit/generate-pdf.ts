@@ -1,5 +1,5 @@
 import { generateAuditPdf } from '../../../server/reportGenerator';
-import { runRealSecurityAudit } from '../../../server/securityAudit';
+import { executeRealSecurityAudit } from '../security-audit';
 
 export interface CloudflareEnv {
   PAGESPEED_API_KEY?: string;
@@ -28,7 +28,7 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
     let auditResult = body?.auditResult;
     if (!auditResult || auditResult.score === undefined) {
       const apiKey = env.PAGESPEED_API_KEY || env.GOOGLE_API_KEY || '';
-      auditResult = await runRealSecurityAudit({ target, apiKey });
+      auditResult = await executeRealSecurityAudit({ target, apiKey });
     }
 
     const pdfBuffer = generateAuditPdf({
