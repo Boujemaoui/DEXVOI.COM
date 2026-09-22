@@ -280,9 +280,9 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
               <button
                 onClick={handleDownloadSample}
                 disabled={isDownloadingSample}
-                className="metallic-btn px-6 py-3 rounded-lg font-mono text-xs uppercase font-bold flex items-center gap-2 cursor-pointer disabled:opacity-60"
+                className="px-6 py-3 rounded-lg bg-[#F5A623] hover:bg-[#FFAE33] active:bg-[#E09015] text-[#0A0F1F] font-sans font-bold text-xs sm:text-sm antialiased flex items-center gap-2 border border-[#FFD074] shadow-[0_2px_5px_rgba(0,0,0,0.4)] transition-colors duration-150 cursor-pointer disabled:opacity-60 select-none"
               >
-                <Download className="w-4 h-4 text-[#0A0F1F]" />
+                <Download className="w-4 h-4 text-[#0A0F1F] shrink-0" strokeWidth={2.4} />
                 <span>
                   {isDownloadingSample
                     ? (language === 'fr' ? 'Génération du PDF...' : language === 'en' ? 'Generating Official PDF...' : 'Generando PDF Oficial...')
@@ -292,7 +292,7 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
 
               <button
                 onClick={onClose}
-                className="px-6 py-3 rounded-lg bg-[#1E293B] border border-gray-700 text-gray-300 hover:text-white font-mono text-xs uppercase cursor-pointer"
+                className="px-6 py-3 rounded-lg bg-[#1E293B] hover:bg-[#2A3A52] border border-gray-700 text-gray-300 hover:text-white font-sans font-semibold text-xs sm:text-sm antialiased transition-colors duration-150 cursor-pointer select-none"
               >
                 {language === 'fr' ? 'Fermer' : language === 'en' ? 'Close' : 'Cerrar'}
               </button>

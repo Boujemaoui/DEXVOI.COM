@@ -9,8 +9,16 @@ import { runRealSecurityAudit } from './server/securityAudit.ts';
 import { executeAndDeliverAudit, pendingAuditTargets } from './server/auditDelivery.ts';
 import { generateAuditPdf } from './server/reportGenerator.ts';
 import { OsintSecurityAuditResult } from './src/types.ts';
+import { verifyEmailAddress } from './server/emailVerifier.ts';
 
 dotenv.config();
+
+// Helper to safely get Stripe client instance
+function getStripeClient(): Stripe | null {
+  const stripeKey = process.env.STRIPE_SECRET_KEY;
+  if (!stripeKey) return null;
+  return new Stripe(stripeKey);
+}
 
 // Fallback response engine matching the exact rules from prompt
 function generateFallbackResponse(userMessage: string, history?: Array<{ role: string; content: string }>): { reply: string; detectedLanguage: 'fr' | 'en' | 'es' } {
@@ -456,7 +464,9 @@ async function startServer() {
       const purchasedProduct =
         lineItems?.[0]?.description ||
         lineItems?.[0]?.price?.nickname ||
-        (session.amount_total === 1900
+        (session.amount_total === 500
+          ? 'Informe Oficial en PDF (5€)'
+          : session.amount_total === 1900
           ? 'Informe Básico (19€)'
           : session.amount_total === 4900
           ? 'Informe Completo (49€)'
@@ -626,6 +636,223 @@ async function startServer() {
       return res.status(422).json({
         error: err?.message || 'Error al ejecutar la auditoría de seguridad en tiempo real.'
       });
+    }
+  });
+
+  // Real-time email verification with DNS MX record lookup
+  app.post('/api/verify-email', async (req, res) => {
+    try {
+      const { email } = req.body;
+      const result = await verifyEmailAddress(email);
+      return res.json(result);
+    } catch (e: any) {
+      return res.status(500).json({ valid: false, reason: e.message });
+    }
+  });
+
+  // Freemium scanner lead capture & report unlock endpoint
+  app.post('/api/scanner/unlock', async (req, res) => {
+    try {
+      const { email, websiteUrl, overallScore, grade, issuesCount = 0, businessType = 'Negocio' } = req.body;
+
+      if (!email || typeof email !== 'string') {
+        return res.status(400).json({ error: 'El correo electrónico es obligatorio.' });
+      }
+
+      const cleanTarget = String(websiteUrl || 'dexvoi.com').replace(/^https?:\/\//i, '').replace(/\/.*$/, '').trim();
+
+      // Rigorous email verification (RFC syntax, disposable domain filter, DNS MX record resolution)
+      const verification = await verifyEmailAddress(email);
+      if (!verification.valid) {
+        return res.status(400).json({
+          error: verification.reason || 'El correo electrónico no es válido o su dominio no puede recibir emails.'
+        });
+      }
+
+      const cleanEmail = email.trim().toLowerCase();
+
+      // Record in pendingAuditTargets for correlation
+      pendingAuditTargets.set(cleanEmail, {
+        website: cleanTarget,
+        timestamp: Date.now(),
+      });
+
+      const destinationEmail = process.env.NOTIFICATION_EMAIL || 'info@dexvoi.com';
+      const ticketId = `SCAN-LEAD-${Math.floor(100000 + Math.random() * 900000)}`;
+
+      // Send lead notification to info@dexvoi.com
+      if (process.env.RESEND_API_KEY) {
+        try {
+          const resend = new Resend(process.env.RESEND_API_KEY);
+          const subject = `🔥 [Lead Freemium Desbloqueado] ${cleanTarget} (Score: ${overallScore ?? 'N/A'}/100 Grado ${grade ?? 'N/A'}) - ${cleanEmail}`;
+          const html = `
+            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 620px; margin: 0 auto; background: #0A0F1F; color: #FFFFFF; padding: 32px; border-radius: 12px; border: 1px solid #0066FF;">
+              <div style="border-bottom: 1px solid #1E293B; padding-bottom: 20px; margin-bottom: 24px;">
+                <span style="background: #F5A623; color: #0A0F1F; font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 4px; text-transform: uppercase;">Lead Freemium Cualificado</span>
+                <h2 style="color: #38BDF8; margin: 12px 0 4px 0; font-size: 22px;">Nuevo Informe Desbloqueado en Escáner</h2>
+                <p style="color: #94A3B8; font-size: 13px; margin: 0;">Expediente de Auditoría: <strong style="color: #F5A623;">${ticketId}</strong></p>
+              </div>
+
+              <div style="background: #131B33; border: 1px solid #1E293B; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
+                <p style="margin: 8px 0; font-size: 15px;"><strong>🌐 Dominio Auditado:</strong> <a href="https://${cleanTarget}" target="_blank" style="color: #38BDF8; text-decoration: none; font-weight: bold;">${cleanTarget}</a></p>
+                <p style="margin: 8px 0; font-size: 15px;"><strong>📧 Email Capturado (Verificado):</strong> <a href="mailto:${cleanEmail}" style="color: #F5A623; text-decoration: none; font-weight: bold;">${cleanEmail}</a></p>
+                <p style="margin: 8px 0; font-size: 15px;"><strong>📊 Puntuación Global:</strong> <span style="font-size: 18px; font-weight: bold; color: ${Number(overallScore) >= 80 ? '#10B981' : Number(overallScore) >= 50 ? '#F5A623' : '#EF4444'};">${overallScore ?? 'N/A'} / 100</span> (Grado ${grade ?? 'N/A'})</p>
+                <p style="margin: 8px 0; font-size: 15px;"><strong>⚠ Vulnerabilidades Ocultas que Desbloqueó:</strong> ${issuesCount} incidencias técnicas</p>
+                <p style="margin: 8px 0; font-size: 15px;"><strong>🏢 Sector / Tipo:</strong> ${businessType}</p>
+                <p style="margin: 8px 0; font-size: 13px; color: #94A3B8;"><strong>🕒 Fecha y Hora:</strong> ${new Date().toLocaleString('es-ES')}</p>
+              </div>
+
+              <div style="display: flex; gap: 12px; margin-bottom: 24px;">
+                <a href="mailto:${cleanEmail}?subject=Informe%20T%C3%A9cnico%20Dexvoi%20para%20${cleanTarget}&body=Hola%2C%20hemos%20visto%20tu%20an%C3%A1lisis%20en%20Dexvoi%20para%20${cleanTarget}..." style="background: #0066FF; color: white; padding: 12px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; display: inline-block;">
+                  Contactar al Lead por Email
+                </a>
+              </div>
+
+              <hr style="border: 0; border-top: 1px solid #1E293B; margin: 24px 0 16px 0;" />
+              <p style="font-size: 11px; color: #64748B; margin: 0; text-align: center;">Notificación comercial automática enviada a info@dexvoi.com</p>
+            </div>
+          `;
+
+          await resend.emails.send({
+            from: 'Dexvoi Scanner <onboarding@resend.dev>',
+            to: destinationEmail,
+            subject,
+            html,
+          });
+
+          if (destinationEmail !== 'info@dexvoi.com') {
+            await resend.emails.send({
+              from: 'Dexvoi Scanner <onboarding@resend.dev>',
+              to: 'info@dexvoi.com',
+              subject,
+              html,
+            }).catch(() => {});
+          }
+
+          // Also send user confirmation recap
+          try {
+            await resend.emails.send({
+              from: 'Dexvoi Seguridad <onboarding@resend.dev>',
+              to: cleanEmail,
+              subject: `Tu informe de auditoría técnica para ${cleanTarget} ya está desbloqueado`,
+              html: `
+                <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background: #0A0F1F; color: #FFFFFF; padding: 30px; border-radius: 12px;">
+                  <h2 style="color: #0066FF;">Informe Técnico Desbloqueado</h2>
+                  <p>Hola, has desbloqueado con éxito el informe perimetral completo para <strong>${cleanTarget}</strong> en Dexvoi.</p>
+                  <div style="background: #131B33; padding: 16px; border-radius: 8px; margin: 20px 0;">
+                    <p style="margin: 4px 0;"><strong>Puntuación Global:</strong> ${overallScore ?? 'N/A'}/100 (Grado ${grade ?? 'N/A'})</p>
+                    <p style="margin: 4px 0;"><strong>Incidencias detectadas:</strong> ${issuesCount} problemas técnicos</p>
+                  </div>
+                  <p>Si deseas descargar el informe forense oficial en PDF de 5 páginas con marca Dexvoi o delegar la remediación técnica en nuestro equipo, accede a nuestra web o responde a este correo.</p>
+                  <p style="color: #94A3B8; font-size: 13px;">Equipo de Arquitectura Digital · Dexvoi</p>
+                </div>
+              `
+            }).catch(() => {});
+          } catch {}
+
+        } catch (mailErr) {
+          console.error('[Resend Lead Notification Error]:', mailErr);
+        }
+      } else {
+        console.log('[Freemium Lead Captured]:', {
+          email: cleanEmail,
+          target: cleanTarget,
+          score: overallScore,
+          grade,
+          ticketId
+        });
+      }
+
+      return res.json({
+        success: true,
+        unlocked: true,
+        ticketId,
+        message: 'Email verificado con éxito. Informe completo desbloqueado.',
+      });
+    } catch (err: any) {
+      console.error('Error unlocking scan report:', err);
+      return res.status(500).json({ error: err?.message || 'Error al procesar el desbloqueo del informe.' });
+    }
+  });
+
+  // Create Stripe Checkout Session endpoint (5€ PDF, 19€ Basic, 49€ Complete, 99€ Premium)
+  app.post('/api/create-checkout-session', async (req, res) => {
+    try {
+      const { websiteUrl = 'dexvoi.com', customerEmail, planTier = 'pdf_5eur' } = req.body;
+      const cleanUrl = String(websiteUrl).replace(/^https?:\/\//i, '').replace(/\/.*$/, '').trim() || 'dexvoi.com';
+
+      const tierConfigs: Record<string, { amount: number; name: string; description: string; fallbackUrl: string }> = {
+        pdf_5eur: {
+          amount: 500,
+          name: 'DEXVOI · Informe Técnico Oficial en PDF (5 Páginas)',
+          description: `Diagnóstico forense y guía de remediación técnica perimetral para ${cleanUrl}`,
+          fallbackUrl: 'https://buy.stripe.com/aFa00kaea4fy0nQ6UFdAk00'
+        },
+        basic: {
+          amount: 1900,
+          name: 'Plan Básico (19€) · Auditoría Perimetral',
+          description: `Auditoría Starter y hoja de ruta para ${cleanUrl}`,
+          fallbackUrl: 'https://buy.stripe.com/aFa00kaea4fy0nQ6UFdAk00'
+        },
+        complete: {
+          amount: 4900,
+          name: 'Plan Completo (49€) · Auditoría Forense (20+ Páginas)',
+          description: `Auditoría Forense exhaustiva, OSINT y scripts Nginx/Apache para ${cleanUrl}`,
+          fallbackUrl: 'https://buy.stripe.com/9B66oI862eUc8Um92NdAk01'
+        },
+        premium: {
+          amount: 9900,
+          name: 'Plan Premium VIP (99€) · Consultoría 1-a-1',
+          description: `Auditoría Forense + Sesión Estratégica 1-a-1 de 45 min con el Arquitecto Principal`,
+          fallbackUrl: 'https://buy.stripe.com/14A5kE0DA7rKgmO4MxdAk02'
+        },
+      };
+
+      const selectedConfig = tierConfigs[planTier] || tierConfigs.pdf_5eur;
+
+      const stripe = getStripeClient();
+      if (stripe) {
+        const origin = req.headers.origin || 'https://www.dexvoi.com';
+        const session = await stripe.checkout.sessions.create({
+          payment_method_types: ['card'],
+          line_items: [
+            {
+              price_data: {
+                currency: 'eur',
+                product_data: {
+                  name: selectedConfig.name,
+                  description: selectedConfig.description,
+                  images: ['https://www.dexvoi.com/favicon.svg'],
+                },
+                unit_amount: selectedConfig.amount,
+              },
+              quantity: 1,
+            },
+          ],
+          mode: 'payment',
+          customer_email: customerEmail || undefined,
+          client_reference_id: cleanUrl,
+          metadata: {
+            websiteUrl: cleanUrl,
+            planTier,
+            customerEmail: customerEmail || '',
+          },
+          success_url: `${origin}/?session_id={CHECKOUT_SESSION_ID}&checkout_success=true&tier=${planTier}&target=${encodeURIComponent(cleanUrl)}`,
+          cancel_url: `${origin}/#scanner`,
+        });
+
+        return res.json({ success: true, url: session.url });
+      }
+
+      // If Stripe secret key is not set, provide payment link with prefilled email
+      let redirectUrl = selectedConfig.fallbackUrl;
+      if (customerEmail) {
+        redirectUrl += `?prefilled_email=${encodeURIComponent(customerEmail)}`;
+      }
+      return res.json({ success: true, url: redirectUrl, mode: 'payment_link' });
+    } catch (err: any) {
+      console.error('Error creating checkout session:', err);
+      return res.status(500).json({ error: err?.message || 'Error al iniciar la pasarela de pago.' });
     }
   });
 

@@ -1,7 +1,7 @@
 import { jsPDF } from 'jspdf';
 import { OsintSecurityAuditResult } from '../src/types.ts';
 
-export type AuditPlanTier = 'free' | 'basic' | 'complete' | 'premium';
+export type AuditPlanTier = 'free' | 'pdf_5eur' | 'basic' | 'complete' | 'premium';
 
 export interface GeneratePdfOptions {
   auditResult: OsintSecurityAuditResult;
@@ -24,7 +24,7 @@ const COLOR_SUCCESS = { r: 16, g: 185, b: 129 };
 
 /**
  * Genera el informe forense oficial en PDF de Dexvoi adaptado a la profundidad del plan:
- * - free / basic (19€): 5 páginas de diagnóstico técnico y remediación
+ * - pdf_5eur / basic (19€): 5 páginas de diagnóstico técnico y remediación
  * - complete (49€): 21 páginas (20+ páginas forenses)
  * - premium (99€): 22 páginas (20+ páginas + Sesión Estratégica 1-a-1)
  */
@@ -37,7 +37,7 @@ export function generateAuditPdf(options: GeneratePdfOptions): Buffer {
     format: 'a4',
   });
 
-  const totalPages = (tier === 'basic' || tier === 'free') ? 5 : tier === 'complete' ? 21 : 22;
+  const totalPages = (tier === 'basic' || tier === 'free' || tier === 'pdf_5eur') ? 5 : tier === 'complete' ? 21 : 22;
   const pageWidth = 210;
   const pageHeight = 297;
   const margin = 15;
@@ -45,10 +45,16 @@ export function generateAuditPdf(options: GeneratePdfOptions): Buffer {
 
   const tierInfo = {
     free: {
-      name: 'Auditoría Exprés Oficial Dexvoi (Gratuita)',
+      name: 'Auditoría Exprés Dexvoi',
       badge: 'DIAGNÓSTICO TÉCNICO OFICIAL DEXVOI (5 PÁGINAS)',
       pages: '5 Páginas',
       desc: 'Informe Oficial de Diagnóstico Perimetral: Velocidad Core Web Vitals, SSL/TLS, Cabeceras HTTP y Google Maps',
+    },
+    pdf_5eur: {
+      name: 'Informe Técnico Oficial en PDF (5€)',
+      badge: 'INFORME FORENSE CERTIFICADO DEXVOI (5 PÁGINAS)',
+      pages: '5 Páginas',
+      desc: 'Auditoría Forense Perimetral: Velocidad Core Web Vitals, Suite Criptográfica SSL/TLS, Cabeceras HTTP y Remedación',
     },
     basic: {
       name: 'Plan Básico (19€)',
@@ -68,7 +74,12 @@ export function generateAuditPdf(options: GeneratePdfOptions): Buffer {
       pages: '25+ Páginas + Sesión 1-a-1',
       desc: 'Auditoría Forense + Sesión Estratégica 1-a-1 (45 min) + Soporte VIP WhatsApp 30 días',
     },
-  }[tier];
+  }[tier] || {
+    name: 'Informe Técnico Oficial en PDF (5€)',
+    badge: 'INFORME CERTIFICADO DEXVOI (5 PÁGINAS)',
+    pages: '5 Páginas',
+    desc: 'Auditoría Forense Perimetral: Velocidad Core Web Vitals, Suite Criptográfica SSL/TLS, Cabeceras HTTP y Remedación',
+  };
 
   const reportId = `DXV-${Math.floor(100000 + Math.random() * 900000)}`;
   const dateStr = new Date().toLocaleDateString('es-ES', {

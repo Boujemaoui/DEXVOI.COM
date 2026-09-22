@@ -110,6 +110,9 @@ export function extractTargetWebsite(session: Stripe.Checkout.Session, customerE
 export function determinePlanTier(session: Stripe.Checkout.Session, lineItems?: any[]): { tier: AuditPlanTier; name: string } {
   const amount = session.amount_total;
 
+  if (amount === 500) {
+    return { tier: 'pdf_5eur', name: 'Informe Oficial en PDF (5€)' };
+  }
   if (amount === 1900) {
     return { tier: 'basic', name: 'Plan Básico (19€)' };
   }
@@ -120,8 +123,26 @@ export function determinePlanTier(session: Stripe.Checkout.Session, lineItems?: 
     return { tier: 'premium', name: 'Plan Premium VIP (99€)' };
   }
 
+  // Check metadata
+  const metaTier = session.metadata?.planTier;
+  if (metaTier === 'pdf_5eur') {
+    return { tier: 'pdf_5eur', name: 'Informe Oficial en PDF (5€)' };
+  }
+  if (metaTier === 'basic') {
+    return { tier: 'basic', name: 'Plan Básico (19€)' };
+  }
+  if (metaTier === 'complete') {
+    return { tier: 'complete', name: 'Plan Completo (49€)' };
+  }
+  if (metaTier === 'premium') {
+    return { tier: 'premium', name: 'Plan Premium VIP (99€)' };
+  }
+
   // Fallback to inspecting line items or description
   const desc = (lineItems?.[0]?.description || lineItems?.[0]?.price?.nickname || '').toLowerCase();
+  if (desc.includes('5') || desc.includes('pdf')) {
+    return { tier: 'pdf_5eur', name: 'Informe Oficial en PDF (5€)' };
+  }
   if (desc.includes('19') || desc.includes('básico') || desc.includes('starter') || desc.includes('initial')) {
     return { tier: 'basic', name: 'Plan Básico (19€)' };
   }
