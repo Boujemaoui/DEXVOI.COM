@@ -237,6 +237,13 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
 
     if (!cleanHostname || cleanHostname.length < 3) return;
 
+    // Automatically detect business sector from domain name if relevant
+    const detectedType: 'clinica' | 'restaurante' | 'otro' =
+      /clinic|dent|med|salud|estetic|doctor|pharma|hopital|sanit/i.test(cleanHostname) ? 'clinica'
+      : /rest|gastro|bistr|cafe|bar|aurum|comid|hotel|food/i.test(cleanHostname) ? 'restaurante'
+      : 'otro';
+    setBusinessType(detectedType);
+
     setIsScanning(true);
     setResult(null);
     setIsUnlocked(false);
@@ -445,11 +452,6 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
     }
   };
 
-  const setSampleUrl = (url: string, type: 'clinica' | 'restaurante' | 'otro') => {
-    setUrlInput(url);
-    setBusinessType(type);
-  };
-
   return (
     <section id="scanner" className="py-24 bg-[#131315] relative border-t border-b border-gray-800">
       {/* Visual background effect */}
@@ -475,59 +477,17 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
 
         {/* Input Box Card */}
         <div className="p-6 sm:p-8 rounded-2xl border border-[#0066FF]/40 shadow-2xl bg-[#0A0F1F]">
-          <form onSubmit={handleRunScan} className="space-y-6">
+          <form onSubmit={handleRunScan} className="space-y-4">
             
-            {/* Sector Selector */}
-            <div>
-              <label className="block text-xs font-mono text-gray-400 uppercase mb-2">
-                {language === 'fr' ? '1. Sélectionnez le secteur d\'activité :' : language === 'en' ? '1. Select Business Sector:' : '1. Selecciona el Tipo de Negocio:'}
-              </label>
-              <div className="grid grid-cols-3 gap-3">
-                <button
-                  type="button"
-                  onClick={() => setBusinessType('clinica')}
-                  className={`py-2.5 px-3 rounded-lg font-mono text-xs font-semibold border transition-all cursor-pointer ${
-                    businessType === 'clinica'
-                      ? 'bg-[#0066FF]/20 border-[#0066FF] text-white shadow-[0_0_12px_rgba(0,102,255,0.3)]'
-                      : 'bg-[#1E293B] border-gray-800 text-gray-400 hover:text-white'
-                  }`}
-                >
-                  {t.footer.sectorClinics}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setBusinessType('restaurante')}
-                  className={`py-2.5 px-3 rounded-lg font-mono text-xs font-semibold border transition-all cursor-pointer ${
-                    businessType === 'restaurante'
-                      ? 'bg-[#0066FF]/20 border-[#0066FF] text-white shadow-[0_0_12px_rgba(0,102,255,0.3)]'
-                      : 'bg-[#1E293B] border-gray-800 text-gray-400 hover:text-white'
-                  }`}
-                >
-                  {t.footer.sectorRestaurants}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setBusinessType('otro')}
-                  className={`py-2.5 px-3 rounded-lg font-mono text-xs font-semibold border transition-all cursor-pointer ${
-                    businessType === 'otro'
-                      ? 'bg-[#0066FF]/20 border-[#0066FF] text-white shadow-[0_0_12px_rgba(0,102,255,0.3)]'
-                      : 'bg-[#1E293B] border-gray-800 text-gray-400 hover:text-white'
-                  }`}
-                >
-                  {t.footer.sectorHospitality}
-                </button>
-              </div>
-            </div>
-
             {/* URL Input and Scan Button */}
             <div>
               <label className="block text-xs font-mono text-gray-400 uppercase mb-2">
-                {language === 'fr' ? '2. Adresse de votre site web :' : language === 'en' ? '2. Your Website URL:' : '2. Enlace de tu Sitio Web:'}
+                {language === 'fr' ? 'Collez le lien ou l’adresse de votre site web :' : language === 'en' ? 'Paste the link or URL of your website:' : 'Pega el enlace o dirección de tu sitio web:'}
               </label>
               <div className="flex flex-col sm:flex-row gap-3">
                 <div className="relative flex-1">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-500 font-mono text-sm">
-                    https://
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#0066FF]">
+                    <Globe className="w-4 h-4" />
                   </div>
                   <input
                     type="text"
@@ -535,7 +495,7 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
                     onChange={(e) => setUrlInput(e.target.value)}
                     placeholder={t.scanner.inputPlaceholder}
                     required
-                    className="w-full bg-[#131B33] border border-gray-700 rounded-lg pl-24 pr-4 py-3.5 text-white font-mono text-sm focus:outline-none focus:border-[#0066FF] focus:ring-1 focus:ring-[#0066FF] transition-all"
+                    className="w-full bg-[#131B33] border border-gray-700 rounded-lg pl-10 pr-4 py-3.5 text-white font-mono text-sm focus:outline-none focus:border-[#0066FF] focus:ring-1 focus:ring-[#0066FF] transition-all"
                   />
                 </div>
 
@@ -555,34 +515,6 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
                       <span>{t.scanner.btnScan}</span>
                     </>
                   )}
-                </button>
-              </div>
-
-              {/* Sample demo URLs for quick testing */}
-              <div className="mt-2 flex items-center gap-2 text-[11px] font-mono text-gray-400">
-                <span>{language === 'fr' ? 'Ou testez un exemple :' : language === 'en' ? 'Or try a live demo:' : 'O prueba un ejemplo:'}</span>
-                <button
-                  type="button"
-                  onClick={() => setSampleUrl('dexvoi.com', 'otro')}
-                  className="text-[#0066FF] hover:underline cursor-pointer"
-                >
-                  dexvoi.com
-                </button>
-                <span>·</span>
-                <button
-                  type="button"
-                  onClick={() => setSampleUrl('clinicadermastetic.com', 'clinica')}
-                  className="text-[#F5A623] hover:underline cursor-pointer"
-                >
-                  clinicadermastetic.com
-                </button>
-                <span>·</span>
-                <button
-                  type="button"
-                  onClick={() => setSampleUrl('restaurante-aurum.es', 'restaurante')}
-                  className="text-gray-300 hover:underline cursor-pointer"
-                >
-                  restaurante-aurum.es
                 </button>
               </div>
             </div>

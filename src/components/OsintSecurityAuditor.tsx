@@ -163,17 +163,17 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
 
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="relative flex-1">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-500 font-mono text-sm">
-                  https://
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#0066FF]">
+                  <Globe2 className="w-4 h-4" />
                 </div>
                 <input
                   type="text"
                   value={targetInput}
                   onChange={(e) => setTargetInput(e.target.value)}
-                  placeholder={language === 'fr' ? 'votresite.com' : language === 'en' ? 'yourdomain.com' : 'ejemplo.com o tuweb.es'}
+                  placeholder={language === 'fr' ? 'collez votre lien ou domaine (ex : https://votresite.fr)' : language === 'en' ? 'paste link or domain (e.g. https://yoursite.com)' : 'pega tu enlace o dominio (ej: https://tuweb.es)'}
                   required
                   disabled={isLoading}
-                  className="w-full bg-[#131B33] border border-gray-700 rounded-xl pl-22 pr-4 py-3.5 text-white font-mono text-sm focus:outline-none focus:border-[#0066FF] focus:ring-1 focus:ring-[#0066FF] transition-all disabled:opacity-50"
+                  className="w-full bg-[#131B33] border border-gray-700 rounded-xl pl-10 pr-4 py-3.5 text-white font-mono text-sm focus:outline-none focus:border-[#0066FF] focus:ring-1 focus:ring-[#0066FF] transition-all disabled:opacity-50"
                 />
               </div>
 
