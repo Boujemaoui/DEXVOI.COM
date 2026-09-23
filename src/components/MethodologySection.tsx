@@ -82,7 +82,7 @@ export const MethodologySection: React.FC<MethodologySectionProps> = ({ onOpenAu
         title: 'Construcción y Blindaje Digital',
         description: 'Edificamos un sistema rápido y seguro con protocolos de protección de datos y reservas online integradas.',
         icon: Hammer,
-        deliverables: ['Código militar optimizado (<1.5s)', 'Cifrado de datos y cortafuegos', 'Motor de reservas automáticas'],
+        deliverables: ['Código de alto rendimiento (<1.5s)', 'Cifrado de datos y cortafuegos', 'Motor de reservas automáticas'],
         duration: 'Fase 2: Implementación'
       },
       {

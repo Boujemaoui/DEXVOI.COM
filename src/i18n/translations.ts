@@ -12,6 +12,7 @@ export interface Translations {
     osintBadge: string;
     pricing: string;
     pricingBadge: string;
+    about: string;
     contact: string;
     freeAudit: string;
     nodesOnline: string;
@@ -168,6 +169,28 @@ export interface Translations {
     step4Title: string;
     step4Desc: string;
     cta: string;
+  };
+
+  // The Architect Behind Dexvoi (About / Quiénes Somos)
+  aboutSection: {
+    badge: string;
+    title: string;
+    titleHighlight: string;
+    subtitle: string;
+    role: string;
+    quote: string;
+    storyTitle: string;
+    storyP1: string;
+    storyP2: string;
+    principlesTitle: string;
+    principle1Title: string;
+    principle1Desc: string;
+    principle2Title: string;
+    principle2Desc: string;
+    principle3Title: string;
+    principle3Desc: string;
+    ctaBtn: string;
+    locationNotice: string;
   };
 
   // Testimonials
@@ -352,6 +375,7 @@ export const translations: Record<Language, Translations> = {
       osintBadge: '29€',
       pricing: 'Planes de Pago',
       pricingBadge: '19€ / 49€ / 99€',
+      about: 'Quiénes Somos',
       contact: 'Contacto',
       freeAudit: 'Auditoría Gratuita',
       nodesOnline: 'NODES ONLINE',
@@ -359,11 +383,11 @@ export const translations: Record<Language, Translations> = {
       mobileSubtitle: 'v3.4.8 SECURE'
     },
     hero: {
-      badge: 'INGENIERÍA & DEFENSA DIGITAL DE ÉLITE',
+      badge: 'ARQUITECTURA DIGITAL & CIBERSEGURIDAD',
       titleLine1: 'Arquitectura Web Inmune,',
       titleLine2: 'Tráfico Dominante &',
       titleHighlight: 'Sistemas de Conversión.',
-      subtitle: 'Diseñamos infraestructuras web militares, blindamos clínicas y restaurantes contra vulnerabilidades y automatizamos tus reservas con IA y SEO local.',
+      subtitle: 'Diseñamos arquitecturas web de alto rendimiento, blindamos clínicas y restaurantes contra vulnerabilidades y automatizamos tus reservas con IA y SEO local.',
       ctaAudit: 'Auditoría Forense de 5 Puntos',
       ctaScanner: 'Escanear mi Web Ahora',
       statSpeed: '< 1.2s',
@@ -401,7 +425,7 @@ export const translations: Record<Language, Translations> = {
       pillar1Desc: 'Estructuras digitales robustas y de carga instantánea diseñadas para brindar una experiencia de usuario impecable.',
       pillar1Badge: 'VELOCIDAD & CONVERSIÓN',
       pillar1Benefit1: 'Plataformas a medida con sistemas de reservas online y gestión de citas automatizadas 24/7.',
-      pillar1Benefit2: 'Optimización de velocidad militar (tiempos de carga menores a 1.5s) para maximizar conversiones.',
+      pillar1Benefit2: 'Optimización de velocidad de alto rendimiento (tiempos de carga menores a 1.5s) para maximizar conversiones.',
       pillar1Benefit3: 'Experiencia móvil ultrafluida para comensales exigentes y pacientes de alto valor.',
       pillar1Spec1Label: 'Tiempo de Carga',
       pillar1Spec1Val: '< 1.2 Segundos',
@@ -490,12 +514,32 @@ export const translations: Record<Language, Translations> = {
       step2Title: 'Blueprint de Arquitectura',
       step2Desc: 'Diseñamos la solución exacta a medida: arquitectura de velocidad extrema, sistema de reservas o plan de blindaje perimetral.',
       step3Num: '03',
-      step3Title: 'Ejecución & Blindaje Militar',
+      step3Title: 'Ejecución & Blindaje Técnico',
       step3Desc: 'Desarrollamos e implementamos el código limpio, optimizamos los servidores y configuramos los sistemas de seguridad y conversión.',
       step4Num: '04',
       step4Title: 'Monitoreo & Crecimiento Continuo',
       step4Desc: 'Supervisamos el rendimiento en tiempo real, garantizamos el 99.99% de uptime y escalamos tu visibilidad local mes a mes.',
       cta: 'Iniciar la Fase 1 Ahora'
+    },
+    aboutSection: {
+      badge: 'EL ARQUITECTO DETRÁS DE DEXVOI',
+      title: 'Ingeniería con Rostro,',
+      titleHighlight: 'Rigor y Responsabilidad',
+      subtitle: 'Dexvoi nació para erradicar las malas prácticas del sector: webs lentas, intermediarios comerciales y plantillas infladas con decenas de plugins vulnerables.',
+      role: 'Fundador & Arquitecto de Software',
+      quote: '«No hacemos webs decorativas ni promesas de humo. Diseñamos infraestructuras comerciales blindadas donde cada milisegundo de carga y cada cabecera de seguridad protegen tu facturación.»',
+      storyTitle: 'Nuestra Historia y Misión',
+      storyP1: 'Durante años he visto cómo clínicas privadas y restaurantes de referencia pagaban miles de euros a agencias tradicionales para recibir a cambio webs lentas, con plantillas de WordPress saturadas de plugins abandonados y formularios desprotegidos expuestos a robo de datos o sanciones RGPD.',
+      storyP2: 'En Dexvoi cambiamos esa dinámica: tratas directamente con el ingeniero que audita tu sistema y escribe tu código. Sin comerciales, sin intermediarios y sin costes inflados.',
+      principlesTitle: 'Nuestros 3 Principios No Negociables',
+      principle1Title: 'Rigor Técnico sobre Humo de Marketing',
+      principle1Desc: 'Cada métrica que entregamos (TTFB, puntuaciones Core Web Vitals, cabeceras CSP/HSTS) es verificable con herramientas estándar de la industria como Google PageSpeed y SSL Labs.',
+      principle2Title: 'Código Propio, Cero Dependencias Inútiles',
+      principle2Desc: 'Desarrollamos con tecnologías modernas (TypeScript, React, Tailwind, Cloudflare Edge) sin sobrecargar tu servidor ni poner en riesgo la privacidad de tus pacientes o clientes.',
+      principle3Title: 'Compromiso Directo 1-a-1',
+      principle3Desc: 'Respondemos en menos de 24 horas y supervisamos personalmente cada auditoría y despliegue técnico desde Madrid, Casablanca y Londres.',
+      ctaBtn: 'Hablar con el Arquitecto',
+      locationNotice: 'Sede y operaciones: Madrid · Casablanca · Londres'
     },
     testimonials: {
       badge: 'RESULTADOS COMPROBADOS',
@@ -661,6 +705,7 @@ export const translations: Record<Language, Translations> = {
       osintBadge: '29€',
       pricing: 'Tarifs & Plans',
       pricingBadge: '19€ / 49€ / 99€',
+      about: 'Qui Sommes-Nous',
       contact: 'Contact',
       freeAudit: 'Audit Gratuit',
       nodesOnline: 'NODES EN LIGNE',
@@ -668,7 +713,7 @@ export const translations: Record<Language, Translations> = {
       mobileSubtitle: 'v3.4.8 SECURE'
     },
     hero: {
-      badge: 'INGÉNIERIE & DÉFENSE DIGITALE D’ÉLITE',
+      badge: 'ARCHITECTURE DIGITALE & CYBERSÉCURITÉ',
       titleLine1: 'Architecture Web Robuste,',
       titleLine2: 'Visibilité Dominante &',
       titleHighlight: 'Systèmes de Conversion.',
@@ -710,7 +755,7 @@ export const translations: Record<Language, Translations> = {
       pillar1Desc: 'Des architectures robustes à chargement instantané conçues pour garantir une expérience utilisateur fluide et irréprochable.',
       pillar1Badge: 'VITESSE & CONVERSION',
       pillar1Benefit1: 'Plateformes sur mesure avec prise de rendez-vous et réservation en ligne 24/7.',
-      pillar1Benefit2: 'Optimisation de niveau militaire (chargement < 1.5s) pour démultiplier vos taux de conversion.',
+      pillar1Benefit2: 'Optimisation de haute performance (chargement < 1.5s) pour démultiplier vos taux de conversion.',
       pillar1Benefit3: 'Expérience mobile d’une fluidité absolue pour patients et convives exigeants.',
       pillar1Spec1Label: 'Temps de Chargement',
       pillar1Spec1Val: '< 1.2 Seconde',
@@ -799,12 +844,32 @@ export const translations: Record<Language, Translations> = {
       step2Title: 'Schéma Directeur d’Architecture',
       step2Desc: 'Conception sur mesure : refonte pour vitesse fulgurante, intégration d’un module de réservation ou blindage périmétrique.',
       step3Num: '03',
-      step3Title: 'Exécution & Blindage de Niveau Militaire',
+      step3Title: 'Exécution & Blindage Technique',
       step3Desc: 'Développement minutieux, optimisation des serveurs, durcissement des en-têtes de sécurité et configuration des tunnels de conversion.',
       step4Num: '04',
       step4Title: 'Supervision & Croissance Continue',
       step4Desc: 'Suivi proactif des performances, maintien d’un uptime de 99.99% et expansion constante de votre autorité locale.',
       cta: 'Lancer l’Étape 1 dès Aujourd’hui'
+    },
+    aboutSection: {
+      badge: 'L’ARCHITECTE DERRIÈRE DEXVOI',
+      title: 'Ingénierie à Visage Humain,',
+      titleHighlight: 'Rigueur & Responsabilité',
+      subtitle: 'Dexvoi est né pour éliminer les mauvaises pratiques du secteur : sites lents, intermédiaires commerciaux et thèmes alourdis par des dizaines de plugins vulnérables.',
+      role: 'Fondateur & Architecte Logiciel',
+      quote: '« Nous ne créons pas de vitrines décoratives ni de promesses creuses. Nous concevons des infrastructures robustes où chaque milliseconde et chaque en-tête de sécurité protègent vos revenus. »',
+      storyTitle: 'Notre Histoire & Notre Mission',
+      storyP1: 'Pendant des années, j’ai vu des cliniques privées et des restaurants réputés investir des milliers d’euros auprès d’agences généralistes pour recevoir des sites lents, bâtis sur des CMS obsolètes truffés de failles RGPD.',
+      storyP2: 'Chez Dexvoi, nous avons brisé ce schéma : vous échangez directement avec l’ingénieur qui audite vos systèmes et produit le code. Sans commercial, sans intermédiaire, avec une transparence absolue.',
+      principlesTitle: 'Nos 3 Principes Non Négociables',
+      principle1Title: 'Rigueur Technique contre Promesses Vagues',
+      principle1Desc: 'Chaque indicateur (TTFB, scores Core Web Vitals, en-têtes CSP/HSTS) est vérifiable publiquement via Google PageSpeed et SSL Labs.',
+      principle2Title: 'Code Propriétaire, Zéro Dépendance Superflue',
+      principle2Desc: 'Nous bâtissons sur des technologies modernes (TypeScript, React, Tailwind, Cloudflare Edge) pour garantir une vitesse maximale et une sécurité sans compromis.',
+      principle3Title: 'Engagement Direct 1-à-1',
+      principle3Desc: 'Nous répondons en moins de 24 heures et supervisons personnellement chaque audit et déploiement depuis Madrid, Casablanca et Londres.',
+      ctaBtn: 'Échanger avec l’Architecte',
+      locationNotice: 'Opérations et audits : Madrid · Casablanca · Londres'
     },
     testimonials: {
       badge: 'RÉSULTATS PROUVÉS',
@@ -970,6 +1035,7 @@ export const translations: Record<Language, Translations> = {
       osintBadge: '29€',
       pricing: 'Pricing Plans',
       pricingBadge: '19€ / 49€ / 99€',
+      about: 'About',
       contact: 'Contact',
       freeAudit: 'Free Audit',
       nodesOnline: 'NODES ONLINE',
@@ -977,7 +1043,7 @@ export const translations: Record<Language, Translations> = {
       mobileSubtitle: 'v3.4.8 SECURE'
     },
     hero: {
-      badge: 'ELITE DIGITAL DEFENSE & ENGINEERING',
+      badge: 'DIGITAL ARCHITECTURE & CYBERSECURITY',
       titleLine1: 'Resilient Web Architecture,',
       titleLine2: 'Market Dominance &',
       titleHighlight: 'Conversion Systems.',
@@ -1012,14 +1078,14 @@ export const translations: Record<Language, Translations> = {
       badge: 'STRATEGIC PILLARS',
       title: 'Our 3 Pillars of',
       titleHighlight: 'Digital Engineering',
-      subtitle: 'A holistic framework merging breakneck speed, local market supremacy, and military-grade cyber defense.',
+      subtitle: 'A holistic framework merging breakneck speed, local market supremacy, and high-performance cyber defense.',
       filterAll: 'View All Pillars',
       pillar1Title: 'Web Architecture & Systems',
       pillar1Tagline: 'HIGH-PERFORMANCE DIGITAL FOUNDATIONS',
       pillar1Desc: 'Hardened, instantaneous web systems engineered to provide flawless user journeys and immediate customer trust.',
       pillar1Badge: 'SPEED & CONVERSION',
       pillar1Benefit1: 'Bespoke booking engines and automated 24/7 calendar coordination.',
-      pillar1Benefit2: 'Military-grade performance tuning (load times under 1.5s) to maximize booking conversions.',
+      pillar1Benefit2: 'High-performance tuning (load times under 1.5s) to maximize booking conversions.',
       pillar1Benefit3: 'Silky smooth mobile responsiveness built for discerning patients and diners.',
       pillar1Spec1Label: 'Load Latency',
       pillar1Spec1Val: '< 1.2 Seconds',
@@ -1108,12 +1174,32 @@ export const translations: Record<Language, Translations> = {
       step2Title: 'Architecture Blueprint',
       step2Desc: 'We draft the exact technical specification: high-speed static architecture, dedicated reservation systems, or perimeter security shields.',
       step3Num: '03',
-      step3Title: 'Execution & Military-Grade Hardening',
+      step3Title: 'Execution & Technical Hardening',
       step3Desc: 'Clean modular code development, server performance tuning, header hardening, and conversion funnel optimization.',
       step4Num: '04',
       step4Title: 'Continuous Telemetry & Expansion',
       step4Desc: 'Real-time performance monitoring, 99.99% uptime enforcement, and systematic month-over-month local authority gains.',
       cta: 'Initiate Phase 1 Today'
+    },
+    aboutSection: {
+      badge: 'THE ARCHITECT BEHIND DEXVOI',
+      title: 'Human-Led Engineering,',
+      titleHighlight: 'Rigor & Accountability',
+      subtitle: 'Dexvoi was created to eliminate industry anti-patterns: bloated websites, agency middlemen, and vulnerable themes weighed down by risky third-party plugins.',
+      role: 'Founder & Principal Software Architect',
+      quote: '“We do not build decorative brochure websites or make hollow claims. We engineer robust digital infrastructures where every millisecond of latency and every security header protects your revenue.”',
+      storyTitle: 'Our Story & Mission',
+      storyP1: 'For years, I witnessed private healthcare clinics and premier restaurants invest substantial budgets with traditional marketing agencies, only to receive sluggish websites built on outdated CMS templates that exposed customer data to security risks and GDPR fines.',
+      storyP2: 'At Dexvoi, we dismantled that model: you work directly with the systems engineer who audits your infrastructure and writes your code. No salespeople, no account managers, and no hidden margins.',
+      principlesTitle: 'Our 3 Non-Negotiable Standards',
+      principle1Title: 'Verifiable Metrics Over Marketing Jargon',
+      principle1Desc: 'Every metric we deliver (TTFB, Core Web Vitals scores, CSP/HSTS headers) is independently verifiable via Google PageSpeed and SSL Labs.',
+      principle2Title: 'Clean Custom Code, Zero Bloat',
+      principle2Desc: 'We build on modern architectures (TypeScript, React, Tailwind, Cloudflare Edge) without overloading servers or endangering patient and diner privacy.',
+      principle3Title: 'Direct 1-on-1 Accountability',
+      principle3Desc: 'We respond in under 24 hours and personally oversee every technical audit and deployment across Madrid, Casablanca, and London.',
+      ctaBtn: 'Speak with the Architect',
+      locationNotice: 'Operations and forensic audits: Madrid · Casablanca · London'
     },
     testimonials: {
       badge: 'VERIFIED OUTCOMES',

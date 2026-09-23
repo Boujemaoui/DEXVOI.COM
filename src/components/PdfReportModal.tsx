@@ -65,7 +65,7 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
           name: 'Audit Premium + Consulting Stratégique 1-to-1',
           pages: '25+ pages + Session 1-to-1',
           price: '99€',
-          badge: 'ÉLITE VIP',
+          badge: 'AUDIT + SESSION 1-À-1',
           stripeUrl: 'https://buy.stripe.com/14A5kE0DA7rKgmO4MxdAk02',
           features: [
             'Tout le contenu du rapport forensique de 20+ pages',
@@ -109,7 +109,7 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
           name: 'Premium Audit + 1-on-1 Strategic Consulting',
           pages: '25+ pages + 1-on-1 Call',
           price: '99€',
-          badge: 'VIP ELITE',
+          badge: 'AUDIT + 1-ON-1 SESSION',
           stripeUrl: 'https://buy.stripe.com/14A5kE0DA7rKgmO4MxdAk02',
           features: [
             'Everything included in the 20+ page full report',
@@ -152,7 +152,7 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
         name: 'Premium Audit + 1-on-1 Strategic Consulting',
         pages: '25+ páginas + Llamada 1-a-1',
         price: '99€',
-        badge: 'ÉLITE VIP',
+        badge: 'AUDITORÍA + SESIÓN 1-A-1',
         stripeUrl: 'https://buy.stripe.com/14A5kE0DA7rKgmO4MxdAk02',
         features: [
           'Todo lo del informe completo de 20+ páginas',

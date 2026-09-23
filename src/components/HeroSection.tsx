@@ -123,10 +123,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenAuditModal, onSc
                   <div className="w-28 h-28 rounded-xl bg-[#131B33] border-2 border-[#0066FF] shadow-[0_0_30px_rgba(0,102,255,0.4)] flex flex-col items-center justify-center text-center p-2 z-10">
                     <Shield className="w-8 h-8 text-[#F5A623] mb-1" />
                     <span className="text-[10px] font-mono font-bold text-white uppercase tracking-wider">
-                      {language === 'fr' ? 'BLINDAGE ACTIF' : language === 'en' ? 'SHIELD ACTIVE' : 'BLINDAJE ACTIVO'}
+                      {language === 'fr' ? 'BLINDAGE ACTIF' : language === 'en' ? 'ACTIVE SHIELD' : 'BLINDAJE ACTIVO'}
                     </span>
                     <span className="text-[9px] font-mono text-emerald-400">
-                      {language === 'fr' ? '0 FAILLE' : language === 'en' ? '0 BREACHES' : '0 BRECHAS'}
+                      {language === 'fr' ? 'SURVEILLANCE CONTINUE' : language === 'en' ? 'CONTINUOUS MONITORING' : 'MONITOREO CONTINUO'}
                     </span>
                   </div>
 
@@ -146,24 +146,35 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenAuditModal, onSc
                 </div>
               </div>
 
-              {/* Real-time Telemetry Grid */}
+              {/* Real-time Telemetry Grid with Verifiable Context */}
               <div className="grid grid-cols-2 gap-3 pt-3 border-t border-gray-800 font-mono">
-                <div className="bg-[#131B33]/80 p-2.5 rounded border border-gray-800">
-                  <div className="text-[10px] text-gray-400">
-                    {language === 'fr' ? 'VITESSE MILITAIRE' : language === 'en' ? 'MILITARY SPEED' : 'VELOCIDAD MILITAR'}
+                <div className="bg-[#131B33]/80 p-2.5 rounded border border-gray-800 flex flex-col justify-between">
+                  <div>
+                    <div className="text-[10px] text-gray-400 font-medium">
+                      {language === 'fr' ? 'HAUTE PERFORMANCE' : language === 'en' ? 'HIGH PERFORMANCE' : 'ALTO RENDIMIENTO'}
+                    </div>
+                    <div className="text-sm font-bold text-white flex items-center justify-between mt-1">
+                      <span>99 / 100</span>
+                      <span className="text-[10px] text-emerald-400">TTFB: 140ms</span>
+                    </div>
                   </div>
-                  <div className="text-sm font-bold text-white flex items-center justify-between mt-1">
-                    <span>99 / 100</span>
-                    <span className="text-[10px] text-emerald-400">TTFB: 140ms</span>
+                  <div className="text-[9px] text-sky-400/90 font-mono mt-1 pt-1 border-t border-gray-800/80">
+                    {language === 'fr' ? '✓ Verifié par PageSpeed' : language === 'en' ? '✓ Verified by PageSpeed' : '✓ Verificado por PageSpeed'}
                   </div>
                 </div>
-                <div className="bg-[#131B33]/80 p-2.5 rounded border border-gray-800">
-                  <div className="text-[10px] text-gray-400">
-                    {language === 'fr' ? 'CONVERSION DIRECTE' : language === 'en' ? 'BOOKING LIFT' : 'CONVERSIÓN RESERVAS'}
+
+                <div className="bg-[#131B33]/80 p-2.5 rounded border border-gray-800 flex flex-col justify-between">
+                  <div>
+                    <div className="text-[10px] text-gray-400 font-medium">
+                      {language === 'fr' ? 'CONVERSION DIRECTE' : language === 'en' ? 'BOOKING LIFT' : 'CONVERSIÓN RESERVAS'}
+                    </div>
+                    <div className="text-sm font-bold text-[#F5A623] flex items-center justify-between mt-1">
+                      <span>+140%</span>
+                      <span className="text-[10px] text-gray-300">24/7 Auto</span>
+                    </div>
                   </div>
-                  <div className="text-sm font-bold text-[#F5A623] flex items-center justify-between mt-1">
-                    <span>+140%</span>
-                    <span className="text-[10px] text-gray-300">24/7 Auto</span>
+                  <div className="text-[9px] text-[#F5A623]/90 font-mono mt-1 pt-1 border-t border-gray-800/80">
+                    {language === 'fr' ? '✓ Moyenne cas clients' : language === 'en' ? '✓ Client benchmark' : '✓ Media en casos de éxito'}
                   </div>
                 </div>
               </div>

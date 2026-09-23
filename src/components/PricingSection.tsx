@@ -98,7 +98,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
       currency: '€',
       period: language === 'fr' ? 'paiement unique' : language === 'en' ? 'one-time fee' : 'pago único',
       pages: t.pricing.tierPremiumPages,
-      badge: language === 'fr' ? 'ÉLITE VIP' : language === 'en' ? 'VIP ELITE' : 'ÉLITE VIP',
+      badge: language === 'fr' ? 'AUDIT + SESSION 1-À-1' : language === 'en' ? 'AUDIT + 1-ON-1 SESSION' : 'AUDITORÍA + SESIÓN 1-A-1',
       highlighted: false,
       stripeUrl: 'https://buy.stripe.com/14A5kE0DA7rKgmO4MxdAk02',
       buttonText: t.pricing.tierPremiumBtn,

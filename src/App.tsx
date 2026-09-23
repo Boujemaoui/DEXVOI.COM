@@ -4,6 +4,7 @@ import { HeroSection } from './components/HeroSection';
 import { ProblemSection } from './components/ProblemSection';
 import { ServicesSection } from './components/ServicesSection';
 import { MethodologySection } from './components/MethodologySection';
+import { AboutSection } from './components/AboutSection';
 import { BookingSystemSection } from './components/BookingSystemSection';
 import { AiAgentsSection } from './components/AiAgentsSection';
 import { ScannerSection } from './components/ScannerSection';
@@ -195,6 +196,12 @@ export default function App() {
 
             {/* Section 05: Methodology */}
             <MethodologySection onOpenAuditModal={() => setIsAuditModalOpen(true)} />
+
+            {/* Section 05.5: Who We Are / The Architect Behind Dexvoi */}
+            <AboutSection 
+              onOpenAuditModal={() => setIsAuditModalOpen(true)}
+              onContactClick={() => scrollToSection('contacto', 'contacto')}
+            />
 
             {/* Section 06: Live Perimeter OSINT Scanner */}
             <ScannerSection 

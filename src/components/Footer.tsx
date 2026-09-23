@@ -125,6 +125,23 @@ export const Footer: React.FC<FooterProps> = () => {
                   06. Blog & Guías Técnicas
                 </a>
               </li>
+              <li>
+                <a 
+                  href="#about" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const el = document.getElementById('about');
+                    if (el) {
+                      el.scrollIntoView({ behavior: 'smooth' });
+                    } else {
+                      window.location.hash = '#about';
+                    }
+                  }}
+                  className="text-gray-300 hover:text-white hover:underline flex items-center gap-1"
+                >
+                  07. {t.aboutSection.badge}
+                </a>
+              </li>
             </ul>
           </div>
 

@@ -32,9 +32,9 @@ export const LOCALIZED_ROUTES: Record<AppRoute, RouteLocalization> = {
       en: 'Dexvoi - Web Architecture, Local SEO & Digital Defense',
     },
     descriptions: {
-      es: 'Agencia digital de élite especializada en arquitectura web ultrarrápida, SEO local en Google Maps y blindaje perimetral ético para clínicas y restaurantes.',
-      fr: 'Agence digitale d\'élite spécialisée en architecture web ultra-rapide, référencement Google Maps et blindage de sécurité pour cliniques et restaurants.',
-      en: 'Elite digital engineering agency specializing in ultra-fast web architecture, Google Maps local SEO, and perimeter cybersecurity for clinics and restaurants.',
+      es: 'Estudio de ingeniería y arquitectura digital especializado en desarrollo web de alto rendimiento, SEO local en Google Maps y ciberseguridad para clínicas y restaurantes.',
+      fr: 'Studio d’ingénierie et d’architecture digitale spécialisé en développement web haute performance, référencement Google Maps et cybersécurité pour cliniques et restaurants.',
+      en: 'Digital engineering and architecture practice specializing in high-performance web systems, Google Maps local SEO, and perimeter cybersecurity for clinics and restaurants.',
     },
   },
   services: {

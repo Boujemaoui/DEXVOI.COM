@@ -86,10 +86,10 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({
             <Sparkles className="w-3.5 h-3.5 text-[#F5A623]" />
             <span>
               {language === 'fr' 
-                ? "ARCHITECTURE DIGITALE D'ÉLITE" 
+                ? 'ARCHITECTURE DIGITALE & CYBERSÉCURITÉ' 
                 : language === 'en' 
-                ? 'ELITE DIGITAL ARCHITECTURE' 
-                : 'ARQUITECTURA DIGITAL DE ÉLITE'}
+                ? 'DIGITAL ARCHITECTURE & CYBERSECURITY' 
+                : 'ARQUITECTURA DIGITAL & CIBERSEGURIDAD'}
             </span>
           </div>
 

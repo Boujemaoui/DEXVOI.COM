@@ -79,10 +79,10 @@ export const ContactCTASection: React.FC<ContactCTASectionProps> = ({ initialUrl
               <Clock className="w-3.5 h-3.5" />
               <span>
                 {language === 'fr'
-                  ? '3 PLACES DISPONIBLES CE MOIS-CI'
+                  ? 'RÉPONSE EN MOINS DE 24H'
                   : language === 'en'
-                  ? '3 AUDIT SLOTS LEFT THIS MONTH'
-                  : '3 PLAZAS DISPONIBLES ESTE MES'}
+                  ? 'RESPONSE WITHIN 24 HOURS'
+                  : 'RESPONDEMOS EN MENOS DE 24H'}
               </span>
             </div>
           </div>

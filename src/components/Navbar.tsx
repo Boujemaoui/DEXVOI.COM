@@ -134,6 +134,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
             <span>{t.nav.aiAgents}</span>
           </button>
 
+          <button
+            onClick={() => scrollToSection('about')}
+            className="px-2.5 py-1.5 rounded-md hover:text-white hover:bg-white/5 transition-all flex items-center gap-1.5 cursor-pointer text-gray-300"
+          >
+            <span>{t.nav.about}</span>
+          </button>
+
           <div className="h-4 w-[1px] bg-white/10 mx-1 hidden xl:block"></div>
 
           <a
@@ -279,6 +286,16 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
               <span className="flex items-center gap-2">
                 <span className="text-[#0066FF] font-bold text-[10px]">04</span>
                 <span>{t.nav.aiAgents}</span>
+              </span>
+              <ArrowRight className="w-3.5 h-3.5 text-gray-600" />
+            </button>
+            <button
+              onClick={() => scrollToSection('about')}
+              className="text-left py-2 px-2.5 rounded-md text-gray-300 hover:text-white hover:bg-white/5 flex items-center justify-between"
+            >
+              <span className="flex items-center gap-2">
+                <span className="text-[#0066FF] font-bold text-[10px]">05</span>
+                <span>{t.nav.about}</span>
               </span>
               <ArrowRight className="w-3.5 h-3.5 text-gray-600" />
             </button>

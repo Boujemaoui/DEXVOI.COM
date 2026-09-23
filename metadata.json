@@ -1,6 +1,6 @@
 {
   "name": "Dexvoi",
-  "description": "Dexvoi - Agencia digital de élite especializada en arquitectura web, SEO local y blindaje digital / ethical hacking para clínicas y restaurantes.",
+  "description": "Dexvoi - Arquitectura digital, desarrollo web de alto rendimiento, SEO local y ciberseguridad para clínicas y restaurantes.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
