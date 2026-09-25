@@ -46,7 +46,8 @@ export const ContactCTASection: React.FC<ContactCTASectionProps> = ({ initialUrl
           businessType: formData.businessType,
           websiteUrl: formData.websiteUrl,
           primaryConcern: formData.primaryConcern,
-          type: 'Sesión Estratégica & Auditoría',
+          message: formData.primaryConcern,
+          type: 'Formulario de Contacto',
         }),
       });
       const data = await res.json();

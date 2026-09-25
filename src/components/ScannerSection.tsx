@@ -51,6 +51,8 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
   // Freemium model states
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [leadEmail, setLeadEmail] = useState('');
+  const [leadName, setLeadName] = useState('');
+  const [leadPhone, setLeadPhone] = useState('');
   const [isSubmittingLead, setIsSubmittingLead] = useState(false);
   const [leadError, setLeadError] = useState<string | null>(null);
   const [leadSuccess, setLeadSuccess] = useState(false);
@@ -136,6 +138,8 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: cleanEmail,
+          fullName: leadName.trim() || undefined,
+          phone: leadPhone.trim() || undefined,
           websiteUrl: result.url,
           overallScore: result.overallScore,
           grade: result.grade,
@@ -772,7 +776,7 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
                         <form onSubmit={handleUnlockWithEmail} className="space-y-3 pt-1">
                           <div>
                             <label htmlFor="scanner-lead-email" className="block text-[11px] font-mono text-gray-400 mb-1">
-                              Email corporativo o profesional:
+                              Email corporativo o profesional *:
                             </label>
                             <div className="relative">
                               <input
@@ -785,9 +789,38 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
                                   if (leadError) setLeadError(null);
                                 }}
                                 placeholder="tu@empresa.com"
-                                className="w-full px-3 py-2.5 pl-9 bg-[#060913] border border-gray-700 focus:border-[#0066FF] rounded-lg text-white text-xs font-mono placeholder:text-gray-600 outline-none transition-colors"
+                                className="w-full px-3 py-2 pl-9 bg-[#060913] border border-gray-700 focus:border-[#0066FF] rounded-lg text-white text-xs font-mono placeholder:text-gray-600 outline-none transition-colors"
                               />
-                              <Mail className="w-4 h-4 text-gray-500 absolute left-2.5 top-3 pointer-events-none" />
+                              <Mail className="w-4 h-4 text-gray-500 absolute left-2.5 top-2.5 pointer-events-none" />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <div>
+                              <label htmlFor="scanner-lead-name" className="block text-[10px] font-mono text-gray-400 mb-1">
+                                {language === 'fr' ? 'Nom (optionnel):' : language === 'en' ? 'Name (optional):' : 'Nombre (opcional):'}
+                              </label>
+                              <input
+                                id="scanner-lead-name"
+                                type="text"
+                                value={leadName}
+                                onChange={(e) => setLeadName(e.target.value)}
+                                placeholder={language === 'fr' ? 'Dr. / Chef...' : language === 'en' ? 'Dr. / Chef...' : 'Dr. / Gerente...'}
+                                className="w-full px-2.5 py-1.5 bg-[#060913] border border-gray-800 focus:border-[#0066FF] rounded-lg text-white text-xs font-mono placeholder:text-gray-600 outline-none transition-colors"
+                              />
+                            </div>
+                            <div>
+                              <label htmlFor="scanner-lead-phone" className="block text-[10px] font-mono text-gray-400 mb-1">
+                                {language === 'fr' ? 'Tél / WhatsApp (optionnel):' : language === 'en' ? 'Phone / WhatsApp (optional):' : 'WhatsApp / Tel (opcional):'}
+                              </label>
+                              <input
+                                id="scanner-lead-phone"
+                                type="tel"
+                                value={leadPhone}
+                                onChange={(e) => setLeadPhone(e.target.value)}
+                                placeholder="+34 600..."
+                                className="w-full px-2.5 py-1.5 bg-[#060913] border border-gray-800 focus:border-[#0066FF] rounded-lg text-white text-xs font-mono placeholder:text-gray-600 outline-none transition-colors"
+                              />
                             </div>
                           </div>
 

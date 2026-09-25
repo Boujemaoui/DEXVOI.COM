@@ -10,6 +10,8 @@ import { executeAndDeliverAudit, pendingAuditTargets } from './server/auditDeliv
 import { generateAuditPdf } from './server/reportGenerator.ts';
 import { OsintSecurityAuditResult } from './src/types.ts';
 import { verifyEmailAddress } from './server/emailVerifier.ts';
+import { processLeadSubmission } from './server/emailService.ts';
+import { getAllStoredLeads } from './server/leadStorage.ts';
 
 dotenv.config();
 
@@ -523,9 +525,9 @@ async function startServer() {
     });
   });
 
-  // Contact & Free Audit Lead Submission endpoint with Resend
+  // Contact & Free Audit Lead Submission endpoint
   app.post('/api/lead', async (req, res) => {
-    const { fullName, email, phone, businessType, websiteUrl, primaryConcern, type, ticketId } = req.body;
+    const { fullName, email, phone, businessType, websiteUrl, primaryConcern, message, type, ticketId } = req.body;
 
     if (!email && !phone && !fullName) {
       return res.status(400).json({ error: 'Faltan datos de contacto del cliente.' });
@@ -539,84 +541,40 @@ async function startServer() {
       });
     }
 
-    const leadTicket = ticketId || `DEXVOI-LEAD-${Math.floor(100000 + Math.random() * 900000)}`;
-    const destinationEmail = process.env.NOTIFICATION_EMAIL || 'info@dexvoi.com';
-
-    let emailSent = false;
-    let emailError: string | null = null;
-
-    if (process.env.RESEND_API_KEY) {
-      try {
-        const resend = new Resend(process.env.RESEND_API_KEY);
-        const subject = `⚡ [Nuevo Lead Dexvoi] ${type || 'Auditoría'}: ${fullName || 'Cliente'} (${businessType || 'Negocio'})`;
-        const html = `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0A0F1F; color: #FFFFFF; padding: 28px; border-radius: 12px; border: 1px solid #0066FF;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid #1E293B; padding-bottom: 16px;">
-              <h2 style="color: #0066FF; margin: 0; font-size: 22px;">⚡ Dexvoi - Nuevo Lead Recibido</h2>
-            </div>
-            <p style="color: #94A3B8; font-size: 14px; margin-top: 0;">
-              <strong>Expediente Técnico:</strong> <span style="color: #F5A623; font-weight: bold;">${leadTicket}</span>
-            </p>
-            <div style="background: #131B33; border: 1px solid #1E293B; border-radius: 8px; padding: 18px; margin: 20px 0; font-size: 15px; line-height: 1.7;">
-              <p style="margin: 6px 0;"><strong>👤 Nombre Completo:</strong> ${fullName || 'No especificado'}</p>
-              <p style="margin: 6px 0;"><strong>📧 Email Profesional:</strong> <a href="mailto:${email}" style="color: #38BDF8; text-decoration: none;">${email || 'No especificado'}</a></p>
-              <p style="margin: 6px 0;"><strong>📱 Teléfono / WhatsApp:</strong> <a href="tel:${phone}" style="color: #10B981; text-decoration: none; font-weight: bold;">${phone || 'No especificado'}</a></p>
-              <p style="margin: 6px 0;"><strong>🏢 Sector / Tipo de Negocio:</strong> ${businessType || 'No especificado'}</p>
-              <p style="margin: 6px 0;"><strong>🌐 Web o Negocio a Auditar:</strong> ${websiteUrl ? `<a href="${websiteUrl.startsWith('http') ? websiteUrl : 'https://' + websiteUrl}" style="color: #38BDF8;" target="_blank">${websiteUrl}</a>` : 'No indicada'}</p>
-              ${primaryConcern ? `<p style="margin: 6px 0;"><strong>🎯 Objetivo o Preocupación:</strong> ${primaryConcern}</p>` : ''}
-              <p style="margin: 6px 0; color: #94A3B8; font-size: 13px;"><strong>📋 Origen:</strong> ${type || 'Formulario Web'}</p>
-            </div>
-            <div style="text-align: center; margin-top: 24px;">
-              ${phone ? `<a href="https://wa.me/${phone.replace(/[^0-9]/g, '')}" style="background: #10B981; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; display: inline-block; margin-right: 10px;">Contactar por WhatsApp</a>` : ''}
-              ${email ? `<a href="mailto:${email}" style="background: #0066FF; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; display: inline-block;">Responder por Email</a>` : ''}
-            </div>
-            <hr style="border: 0; border-top: 1px solid #1E293B; margin: 24px 0 16px 0;" />
-            <p style="font-size: 12px; color: #64748B; margin: 0; text-align: center;">Notificación generada automáticamente por la plataforma dexvoi.com</p>
-          </div>
-        `;
-
-        // Attempt sending to destinationEmail (and fallback to info@dexvoi.com if restricted)
-        const sendResult = await resend.emails.send({
-          from: 'Dexvoi Leads <onboarding@resend.dev>',
-          to: destinationEmail,
-          subject,
-          html,
-        });
-
-        if (sendResult.error) {
-          console.warn('[Resend] Primary destination rejected, falling back to info@dexvoi.com:', sendResult.error);
-          if (destinationEmail !== 'info@dexvoi.com') {
-            await resend.emails.send({
-              from: 'Dexvoi Leads <onboarding@resend.dev>',
-              to: 'info@dexvoi.com',
-              subject,
-              html,
-            });
-          }
-        }
-
-        emailSent = true;
-        console.log(`[Resend] Lead email successfully dispatched`);
-      } catch (err: any) {
-        console.error('[Resend] Error sending lead notification:', err);
-        emailError = err?.message || 'Error al enviar email';
-      }
-    } else {
-      console.log(`[Dexvoi Lead] RESEND_API_KEY no configurada aún. Lead registrado localmente:`, {
-        ticketId: leadTicket,
-        fullName,
-        email,
-        phone,
-        websiteUrl,
-      });
-    }
+    const formType = type || 'Formulario de Contacto';
+    const result = await processLeadSubmission({
+      formType,
+      fullName,
+      email,
+      phone,
+      businessType,
+      websiteUrl,
+      primaryConcern: primaryConcern || message,
+      message: message || primaryConcern,
+      ticketId,
+      clientIp: req.ip,
+      userAgent: req.headers['user-agent'] as string,
+    });
 
     return res.json({
       success: true,
-      ticketId: leadTicket,
-      emailSent,
-      hasResendKey: Boolean(process.env.RESEND_API_KEY),
-      error: emailError,
+      ticketId: result.ticketId,
+      leadId: result.leadId,
+      emailSent: result.adminNotified,
+      provider: result.provider,
+      userConfirmed: result.userConfirmed,
+      destinationEmail: result.adminEmail,
+      error: result.error,
+    });
+  });
+
+  // Admin endpoint to view all captured leads and audit trail safely stored on disk
+  app.get('/api/admin/leads', (_req, res) => {
+    const leads = getAllStoredLeads();
+    return res.json({
+      total: leads.length,
+      destinationEmail: 'info@dexvoi.com',
+      leads,
     });
   });
 
@@ -653,7 +611,7 @@ async function startServer() {
   // Freemium scanner lead capture & report unlock endpoint
   app.post('/api/scanner/unlock', async (req, res) => {
     try {
-      const { email, websiteUrl, overallScore, grade, issuesCount = 0, businessType = 'Negocio' } = req.body;
+      const { email, fullName, phone, websiteUrl, overallScore, grade, issuesCount = 0, businessType = 'Negocio' } = req.body;
 
       if (!email || typeof email !== 'string') {
         return res.status(400).json({ error: 'El correo electrónico es obligatorio.' });
@@ -677,96 +635,32 @@ async function startServer() {
         timestamp: Date.now(),
       });
 
-      const destinationEmail = process.env.NOTIFICATION_EMAIL || 'info@dexvoi.com';
-      const ticketId = `SCAN-LEAD-${Math.floor(100000 + Math.random() * 900000)}`;
-
-      // Send lead notification to info@dexvoi.com
-      if (process.env.RESEND_API_KEY) {
-        try {
-          const resend = new Resend(process.env.RESEND_API_KEY);
-          const subject = `🔥 [Lead Freemium Desbloqueado] ${cleanTarget} (Score: ${overallScore ?? 'N/A'}/100 Grado ${grade ?? 'N/A'}) - ${cleanEmail}`;
-          const html = `
-            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 620px; margin: 0 auto; background: #0A0F1F; color: #FFFFFF; padding: 32px; border-radius: 12px; border: 1px solid #0066FF;">
-              <div style="border-bottom: 1px solid #1E293B; padding-bottom: 20px; margin-bottom: 24px;">
-                <span style="background: #F5A623; color: #0A0F1F; font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 4px; text-transform: uppercase;">Lead Freemium Cualificado</span>
-                <h2 style="color: #38BDF8; margin: 12px 0 4px 0; font-size: 22px;">Nuevo Informe Desbloqueado en Escáner</h2>
-                <p style="color: #94A3B8; font-size: 13px; margin: 0;">Expediente de Auditoría: <strong style="color: #F5A623;">${ticketId}</strong></p>
-              </div>
-
-              <div style="background: #131B33; border: 1px solid #1E293B; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
-                <p style="margin: 8px 0; font-size: 15px;"><strong>🌐 Dominio Auditado:</strong> <a href="https://${cleanTarget}" target="_blank" style="color: #38BDF8; text-decoration: none; font-weight: bold;">${cleanTarget}</a></p>
-                <p style="margin: 8px 0; font-size: 15px;"><strong>📧 Email Capturado (Verificado):</strong> <a href="mailto:${cleanEmail}" style="color: #F5A623; text-decoration: none; font-weight: bold;">${cleanEmail}</a></p>
-                <p style="margin: 8px 0; font-size: 15px;"><strong>📊 Puntuación Global:</strong> <span style="font-size: 18px; font-weight: bold; color: ${Number(overallScore) >= 80 ? '#10B981' : Number(overallScore) >= 50 ? '#F5A623' : '#EF4444'};">${overallScore ?? 'N/A'} / 100</span> (Grado ${grade ?? 'N/A'})</p>
-                <p style="margin: 8px 0; font-size: 15px;"><strong>⚠ Vulnerabilidades Ocultas que Desbloqueó:</strong> ${issuesCount} incidencias técnicas</p>
-                <p style="margin: 8px 0; font-size: 15px;"><strong>🏢 Sector / Tipo:</strong> ${businessType}</p>
-                <p style="margin: 8px 0; font-size: 13px; color: #94A3B8;"><strong>🕒 Fecha y Hora:</strong> ${new Date().toLocaleString('es-ES')}</p>
-              </div>
-
-              <div style="display: flex; gap: 12px; margin-bottom: 24px;">
-                <a href="mailto:${cleanEmail}?subject=Informe%20T%C3%A9cnico%20Dexvoi%20para%20${cleanTarget}&body=Hola%2C%20hemos%20visto%20tu%20an%C3%A1lisis%20en%20Dexvoi%20para%20${cleanTarget}..." style="background: #0066FF; color: white; padding: 12px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; display: inline-block;">
-                  Contactar al Lead por Email
-                </a>
-              </div>
-
-              <hr style="border: 0; border-top: 1px solid #1E293B; margin: 24px 0 16px 0;" />
-              <p style="font-size: 11px; color: #64748B; margin: 0; text-align: center;">Notificación comercial automática enviada a info@dexvoi.com</p>
-            </div>
-          `;
-
-          await resend.emails.send({
-            from: 'Dexvoi Scanner <onboarding@resend.dev>',
-            to: destinationEmail,
-            subject,
-            html,
-          });
-
-          if (destinationEmail !== 'info@dexvoi.com') {
-            await resend.emails.send({
-              from: 'Dexvoi Scanner <onboarding@resend.dev>',
-              to: 'info@dexvoi.com',
-              subject,
-              html,
-            }).catch(() => {});
-          }
-
-          // Also send user confirmation recap
-          try {
-            await resend.emails.send({
-              from: 'Dexvoi Seguridad <onboarding@resend.dev>',
-              to: cleanEmail,
-              subject: `Tu informe de auditoría técnica para ${cleanTarget} ya está desbloqueado`,
-              html: `
-                <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background: #0A0F1F; color: #FFFFFF; padding: 30px; border-radius: 12px;">
-                  <h2 style="color: #0066FF;">Informe Técnico Desbloqueado</h2>
-                  <p>Hola, has desbloqueado con éxito el informe perimetral completo para <strong>${cleanTarget}</strong> en Dexvoi.</p>
-                  <div style="background: #131B33; padding: 16px; border-radius: 8px; margin: 20px 0;">
-                    <p style="margin: 4px 0;"><strong>Puntuación Global:</strong> ${overallScore ?? 'N/A'}/100 (Grado ${grade ?? 'N/A'})</p>
-                    <p style="margin: 4px 0;"><strong>Incidencias detectadas:</strong> ${issuesCount} problemas técnicos</p>
-                  </div>
-                  <p>Si deseas descargar el informe forense oficial en PDF de 5 páginas con marca Dexvoi o delegar la remediación técnica en nuestro equipo, accede a nuestra web o responde a este correo.</p>
-                  <p style="color: #94A3B8; font-size: 13px;">Equipo de Arquitectura Digital · Dexvoi</p>
-                </div>
-              `
-            }).catch(() => {});
-          } catch {}
-
-        } catch (mailErr) {
-          console.error('[Resend Lead Notification Error]:', mailErr);
-        }
-      } else {
-        console.log('[Freemium Lead Captured]:', {
-          email: cleanEmail,
-          target: cleanTarget,
-          score: overallScore,
+      // Process lead submission to info@dexvoi.com via Brevo, Cloudflare Email Worker, or Resend + save to disk
+      const leadResult = await processLeadSubmission({
+        formType: 'Escáner OSINT',
+        fullName: fullName || undefined,
+        email: cleanEmail,
+        phone: phone || undefined,
+        websiteUrl: cleanTarget,
+        businessType: businessType || 'Negocio',
+        primaryConcern: `Desbloqueo de informe perimetral para ${cleanTarget}`,
+        technicalDetails: {
+          overallScore,
           grade,
-          ticketId
-        });
-      }
+          issuesCount,
+        },
+        clientIp: req.ip,
+        userAgent: req.headers['user-agent'] as string,
+      });
 
       return res.json({
         success: true,
         unlocked: true,
-        ticketId,
+        ticketId: leadResult.ticketId,
+        leadId: leadResult.leadId,
+        emailSent: leadResult.adminNotified,
+        provider: leadResult.provider,
+        destinationEmail: leadResult.adminEmail,
         message: 'Email verificado con éxito. Informe completo desbloqueado.',
       });
     } catch (err: any) {
@@ -932,30 +826,17 @@ async function startServer() {
     const phoneMatch = trimmed.match(/(?:\+?[0-9]{1,3}[-\s.]?)?\(?[0-9]{2,4}\)?[-\s.]?[0-9]{3,4}[-\s.]?[0-9]{3,5}/);
     const hasContactDetails = Boolean(emailMatch || (phoneMatch && phoneMatch[0].replace(/\D/g, '').length >= 8));
 
-    if (hasContactDetails && process.env.RESEND_API_KEY) {
-      try {
-        const resend = new Resend(process.env.RESEND_API_KEY);
-        const destination = process.env.NOTIFICATION_EMAIL || 'info@dexvoi.com';
-        const contactAlertHtml = `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0A0F1F; color: #FFFFFF; padding: 24px; border-radius: 12px; border: 1px solid #0066FF;">
-            <h2 style="color: #0066FF; margin: 0 0 16px 0; font-size: 20px;">💬 Nuevo Contacto Detectado en Chat Dexvoi</h2>
-            <div style="background: #131B33; padding: 16px; border-radius: 8px; border: 1px solid #1E293B; line-height: 1.6;">
-              <p><strong>Mensaje del cliente:</strong> "${trimmed}"</p>
-              ${emailMatch ? `<p><strong>Email detectado:</strong> <a href="mailto:${emailMatch[0]}" style="color: #38BDF8;">${emailMatch[0]}</a></p>` : ''}
-              ${phoneMatch ? `<p><strong>Teléfono detectado:</strong> <a href="tel:${phoneMatch[0]}" style="color: #10B981;">${phoneMatch[0]}</a></p>` : ''}
-            </div>
-            <p style="font-size: 12px; color: #64748B; margin-top: 16px;">Detectado automáticamente por el Asistente Virtual Dexvoi.</p>
-          </div>
-        `;
-        resend.emails.send({
-          from: 'Dexvoi Leads <onboarding@resend.dev>',
-          to: destination,
-          subject: '💬 [Lead en Chat Dexvoi] Cliente ha dejado sus datos de contacto',
-          html: contactAlertHtml,
-        }).catch((e: any) => console.warn('[Resend Chat Alert Error]:', e?.message));
-      } catch (e: any) {
-        console.warn('Error queuing chat lead notification:', e);
-      }
+    if (hasContactDetails) {
+      processLeadSubmission({
+        formType: 'Chat Asistente Virtual',
+        fullName: 'Visitante Chat Dexvoi',
+        email: emailMatch ? emailMatch[0] : undefined,
+        phone: phoneMatch ? phoneMatch[0] : undefined,
+        message: trimmed,
+        primaryConcern: trimmed,
+        clientIp: req.ip,
+        userAgent: req.headers['user-agent'] as string,
+      }).catch((e: any) => console.warn('[EmailService Chat Alert Error]:', e?.message));
     }
 
     // Attempt Gemini call if API client is available

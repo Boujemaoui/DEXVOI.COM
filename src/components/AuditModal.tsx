@@ -16,6 +16,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({ isOpen, onClose }) => {
   const [businessType, setBusinessType] = useState('Clínica Médica / Estética');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDone, setIsDone] = useState(false);
+  const [ticketId, setTicketId] = useState('');
 
   if (!isOpen) return null;
 
@@ -24,7 +25,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({ isOpen, onClose }) => {
     setIsSubmitting(true);
 
     try {
-      await fetch('/api/lead', {
+      const res = await fetch('/api/lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -36,8 +37,10 @@ export const AuditModal: React.FC<AuditModalProps> = ({ isOpen, onClose }) => {
           type: 'Auditoría Gratuita 5 Puntos',
         }),
       });
+      const data = await res.json();
+      setTicketId(data.ticketId || `DEXVOI-${Math.floor(100000 + Math.random() * 900000)}`);
     } catch {
-      // Graceful fallback
+      setTicketId(`DEXVOI-${Math.floor(100000 + Math.random() * 900000)}`);
     } finally {
       setIsSubmitting(false);
       setIsDone(true);
@@ -72,6 +75,12 @@ export const AuditModal: React.FC<AuditModalProps> = ({ isOpen, onClose }) => {
             <h3 className="text-xl font-bold text-white font-mono">
               {language === 'fr' ? 'AUDIT 5 POINTS CONFIRMÉ' : language === 'en' ? '5-POINT AUDIT CONFIRMED' : 'AUDITORÍA DE 5 PUNTOS CONFIRMADA'}
             </h3>
+            {ticketId && (
+              <p className="text-xs font-mono text-emerald-400">
+                {language === 'fr' ? 'Expédition dossier :' : language === 'en' ? 'Ticket ID:' : 'Expediente Técnico :'}{' '}
+                <span className="font-bold text-white">{ticketId}</span>
+              </p>
+            )}
             <p className="text-xs text-gray-300 max-w-sm mx-auto leading-relaxed">
               {language === 'fr'
                 ? 'L’Architecte Digital a bien reçu vos informations et initie l’évaluation de vitesse, failles et visibilité locale. Nous vous recontacterons sous 24h.'
