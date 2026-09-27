@@ -27,6 +27,7 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
       });
     }
 
+    const destinationEmail = (env?.NOTIFICATION_EMAIL || PRIMARY_DESTINATION).trim();
     const cleanTarget = String(websiteUrl || 'dexvoi.com').replace(/^https?:\/\//i, '').replace(/\/.*$/, '').trim();
     const cleanEmail = email.trim().toLowerCase();
     const ticketId = `SCAN-LEAD-${Math.floor(100000 + Math.random() * 900000)}`;
@@ -45,12 +46,18 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
           <p><strong>⚠️ Incidencias técnicas:</strong> ${issuesCount}</p>
           <p><strong>🏢 Sector:</strong> ${businessType}</p>
         </div>
-        <p style="font-size: 12px; color: #64748B; margin-top: 20px;">Enviado automáticamente a ${PRIMARY_DESTINATION}</p>
+        <p style="font-size: 12px; color: #64748B; margin-top: 20px;">Enviado a ${destinationEmail}</p>
       </div>
     `;
 
     let emailSent = false;
     let provider = 'none';
+    let lastError: string | null = null;
+
+    const recipients = [{ email: destinationEmail, name: 'Dexvoi' }];
+    if (destinationEmail !== PRIMARY_DESTINATION) {
+      recipients.push({ email: PRIMARY_DESTINATION, name: 'Dexvoi Backup' });
+    }
 
     // Envío principal mediante Brevo
     const brevoKey = env?.BREVO_API_KEY;
@@ -67,7 +74,7 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
               name: env?.BREVO_SENDER_NAME || 'Dexvoi', 
               email: env?.BREVO_SENDER_EMAIL || 'info@dexvoi.com' 
             },
-            to: [{ email: PRIMARY_DESTINATION, name: 'Dexvoi' }],
+            to: recipients,
             subject,
             htmlContent: adminHtml,
           }),
@@ -75,8 +82,12 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
         if (brevoRes.ok) {
           emailSent = true;
           provider = 'brevo';
+        } else {
+          lastError = await brevoRes.text();
+          console.warn('[Brevo Scanner Unlock Error]:', lastError);
         }
-      } catch (e) {
+      } catch (e: any) {
+        lastError = e?.message;
         console.warn('Brevo edge dispatch failed:', e);
       }
     }
@@ -84,6 +95,9 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
     // Respaldo secundario mediante Resend
     if (!emailSent && env?.RESEND_API_KEY) {
       try {
+        const toEmails = [destinationEmail];
+        if (destinationEmail !== PRIMARY_DESTINATION) toEmails.push(PRIMARY_DESTINATION);
+
         const resendRes = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
@@ -92,7 +106,7 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
           },
           body: JSON.stringify({
             from: 'Dexvoi Scanner <onboarding@resend.dev>',
-            to: [PRIMARY_DESTINATION],
+            to: toEmails,
             subject,
             html: adminHtml,
           }),
@@ -100,8 +114,12 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
         if (resendRes.ok) {
           emailSent = true;
           provider = 'resend';
+          lastError = null;
+        } else {
+          lastError = await resendRes.text();
         }
-      } catch (e) {
+      } catch (e: any) {
+        lastError = e?.message;
         console.warn('Resend edge dispatch failed:', e);
       }
     }
@@ -113,7 +131,8 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
         ticketId,
         emailSent,
         provider,
-        destinationEmail: PRIMARY_DESTINATION,
+        destinationEmail,
+        errorDetails: emailSent ? undefined : lastError,
         message: 'Email verificado con éxito. Informe completo desbloqueado.',
       }),
       { status: 200, headers: { 'Content-Type': 'application/json' } }

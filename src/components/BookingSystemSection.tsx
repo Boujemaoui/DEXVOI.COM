@@ -20,7 +20,11 @@ import {
   X,
   MessageSquare,
   ShieldCheck,
-  Check
+  Check,
+  Mail,
+  Phone,
+  User,
+  AlertCircle
 } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 
@@ -35,8 +39,58 @@ export const BookingSystemSection: React.FC<BookingSystemSectionProps> = ({
 }) => {
   const { t, language } = useLanguage();
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [selectedDemoIndustry, setSelectedDemoIndustry] = useState<string>('comercio');
   const [selectedSlot, setSelectedSlot] = useState<string>('11:30');
+
+  // Real booking submission state
+  const [bookingFormData, setBookingFormData] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+    businessName: '',
+    notes: '',
+  });
+  const [isBookingSubmitting, setIsBookingSubmitting] = useState(false);
+  const [bookingSubmittedTicket, setBookingSubmittedTicket] = useState<string | null>(null);
+  const [bookingError, setBookingError] = useState<string | null>(null);
+
+  const handleBookingSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsBookingSubmitting(true);
+    setBookingError(null);
+
+    const currentInd = industries.find((i) => i.id === selectedDemoIndustry) || industries[0];
+
+    try {
+      const res = await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: bookingFormData.fullName.trim(),
+          email: bookingFormData.email.trim(),
+          phone: bookingFormData.phone.trim(),
+          websiteUrl: bookingFormData.businessName.trim() || undefined,
+          businessType: currentInd.label,
+          selectedService: currentInd.serviceName,
+          selectedSlot: selectedSlot,
+          primaryConcern: `Reserva de Cita en Agenda: ${currentInd.serviceName} a las ${selectedSlot}. Notas: ${bookingFormData.notes.trim() || 'Sin notas adicionales'}`,
+          type: 'Reserva de Cita en Agenda',
+        }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.success) {
+        setBookingSubmittedTicket(data.ticketId || `DEXVOI-BOOK-${Math.floor(100000 + Math.random() * 900000)}`);
+      } else {
+        throw new Error(data.error || 'Error al procesar reserva');
+      }
+    } catch (err: any) {
+      setBookingError(err?.message || 'Error de conexión al enviar la reserva.');
+    } finally {
+      setIsBookingSubmitting(false);
+    }
+  };
 
   // Business verticals with dedicated demo data
   const industries = language === 'fr' ? [
@@ -551,11 +605,15 @@ export const BookingSystemSection: React.FC<BookingSystemSectionProps> = ({
               {/* Interactive Booking Trigger inside Card */}
               <button
                 type="button"
-                onClick={() => setIsDetailModalOpen(true)}
+                onClick={() => {
+                  setBookingSubmittedTicket(null);
+                  setBookingError(null);
+                  setIsBookingModalOpen(true);
+                }}
                 className="w-full metallic-btn py-3.5 rounded-xl font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl cursor-pointer"
               >
                 <Sparkles className="w-4 h-4 text-[#F5A623]" />
-                <span>{language === 'fr' ? 'Tester le Processus Complet' : language === 'en' ? 'Test Complete Booking Flow' : 'Probar Flujo de Reserva Completo'}</span>
+                <span>{language === 'fr' ? 'Réserver ce Créneau en Ligne' : language === 'en' ? 'Book this Slot Online' : 'Reservar Cita en Este Horario'}</span>
               </button>
             </div>
           </div>
@@ -591,20 +649,215 @@ export const BookingSystemSection: React.FC<BookingSystemSectionProps> = ({
           </div>
         </div>
 
-        {/* Call to Action Button */}
-        <div className="text-center">
+        {/* Call to Action Buttons */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <button
+            type="button"
+            id="btn-reservar-cita-agenda"
+            onClick={() => {
+              setBookingSubmittedTicket(null);
+              setBookingError(null);
+              setIsBookingModalOpen(true);
+            }}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-gradient-to-r from-[#0066FF] to-[#004ECC] hover:from-[#0055DD] hover:to-[#003EA8] text-white font-mono text-sm uppercase tracking-wider font-bold shadow-[0_0_25px_rgba(0,102,255,0.4)] hover:shadow-[0_0_35px_rgba(0,102,255,0.6)] transition-all duration-300 group cursor-pointer"
+          >
+            <CalendarCheck className="w-4 h-4 text-[#F5A623]" />
+            <span>{language === 'fr' ? 'Prendre Rendez-vous en Ligne' : language === 'en' ? 'Schedule an Appointment' : 'Agendar Cita en Calendario'}</span>
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </button>
+
           <button
             type="button"
             id="btn-descubre-mas-reservas"
             onClick={() => setIsDetailModalOpen(true)}
-            className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl bg-gradient-to-r from-[#0066FF] to-[#004ECC] hover:from-[#0055DD] hover:to-[#003EA8] text-white font-mono text-sm uppercase tracking-wider font-bold shadow-[0_0_25px_rgba(0,102,255,0.4)] hover:shadow-[0_0_35px_rgba(0,102,255,0.6)] transition-all duration-300 group cursor-pointer"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-[#131B33] hover:bg-[#1E293B] border border-gray-700 text-gray-200 hover:text-white font-mono text-sm uppercase tracking-wider font-medium transition-colors cursor-pointer"
           >
-            <span>🔗 {t.booking.cta}</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            <span>ℹ️ {language === 'fr' ? 'Détails du Système' : language === 'en' ? 'System Capabilities' : 'Detalles del Sistema'}</span>
           </button>
         </div>
 
       </div>
+
+      {/* Real Appointment Booking Modal */}
+      {isBookingModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="relative w-full max-w-lg bg-[#0E1528] border border-[#0066FF]/60 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="flex items-start justify-between border-b border-gray-800 pb-4">
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded bg-[#0066FF]/20 border border-[#0066FF]/40 text-[#0066FF] font-mono text-[11px] font-bold">
+                  <CalendarCheck className="w-3.5 h-3.5 text-[#F5A623]" />
+                  <span>DEXVOI · CONFIRMACIÓN DE CITA</span>
+                </div>
+                <h3 className="text-xl font-bold text-white font-mono">
+                  {language === 'fr' ? 'Réserver un Créneau' : language === 'en' ? 'Book an Appointment' : 'Reservar Cita en Agenda'}
+                </h3>
+                <p className="text-xs text-gray-400">
+                  {language === 'fr' 
+                    ? `Service : ${currentIndustry.serviceName} · Créneau : ${selectedSlot}` 
+                    : language === 'en'
+                    ? `Service: ${currentIndustry.serviceName} · Slot: ${selectedSlot}`
+                    : `Servicio: ${currentIndustry.serviceName} · Horario: ${selectedSlot}`}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsBookingModalOpen(false)}
+                className="p-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {bookingSubmittedTicket ? (
+              <div className="py-8 text-center space-y-4 animate-in fade-in">
+                <div className="w-14 h-14 rounded-full bg-emerald-500/20 border-2 border-emerald-500 flex items-center justify-center mx-auto text-emerald-400">
+                  <CheckCircle2 className="w-8 h-8" />
+                </div>
+                <div className="space-y-2">
+                  <h4 className="text-xl font-bold text-white font-mono">
+                    {language === 'fr' ? 'Rendez-vous Demandé avec Succès !' : language === 'en' ? 'Appointment Successfully Requested!' : '¡Cita Solicitada con Éxito!'}
+                  </h4>
+                  <p className="text-xs text-gray-300 max-w-sm mx-auto">
+                    {language === 'fr'
+                      ? `Votre demande pour le créneau de ${selectedSlot} a été enregistrée. Une notification a été envoyée à info@dexvoi.com et vous recevrez un retour rapide.`
+                      : language === 'en'
+                      ? `Your booking request for ${selectedSlot} has been registered. Notification sent to info@dexvoi.com and we will follow up promptly.`
+                      : `Tu solicitud para el horario de ${selectedSlot} ha sido registrada. Notificación enviada a info@dexvoi.com y contactaremos contigo a la mayor brevedad.`}
+                  </p>
+                  <div className="inline-block px-3 py-1.5 rounded-lg bg-[#131B33] border border-gray-700 font-mono text-xs text-[#F5A623]">
+                    Expediente: <strong>{bookingSubmittedTicket}</strong>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsBookingModalOpen(false);
+                    setBookingSubmittedTicket(null);
+                  }}
+                  className="px-6 py-2.5 rounded-xl bg-[#0066FF] hover:bg-[#0055DD] text-white font-mono text-xs uppercase font-bold cursor-pointer"
+                >
+                  {language === 'fr' ? 'Fermer' : language === 'en' ? 'Close' : 'Cerrar'}
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleBookingSubmit} className="space-y-4">
+                <div className="p-3 rounded-xl bg-[#070B16] border border-gray-800 text-xs font-mono space-y-1 text-gray-300">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-400">Sector / Vertical:</span>
+                    <span className="text-white font-bold">{currentIndustry.label}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-400">Horario seleccionado:</span>
+                    <span className="text-[#F5A623] font-bold">{selectedSlot}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-400">Modalidad:</span>
+                    <span className="text-emerald-400 font-bold">Online / Presencial</span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-mono text-gray-300 mb-1">
+                    {language === 'fr' ? 'Nom et Prénom *' : language === 'en' ? 'Full Name *' : 'Nombre y Apellidos *'}
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={bookingFormData.fullName}
+                    onChange={(e) => setBookingFormData((p) => ({ ...p, fullName: e.target.value }))}
+                    placeholder="Ej. Carlos Mendoza"
+                    className="w-full bg-[#131B33] border border-gray-700 rounded-xl px-3.5 py-2.5 text-xs text-white font-mono focus:outline-none focus:border-[#0066FF]"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-mono text-gray-300 mb-1">
+                      {language === 'fr' ? 'E-mail professionnel *' : language === 'en' ? 'Work Email *' : 'Email Profesional *'}
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={bookingFormData.email}
+                      onChange={(e) => setBookingFormData((p) => ({ ...p, email: e.target.value }))}
+                      placeholder="carlos@empresa.com"
+                      className="w-full bg-[#131B33] border border-gray-700 rounded-xl px-3.5 py-2.5 text-xs text-white font-mono focus:outline-none focus:border-[#0066FF]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-mono text-gray-300 mb-1">
+                      {language === 'fr' ? 'Téléphone / WhatsApp *' : language === 'en' ? 'Phone / WhatsApp *' : 'Teléfono / WhatsApp *'}
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      value={bookingFormData.phone}
+                      onChange={(e) => setBookingFormData((p) => ({ ...p, phone: e.target.value }))}
+                      placeholder="+34 600 000 000"
+                      className="w-full bg-[#131B33] border border-gray-700 rounded-xl px-3.5 py-2.5 text-xs text-white font-mono focus:outline-none focus:border-[#0066FF]"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-mono text-gray-300 mb-1">
+                    {language === 'fr' ? 'Nom du commerce / Site web (optionnel)' : language === 'en' ? 'Business name / Website (optional)' : 'Nombre del negocio / Web (opcional)'}
+                  </label>
+                  <input
+                    type="text"
+                    value={bookingFormData.businessName}
+                    onChange={(e) => setBookingFormData((p) => ({ ...p, businessName: e.target.value }))}
+                    placeholder="ejemplo.com"
+                    className="w-full bg-[#131B33] border border-gray-700 rounded-xl px-3.5 py-2.5 text-xs text-white font-mono focus:outline-none focus:border-[#0066FF]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-mono text-gray-300 mb-1">
+                    {language === 'fr' ? 'Notes ou objectif du rendez-vous' : language === 'en' ? 'Notes or meeting objective' : 'Notas u objetivo de la cita'}
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={bookingFormData.notes}
+                    onChange={(e) => setBookingFormData((p) => ({ ...p, notes: e.target.value }))}
+                    placeholder="Quiero implementar reservas automáticas en mi web y Google Maps..."
+                    className="w-full bg-[#131B33] border border-gray-700 rounded-xl px-3.5 py-2 text-xs text-white font-mono focus:outline-none focus:border-[#0066FF]"
+                  />
+                </div>
+
+                {bookingError && (
+                  <div className="p-2.5 rounded-lg bg-red-500/15 border border-red-500/40 text-red-300 text-xs flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
+                    <span>{bookingError}</span>
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={isBookingSubmitting}
+                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#0066FF] to-[#004ECC] hover:from-[#0055DD] hover:to-[#003EA8] text-white font-mono text-xs uppercase font-bold tracking-wider shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                >
+                  {isBookingSubmitting ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                      <span>{language === 'fr' ? 'Enregistrement en cours...' : language === 'en' ? 'Submitting booking...' : 'Registrando reserva...'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <CalendarCheck className="w-4 h-4 text-[#F5A623]" />
+                      <span>{language === 'fr' ? 'Confirmer la Réservation' : language === 'en' ? 'Confirm Appointment' : 'Confirmar Reserva en Agenda'}</span>
+                    </>
+                  )}
+                </button>
+              </form>
+            )}
+
+          </div>
+        </div>
+      )}
 
       {/* "Descubre Más" Comprehensive Booking Systems Modal */}
       {isDetailModalOpen && (

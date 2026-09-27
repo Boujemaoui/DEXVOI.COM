@@ -1001,7 +1001,7 @@ Is this correct? Reply YES for my system to launch the automated analysis.`,
                 <div className="mt-2 flex items-center justify-between text-[10px] font-mono text-gray-500 px-1">
                   <span>{language === 'fr' ? 'Actif : Français (FR / EN / ES)' : language === 'en' ? 'Active: English (EN / ES / FR)' : 'Activo: Español (ES / FR / EN)'}</span>
                   <a
-                    href="mailto:contact@dexvoi.com"
+                    href="mailto:info@dexvoi.com"
                     className="hover:text-[#0066FF] transition-colors"
                   >
                     {language === 'fr' ? 'Contact humain' : language === 'en' ? 'Human contact' : 'Contacto humano'}
