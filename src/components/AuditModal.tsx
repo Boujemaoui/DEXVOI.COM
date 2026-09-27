@@ -13,7 +13,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({ isOpen, onClose }) => {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [website, setWebsite] = useState('');
-  const [businessType, setBusinessType] = useState('Clínica Médica / Estética');
+  const [businessType, setBusinessType] = useState('Negocio Local / Establecimiento Físico (Offline)');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDone, setIsDone] = useState(false);
   const [ticketId, setTicketId] = useState('');
@@ -124,7 +124,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({ isOpen, onClose }) => {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder={language === 'fr' ? 'Dr. Charles ou Chef Alexandre' : language === 'en' ? 'Dr. Charles or Chef Michael' : 'Dr. Carlos o Chef Andrés'}
+                  placeholder={language === 'fr' ? 'Ex: Marc Varela ou Laura Silva (Directeur / Fondateur)' : language === 'en' ? 'E.g., Mark Davis or Laura Miller (CEO / Founder)' : 'Ej: Marcos Varela o Laura Sotomayor (CEO / Fundador)'}
                   className="w-full bg-[#0A0F1F] border border-gray-700 rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-[#0066FF]"
                 />
               </div>
@@ -167,9 +167,30 @@ export const AuditModal: React.FC<AuditModalProps> = ({ isOpen, onClose }) => {
                   onChange={(e) => setBusinessType(e.target.value)}
                   className="w-full bg-[#0A0F1F] border border-gray-700 rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-[#0066FF]"
                 >
-                  <option value="Clínica Médica / Estética">{language === 'fr' ? 'Clinique Médicale / Esthétique' : language === 'en' ? 'Medical / Aesthetic Clinic' : 'Clínica Médica / Estética'}</option>
-                  <option value="Restaurante de Gama Media-Alta">{language === 'fr' ? 'Restaurant Gastronomique / Haut de gamme' : language === 'en' ? 'Upscale Restaurant / Hospitality' : 'Restaurante de Gama Media-Alta'}</option>
-                  <option value="Otro Negocio Premium">{language === 'fr' ? 'Autre Entreprise de Services' : language === 'en' ? 'Other Professional Service' : 'Otro Negocio de Servicios'}</option>
+                  <option value="Negocio Local / Establecimiento Físico (Offline)">
+                    {language === 'fr' ? 'Commerce Local / Établissement Physique (Offline)' : language === 'en' ? 'Local Business / Physical Venue (Offline)' : 'Negocio Local / Establecimiento Físico (Offline)'}
+                  </option>
+                  <option value="E-Commerce & Tienda Online (Online)">
+                    {language === 'fr' ? 'E-Commerce & Boutique en Ligne (Online)' : language === 'en' ? 'E-Commerce & Online Store (Online)' : 'E-Commerce & Tienda Online (Online)'}
+                  </option>
+                  <option value="Empresa de Servicios Profesionales (B2B / B2C)">
+                    {language === 'fr' ? 'Entreprise de Services Professionnels (B2B / B2C)' : language === 'en' ? 'Professional Services Company (B2B / B2C)' : 'Empresa de Servicios Profesionales (B2B / B2C)'}
+                  </option>
+                  <option value="Negocio Híbrido (Punto Físico + Canal Digital)">
+                    {language === 'fr' ? 'Entreprise Hybride (Point Physique + Vente en Ligne)' : language === 'en' ? 'Hybrid Business (Physical Store + Digital Channel)' : 'Negocio Híbrido (Punto Físico + Canal Digital)'}
+                  </option>
+                  <option value="Salud, Clínicas & Bienestar">
+                    {language === 'fr' ? 'Santé, Cliniques & Bien-être' : language === 'en' ? 'Healthcare, Clinics & Wellness' : 'Salud, Clínicas & Bienestar'}
+                  </option>
+                  <option value="Hostelería, Restauración & Ocio">
+                    {language === 'fr' ? 'Hôtellerie, Restauration & Loisirs' : language === 'en' ? 'Hospitality, Dining & Leisure' : 'Hostelería, Restauración & Ocio'}
+                  </option>
+                  <option value="Academia, Formación o Eventos">
+                    {language === 'fr' ? 'Académie, Formation & Événements' : language === 'en' ? 'Academy, Education & Events' : 'Academia, Formación o Eventos'}
+                  </option>
+                  <option value="Otro Tipo de Negocio (Offline u Online)">
+                    {language === 'fr' ? 'Autre Modèle d’Affaires (Offline ou Online)' : language === 'en' ? 'Other Business Model (Offline or Online)' : 'Otro Tipo de Negocio (Offline u Online)'}
+                  </option>
                 </select>
               </div>
 

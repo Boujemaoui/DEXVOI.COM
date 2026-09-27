@@ -785,21 +785,21 @@ export function generateAuditPdf(options: GeneratePdfOptions): Buffer {
       {
         num: 17,
         title: '16. Cumplimiento RGPD, Privacidad de Formularios & Consentimiento',
-        desc: 'Adecuación a la normativa europea de protección de datos (UE 2016/679) para clínicas y negocios con datos de clientes.',
+        desc: 'Adecuación a la normativa europea de protección de datos (UE 2016/679) para negocios offline, marcas online y gestión de clientes.',
         items: [
           { k: 'Banner de Cookies Granular', v: 'Obligatorio permitir el rechazo de cookies analíticas y de marketing con un solo clic.' },
           { k: 'Casilla de Aceptación Expresa', v: 'No pre-marcada, con enlace visible a la Política de Privacidad actualizada.' },
-          { k: 'Cifrado de Datos en Formularios', v: 'Tratamiento confidencial de consultas médicas o reservas de comensales.' },
+          { k: 'Cifrado de Datos en Formularios', v: 'Tratamiento confidencial de consultas de clientes, pagos o pedidos de usuarios.' },
           { k: 'Registro de Tratamiento', v: 'Evitar multas de la Agencia Española de Protección de Datos (AEPD) por brechas de seguridad.' },
         ],
       },
       {
         num: 18,
-        title: '17. Arquitectura de Reservas Propietaria con IA vs Comisionistas',
-        desc: 'Análisis financiero y tecnológico del impacto de intermediarios (TheFork, Doctolib, Booking) frente a un motor propio.',
+        title: '17. Arquitectura de Captación y Reservas con IA vs Comisionistas',
+        desc: 'Análisis financiero y tecnológico del impacto de intermediarios y comisionistas externos frente a un motor de captación propio.',
         items: [
-          { k: 'Coste Anual por Comisiones', v: 'Un restaurante con 500 reservas/mes a 2€ paga 12.000€/año a intermediarios.' },
-          { k: 'Agentes de IA Conversacionales', v: 'Atención 24/7 en WhatsApp y Web para confirmar mesas o citas médicas en lenguaje natural.' },
+          { k: 'Coste Anual por Comisiones', v: 'Un negocio con 500 operaciones/mes a comisiones medias de intermediarios pierde más de 12.000€/año.' },
+          { k: 'Agentes de IA Conversacionales', v: 'Atención 24/7 en WhatsApp y Web para confirmar pedidos, citas o presupuestos en lenguaje natural.' },
           { k: 'Propiedad de la Base de Datos', v: 'Los clientes son de tu negocio, no de una plataforma externa que promociona a tu competencia.' },
           { k: 'Retorno de Inversión (ROI)', v: 'La inversión en arquitectura propia de Dexvoi se amortiza habitualmente en menos de 90 días.' },
         ],

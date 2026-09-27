@@ -1,6 +1,6 @@
 {
   "name": "Dexvoi",
-  "description": "Dexvoi - Arquitectura digital, desarrollo web de alto rendimiento, SEO local y ciberseguridad para clínicas y restaurantes.",
+  "description": "Dexvoi - Arquitectura digital, desarrollo web de alto rendimiento, SEO y ciberseguridad para negocios offline y online.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

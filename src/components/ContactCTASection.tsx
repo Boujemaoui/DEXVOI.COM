@@ -15,9 +15,9 @@ export const ContactCTASection: React.FC<ContactCTASectionProps> = ({ initialUrl
     fullName: '',
     email: '',
     phone: '',
-    businessType: 'Clínica Médica / Estética',
+    businessType: 'Negocio Local / Establecimiento Físico (Offline)',
     websiteUrl: initialUrl,
-    primaryConcern: 'Aumentar reservas y blindar seguridad'
+    primaryConcern: 'Acelerar velocidad, captar más clientes y blindar seguridad'
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -196,9 +196,30 @@ export const ContactCTASection: React.FC<ContactCTASectionProps> = ({ initialUrl
                     onChange={(e) => setFormData({ ...formData, businessType: e.target.value })}
                     className="w-full bg-[#0A0F1F] border border-gray-700 rounded-lg px-4 py-3.5 text-white font-sans text-sm focus:outline-none focus:border-[#0066FF] focus:ring-1 focus:ring-[#0066FF] transition-all"
                   >
-                    <option value="Clínica Médica / Estética">{t.footer.sectorClinics}</option>
-                    <option value="Restaurante de Gama Alta">{t.footer.sectorRestaurants}</option>
-                    <option value="Servicios Profesionales de Élite">{t.footer.sectorHospitality}</option>
+                    <option value="Negocio Local / Establecimiento Físico (Offline)">
+                      {language === 'fr' ? 'Commerce Local / Établissement Physique (Offline)' : language === 'en' ? 'Local Business / Physical Venue (Offline)' : 'Negocio Local / Establecimiento Físico (Offline)'}
+                    </option>
+                    <option value="E-Commerce & Tienda Online (Online)">
+                      {language === 'fr' ? 'E-Commerce & Boutique en Ligne (Online)' : language === 'en' ? 'E-Commerce & Online Store (Online)' : 'E-Commerce & Tienda Online (Online)'}
+                    </option>
+                    <option value="Empresa de Servicios Profesionales (B2B / B2C)">
+                      {language === 'fr' ? 'Entreprise de Services Professionnels (B2B / B2C)' : language === 'en' ? 'Professional Services Company (B2B / B2C)' : 'Empresa de Servicios Profesionales (B2B / B2C)'}
+                    </option>
+                    <option value="Negocio Híbrido (Punto Físico + Canal Digital)">
+                      {language === 'fr' ? 'Entreprise Hybride (Point Physique + Vente en Ligne)' : language === 'en' ? 'Hybrid Business (Physical Store + Digital Channel)' : 'Negocio Híbrido (Punto Físico + Canal Digital)'}
+                    </option>
+                    <option value="Salud, Clínicas & Bienestar">
+                      {language === 'fr' ? 'Santé, Cliniques & Bien-être' : language === 'en' ? 'Healthcare, Clinics & Wellness' : 'Salud, Clínicas & Bienestar'}
+                    </option>
+                    <option value="Hostelería, Restauración & Ocio">
+                      {language === 'fr' ? 'Hôtellerie, Restauration & Loisirs' : language === 'en' ? 'Hospitality, Dining & Leisure' : 'Hostelería, Restauración & Ocio'}
+                    </option>
+                    <option value="Academia, Formación o Eventos">
+                      {language === 'fr' ? 'Académie, Formation & Événements' : language === 'en' ? 'Academy, Education & Events' : 'Academia, Formación o Eventos'}
+                    </option>
+                    <option value="Otro Tipo de Negocio (Offline u Online)">
+                      {language === 'fr' ? 'Autre Modèle d’Affaires (Offline ou Online)' : language === 'en' ? 'Other Business Model (Offline or Online)' : 'Otro Tipo de Negocio (Offline u Online)'}
+                    </option>
                   </select>
                 </div>
               </div>

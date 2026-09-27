@@ -233,7 +233,7 @@ Automatiza la gestión de citas, reservas y ventas de tu negocio con nuestra pla
 ✅ Integración con Google Maps: Aparece como "disponible ahora" con reserva directa.
 ✅ Panel de control intuitivo: Gestiona citas, turnos y cobros sin comisiones abusivas.
 
-Ideal para: Peluquerías, clínicas, restaurantes, gimnasios, academias, hoteles y cualquier negocio que gestione citas.
+Ideal para: Negocios físicos y locales (tiendas, showrooms, academias), tiendas online (e-commerce), empresas de servicios y cualquier negocio offline u online con citas, pedidos o reservas.
 
 ¿Te gustaría que preparemos una propuesta de implantación adaptada a tu negocio?`,
           lang: 'es'

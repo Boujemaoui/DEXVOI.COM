@@ -229,10 +229,10 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({
               </div>
               <p className="text-sm text-gray-300 leading-relaxed font-sans">
                 {language === 'fr'
-                  ? 'Pour une clinique ou un commerce, 80% des clients proviennent de recherches géolocalisées ("près de chez moi"). Nous optimisons votre profil Google Business, intégrons le balisage Schema.org et bâtissons votre autorité locale vers le prestigieux "Local 3-Pack".'
+                  ? 'Pour tout commerce local, showroom ou entreprise avec présence géographique, 80% des clients proviennent de recherches de proximité ("près de chez moi"). Nous optimisons votre profil Google Business, intégrons le balisage Schema.org et bâtissons votre autorité locale vers le prestigieux "Local 3-Pack".'
                   : language === 'en'
-                  ? 'For a clinic or business, 80% of customers come from proximity queries ("near me"). We optimize your Google Business profile, implement Schema.org structured data, and build local relevance to reach the coveted "Local 3-Pack".'
-                  : 'Para una clínica dental o un restaurante, el 80% de los clientes provienen de búsquedas de proximidad ("cerca de mí"). Optimizamos su perfil de Google Business, implementamos marcado estructurado Schema.org y construimos relevancia local para alcanzar el codiciado "Local 3-Pack".'}
+                  ? 'For any local store, showroom, or brick-and-mortar business, 80% of customers come from proximity queries ("near me"). We optimize your Google Business profile, implement Schema.org structured data, and build local relevance to reach the coveted "Local 3-Pack".'
+                  : 'Para cualquier negocio local, tienda física o empresa de proximidad, el 80% de los clientes provienen de búsquedas de cercanía ("cerca de mí"). Optimizamos tu perfil de Google Business, implementamos marcado estructurado Schema.org y construimos relevancia local para alcanzar las primeras posiciones de Google Maps.'}
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-xs font-mono">
                 <div className="flex items-center gap-2 text-gray-300">
@@ -502,10 +502,10 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({
               </div>
               <p className="text-sm text-gray-300 leading-relaxed font-sans">
                 {language === 'fr'
-                  ? '40% des clients cherchent un rendez-vous ou une table en dehors des heures d\'ouverture. Nos assistants IA qualifient l\'utilisateur, répondent aux questions fréquentes en plusieurs langues (FR, EN, ES) et planifient les rendez-vous sans intervention humaine.'
+                  ? 'Plus de 45% des clients et acheteurs recherchent des informations, prennent des rendez-vous ou passent commande en dehors des heures ouvrées. Nos assistants IA qualifient les prospects, répondent aux questions fréquentes en plusieurs langues (FR, EN, ES) et concluent sans friction.'
                   : language === 'en'
-                  ? '40% of clients look for appointments or tables outside of business hours. Our AI assistants qualify leads, answer FAQs in multiple languages (FR, EN, ES), and schedule directly without human intervention.'
-                  : 'El 40% de los pacientes y comensales buscan cita o mesa fuera del horario laboral. Nuestros asistentes virtuales cualifican al usuario, resuelven dudas clínicas o de cartas/alérgenos en múltiples idiomas (Español, Francés, Inglés) y agendan directamente sin intervención humana.'}
+                  ? 'Over 45% of potential clients and shoppers inquire, book appointments, or place orders outside normal business hours. Our AI assistants qualify leads, resolve FAQs in multiple languages (FR, EN, ES), and complete bookings autonomously.'
+                  : 'Más del 45% de los clientes y compradores potenciales buscan información, citas o pedidos fuera del horario laboral. Nuestros asistentes virtuales cualifican al usuario, resuelven dudas sobre tu catálogo o servicios en múltiples idiomas (Español, Francés, Inglés) y agendan o tramitan pedidos directamente sin intervención humana.'}
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-xs font-mono">
                 <div className="flex items-center gap-2 text-gray-300">

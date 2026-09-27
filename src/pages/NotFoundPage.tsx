@@ -55,7 +55,7 @@ export const NotFoundPage: React.FC<NotFoundPageProps> = ({
       btnServices: 'Servicios de Élite',
       btnBlog: 'Blog & Recursos Técnicos',
       btnContact: 'Contactar Especialista',
-      searchPlaceholder: '¿Buscas algo específico? Ej: precios, clínicas, seo...',
+      searchPlaceholder: '¿Buscas algo específico? Ej: precios, auditoría, seo, ecommerce...',
       searchAction: 'Buscar',
       cards: [
         {

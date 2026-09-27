@@ -75,19 +75,19 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenAuditModal, onSc
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-[#0066FF] shrink-0" />
                 <span className="text-xs text-gray-300 font-mono">
-                  {language === 'fr' ? 'Cliniques Médicales / Esthétiques' : language === 'en' ? 'Medical & Aesthetic Clinics' : 'Clínicas Médicas / Estéticas'}
+                  {language === 'fr' ? 'Commerces & Établissements (Offline)' : language === 'en' ? 'Local & Physical Venues (Offline)' : 'Negocios Físicos & Locales (Offline)'}
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-[#0066FF] shrink-0" />
                 <span className="text-xs text-gray-300 font-mono">
-                  {language === 'fr' ? 'Restaurants Haut de Gamme' : language === 'en' ? 'Fine Dining Restaurants' : 'Restaurantes de Gama Alta'}
+                  {language === 'fr' ? 'E-Commerce & Projets Web (Online)' : language === 'en' ? 'E-Commerce & Digital Brands (Online)' : 'E-Commerce & Marcas Digitales (Online)'}
                 </span>
               </div>
               <div className="flex items-center gap-2 col-span-2 sm:col-span-1">
                 <CheckCircle2 className="w-4 h-4 text-[#F5A623] shrink-0" />
                 <span className="text-xs text-gray-300 font-mono">
-                  {language === 'fr' ? 'Blindage & Conformité RGPD' : language === 'en' ? 'GDPR & Defense Shielding' : 'Blindaje Legal & Datos'}
+                  {language === 'fr' ? 'Haute Conversion & Blindage Actif' : language === 'en' ? 'High Conversion & Active Defense' : 'Alta Conversión & Blindaje Activo'}
                 </span>
               </div>
             </div>

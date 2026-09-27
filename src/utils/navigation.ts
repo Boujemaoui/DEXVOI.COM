@@ -33,14 +33,14 @@ export const ROUTE_MAP: Record<AppRoute, { path: string; aliases: string[]; titl
   home: {
     path: '/',
     aliases: ['/home', '/index.html', '/es', '/fr', '/en'],
-    title: 'Dexvoi - Arquitectura Web, SEO y Blindaje Digital',
-    description: 'Dexvoi - Agencia digital de élite especializada en arquitectura web, SEO local y blindaje digital / ethical hacking para clínicas y restaurantes.'
+    title: 'Dexvoi - Arquitectura Web, SEO y Blindaje Digital para Negocios Offline & Online',
+    description: 'Dexvoi - Ingeniería digital de élite: arquitectura web ultrarrápida, SEO local y global, blindaje perimetral y automatización de clientes para negocios offline y online.'
   },
   services: {
     path: '/servicios',
     aliases: ['/services', '/es/servicios', '/fr/services', '/en/services'],
     title: 'Servicios de Arquitectura Web & Ciberseguridad | DEXVOI',
-    description: 'Descubre nuestros servicios de arquitectura web ultrarrápida, SEO local en Google Maps, blindaje perimetral y sistemas de reservas para clínicas y restaurantes.'
+    description: 'Descubre nuestros servicios de arquitectura web ultrarrápida, SEO local en Google Maps, blindaje perimetral y sistemas de captación automatizada para negocios offline y online.'
   },
   terms: {
     path: '/condiciones',

@@ -123,10 +123,10 @@ export const PricingPage: React.FC<PricingPageProps> = ({
               </div>
               <p className="text-xs text-gray-300 font-sans">
                 {language === 'fr' 
-                  ? 'Idéal pour cliniques ou commerces locaux souhaitant un contrôle rapide des failles critiques et de la vitesse.'
+                  ? 'Idéal pour tout commerce local ou boutique en ligne souhaitant un contrôle rapide des failles critiques et de la vitesse.'
                   : language === 'en' 
-                  ? 'Ideal for clinics or local businesses wanting a quick check of critical flaws and speed performance.'
-                  : 'Ideal para clínicas o comercios locales que desean una revisión rápida de fallos críticos y velocidad.'}
+                  ? 'Ideal for local businesses and online stores seeking a fast check of critical security flaws and speed.'
+                  : 'Ideal para negocios offline y tiendas online que desean una revisión rápida de fallos críticos, seguridad y velocidad.'}
               </p>
               <div className="pt-4 border-t border-gray-800 space-y-2.5 text-xs font-mono text-gray-300">
                 <div className="flex items-center gap-2">

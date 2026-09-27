@@ -1,6 +1,6 @@
 export interface ScanResult {
   url: string;
-  businessType: 'clinica' | 'restaurante' | 'otro';
+  businessType: 'offline' | 'online' | 'hibrido' | 'clinica' | 'restaurante' | 'otro' | string;
   timestamp: string;
   overallScore: number;
   grade?: 'A+' | 'A' | 'B' | 'C' | 'D' | 'F';

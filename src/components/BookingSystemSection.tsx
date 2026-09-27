@@ -35,11 +35,41 @@ export const BookingSystemSection: React.FC<BookingSystemSectionProps> = ({
 }) => {
   const { t, language } = useLanguage();
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [selectedDemoIndustry, setSelectedDemoIndustry] = useState<string>('clinica');
+  const [selectedDemoIndustry, setSelectedDemoIndustry] = useState<string>('comercio');
   const [selectedSlot, setSelectedSlot] = useState<string>('11:30');
 
   // Business verticals with dedicated demo data
   const industries = language === 'fr' ? [
+    {
+      id: 'comercio',
+      label: 'Commerces & Showrooms',
+      icon: Building2,
+      serviceName: 'Rendez-vous Conseil & Devis Showroom',
+      duration: '45 min',
+      provider: 'Conseiller Expert - Showroom Principal',
+      price: 'Réservation Confirmée',
+      tagline: 'Multipliez les visites en boutique physique et éliminez les temps morts.',
+    },
+    {
+      id: 'ecommerce',
+      label: 'E-Commerce & Vente en Ligne',
+      icon: Sparkles,
+      serviceName: 'Session Personnalisée VIP & Conseil Produit',
+      duration: '30 min',
+      provider: 'Spécialiste Marque en Ligne',
+      price: 'Accès Direct',
+      tagline: 'Convertissez vos visiteurs web indécis en acheteurs fidèles 24h/24.',
+    },
+    {
+      id: 'servicios',
+      label: 'Cabinets & Conseil B2B',
+      icon: Briefcase,
+      serviceName: 'Session Diagnostic Stratégique',
+      duration: '45 min',
+      provider: 'Consultant Senior Associé',
+      price: '120€ / Session',
+      tagline: 'Paiement d’acompte et intégration automatique avec votre CRM.',
+    },
     {
       id: 'peluqueria',
       label: 'Salons & Coiffure',
@@ -102,6 +132,36 @@ export const BookingSystemSection: React.FC<BookingSystemSectionProps> = ({
     },
   ] : language === 'en' ? [
     {
+      id: 'comercio',
+      label: 'Local Stores & Showrooms',
+      icon: Building2,
+      serviceName: 'Showroom Consultation & Project Estimate',
+      duration: '45 min',
+      provider: 'Senior Design Consultant',
+      price: 'Confirmed Booking',
+      tagline: 'Drive verified foot traffic to physical stores without phone queues.',
+    },
+    {
+      id: 'ecommerce',
+      label: 'E-Commerce & Online Brands',
+      icon: Sparkles,
+      serviceName: 'VIP One-on-One Product Advisory',
+      duration: '30 min',
+      provider: 'Online Brand Specialist',
+      price: 'Direct Access',
+      tagline: 'Turn hesitating digital visitors into high-value online buyers 24/7.',
+    },
+    {
+      id: 'servicios',
+      label: 'Professional Firms & B2B',
+      icon: Briefcase,
+      serviceName: 'Strategic Technical Assessment',
+      duration: '45 min',
+      provider: 'Senior Partner',
+      price: '120€ / Session',
+      tagline: 'Upfront deposit collection and seamless two-way CRM sync.',
+    },
+    {
       id: 'peluqueria',
       label: 'Salons & Hairdressers',
       icon: Scissors,
@@ -162,6 +222,36 @@ export const BookingSystemSection: React.FC<BookingSystemSectionProps> = ({
       tagline: 'Direct booking engine to bypass unfair 20%+ OTA commissions.',
     },
   ] : [
+    {
+      id: 'comercio',
+      label: 'Comercios & Showrooms',
+      icon: Building2,
+      serviceName: 'Asesoramiento Presencial & Presupuesto',
+      duration: '45 min',
+      provider: 'Asesor Especialista - Tienda Central',
+      price: 'Cita Confirmada',
+      tagline: 'Multiplica las visitas presenciales y elimina las horas muertas en tu negocio.',
+    },
+    {
+      id: 'ecommerce',
+      label: 'E-Commerce & Marcas Online',
+      icon: Sparkles,
+      serviceName: 'Sesión Asesoría VIP & Selección de Producto',
+      duration: '30 min',
+      provider: 'Especialista de Marca Digital',
+      price: 'Acceso Directo',
+      tagline: 'Convierte visitantes indecisos de tu web en compradores recurrentes 24/7.',
+    },
+    {
+      id: 'servicios',
+      label: 'Despachos & Consultoría B2B',
+      icon: Briefcase,
+      serviceName: 'Sesión de Valoración Estratégica',
+      duration: '45 min',
+      provider: 'Socio Director',
+      price: '120€ / Sesión',
+      tagline: 'Cobro de honorarios previo y sincronización directa con tu CRM.',
+    },
     {
       id: 'peluqueria',
       label: 'Peluquerías & Salones',
@@ -264,13 +354,13 @@ export const BookingSystemSection: React.FC<BookingSystemSectionProps> = ({
   ];
 
   const idealForCategories = [
-    { name: language === 'fr' ? 'Coiffure & Salons' : language === 'en' ? 'Salons' : 'Peluquerías', icon: Scissors },
-    { name: language === 'fr' ? 'Cliniques & Santé' : language === 'en' ? 'Clinics' : 'Clínicas', icon: Stethoscope },
-    { name: language === 'fr' ? 'Restaurants' : language === 'en' ? 'Restaurants' : 'Restaurantes', icon: Utensils },
-    { name: language === 'fr' ? 'Fitness & Gym' : language === 'en' ? 'Gyms' : 'Gimnasios', icon: Dumbbell },
-    { name: language === 'fr' ? 'Académies & Cours' : language === 'en' ? 'Academies' : 'Academias', icon: GraduationCap },
-    { name: language === 'fr' ? 'Hôtels & Séjours' : language === 'en' ? 'Hotels' : 'Hoteles', icon: Building2 },
-    { name: language === 'fr' ? 'Toute activité avec rendez-vous' : language === 'en' ? 'Any appointment-based business' : 'Cualquier negocio que gestione citas o reservas', icon: Briefcase },
+    { name: language === 'fr' ? 'Commerces & Showrooms (Offline)' : language === 'en' ? 'Local Stores & Showrooms (Offline)' : 'Comercios & Tiendas Físicas (Offline)', icon: Building2 },
+    { name: language === 'fr' ? 'E-Commerce & Boutiques (Online)' : language === 'en' ? 'E-Commerce & Online Stores' : 'E-Commerce & Tiendas Online', icon: Sparkles },
+    { name: language === 'fr' ? 'Cabinets & Conseil B2B' : language === 'en' ? 'Firms & B2B Services' : 'Despachos & Servicios Profesionales', icon: Briefcase },
+    { name: language === 'fr' ? 'Cliniques & Santé' : language === 'en' ? 'Clinics & Healthcare' : 'Clínicas & Salud', icon: Stethoscope },
+    { name: language === 'fr' ? 'Restaurants & Salons' : language === 'en' ? 'Restaurants & Salons' : 'Restaurantes & Salones', icon: Utensils },
+    { name: language === 'fr' ? 'Académies & Fitness' : language === 'en' ? 'Academies & Fitness' : 'Academias & Fitness', icon: GraduationCap },
+    { name: language === 'fr' ? 'Tout métier avec rendez-vous ou commandes' : language === 'en' ? 'Any business with bookings or orders' : 'Cualquier negocio offline u online con citas o pedidos', icon: CalendarCheck },
   ];
 
   const availableHours = ['09:30', '10:15', '11:30', '13:00', '16:30', '18:00'];

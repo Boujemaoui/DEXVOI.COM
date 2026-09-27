@@ -37,12 +37,12 @@ export const AiAgentsSection: React.FC<AiAgentsSectionProps> = ({
       return [
         {
           sender: 'user',
-          text: 'Bonjour, que proposez-vous pour accélérer le site et capter plus de réservations pour ma clinique ?',
+          text: 'Bonjour, j’ai une entreprise avec un point de vente physique et un site e-commerce. Comment pouvez-vous sécuriser mon site, accélérer son chargement et capter des clients 24h/24 ?',
           time: '12:14',
         },
         {
           sender: 'agent',
-          text: 'Bonjour ! Chez Dexvoi, nous déployons une architecture web avec temps de chargement < 1s et des systèmes de réservation automatique 24/7 synchronisés avec votre calendrier et WhatsApp. Souhaitez-vous planifier une démo de 10 min ?',
+          text: 'Bonjour ! Chez Dexvoi, nous déployons une architecture web ultra-rapide (< 1s), un blindage périmétrique actif et des agents IA autonomes 24/7. Que vos clients viennent en boutique physique ou commandent en ligne, nous automatisons la prise de rendez-vous, le conseil produit et les commandes sans intervention humaine. Souhaitez-vous une démo en direct de 10 min ?',
           time: '12:14',
         },
       ];
@@ -51,12 +51,12 @@ export const AiAgentsSection: React.FC<AiAgentsSectionProps> = ({
       return [
         {
           sender: 'user',
-          text: 'Hello, what services do you offer to increase speed and booking conversions for my clinic?',
+          text: 'Hello, I run a business with both physical operations and an online store. How can you harden our security, speed up load times, and capture clients 24/7?',
           time: '12:14',
         },
         {
           sender: 'agent',
-          text: 'Hi! At Dexvoi, we build sub-second web architectures and 24/7 automated booking agents synced with Google Calendar and WhatsApp. Would you like to schedule a 10-minute live demonstration?',
+          text: 'Hi! At Dexvoi, we build sub-second web architectures (< 1s), perimeter cybersecurity shields, and autonomous 24/7 AI agents. Whether your customers visit your physical venue or buy through your online store, we automate lead qualification, appointments, and checkout assistance without human bottlenecks. Would you like a 10-minute live demonstration?',
           time: '12:14',
         },
       ];
@@ -64,12 +64,12 @@ export const AiAgentsSection: React.FC<AiAgentsSectionProps> = ({
     return [
       {
         sender: 'user',
-        text: 'Hola, ¿qué servicios tenéis para mejorar la velocidad y captar más reservas en mi clínica?',
+        text: 'Hola, tengo un negocio con local físico y también venta online. ¿Cómo podéis blindar la web, acelerar la carga y captar clientes automáticamente 24/7?',
         time: '12:14',
       },
       {
         sender: 'agent',
-        text: '¡Hola! En Dexvoi implementamos optimización web de carga <1s y sistemas de reservas automáticas 24/7 sincronizados con tu agenda y WhatsApp. ¿Te gustaría agendar una demostración en vivo de 10 minutos?',
+        text: '¡Hola! En Dexvoi implementamos optimización web de carga <1s, blindaje de ciberseguridad perimetral y agentes IA autónomos 24/7. Tanto si tus clientes vienen a tu sede física como si compran por tu web, automatizamos la captura de leads, citas y pedidos sin intervención humana. ¿Te gustaría agendar una demo en vivo de 10 minutos?',
         time: '12:14',
       },
     ];
