@@ -27,7 +27,17 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
       });
     }
 
-    const destinationEmail = (env?.NOTIFICATION_EMAIL || PRIMARY_DESTINATION).trim();
+    const cleanEmailStr = (raw?: string, fallback = PRIMARY_DESTINATION): string => {
+      if (!raw) return fallback;
+      const stripped = raw.replace(/['"]/g, '').trim().toLowerCase();
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(stripped) ? stripped : fallback;
+    };
+
+    const cleanBrevoKey = (env?.BREVO_API_KEY || (env as any)?.SIB_API_KEY || '').replace(/['"]/g, '').trim();
+    const cleanSenderEmail = cleanEmailStr(env?.BREVO_SENDER_EMAIL, PRIMARY_DESTINATION);
+    const cleanSenderName = (env?.BREVO_SENDER_NAME || 'Dexvoi').replace(/['"]/g, '').trim() || 'Dexvoi';
+    const destinationEmail = cleanEmailStr(env?.NOTIFICATION_EMAIL, PRIMARY_DESTINATION);
+
     const cleanTarget = String(websiteUrl || 'dexvoi.com').replace(/^https?:\/\//i, '').replace(/\/.*$/, '').trim();
     const cleanEmail = email.trim().toLowerCase();
     const ticketId = `SCAN-LEAD-${Math.floor(100000 + Math.random() * 900000)}`;
@@ -60,31 +70,54 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
     }
 
     // Envío principal mediante Brevo
-    const brevoKey = env?.BREVO_API_KEY;
-    if (brevoKey) {
+    if (cleanBrevoKey) {
       try {
-        const brevoRes = await fetch('https://api.brevo.com/v3/smtp/email', {
+        let brevoRes = await fetch('https://api.brevo.com/v3/smtp/email', {
           method: 'POST',
           headers: {
-            'api-key': brevoKey.trim(),
+            'api-key': cleanBrevoKey,
             'Content-Type': 'application/json',
+            'Accept': 'application/json',
           },
           body: JSON.stringify({
             sender: { 
-              name: env?.BREVO_SENDER_NAME || 'Dexvoi', 
-              email: env?.BREVO_SENDER_EMAIL || 'info@dexvoi.com' 
+              name: cleanSenderName, 
+              email: cleanSenderEmail 
             },
             to: recipients,
             subject,
             htmlContent: adminHtml,
           }),
         });
+
         if (brevoRes.ok) {
           emailSent = true;
           provider = 'brevo';
         } else {
-          lastError = await brevoRes.text();
-          console.warn('[Brevo Scanner Unlock Error]:', lastError);
+          // Reintento con remitente base garantizado
+          const retryRes = await fetch('https://api.brevo.com/v3/smtp/email', {
+            method: 'POST',
+            headers: {
+              'api-key': cleanBrevoKey,
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: JSON.stringify({
+              sender: { name: 'Dexvoi', email: 'info@dexvoi.com' },
+              to: [{ email: PRIMARY_DESTINATION, name: 'Dexvoi' }],
+              subject,
+              htmlContent: adminHtml,
+            }),
+          });
+
+          if (retryRes.ok) {
+            emailSent = true;
+            provider = 'brevo';
+            lastError = null;
+          } else {
+            lastError = await retryRes.text();
+            console.warn('[Brevo Scanner Unlock Error]:', lastError);
+          }
         }
       } catch (e: any) {
         lastError = e?.message;

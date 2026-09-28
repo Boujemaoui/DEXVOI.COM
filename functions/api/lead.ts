@@ -28,7 +28,19 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
 
     const formType = type || 'Formulario de Contacto';
     const leadTicket = ticketId || `DEXVOI-${Date.now().toString(36).toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`;
-    const destinationEmail = (env?.NOTIFICATION_EMAIL || PRIMARY_DESTINATION).trim();
+
+    // Helper to sanitize and validate email strings from env (strips quotes, whitespace)
+    const cleanEmail = (raw?: string, fallback = PRIMARY_DESTINATION): string => {
+      if (!raw) return fallback;
+      const stripped = raw.replace(/['"]/g, '').trim().toLowerCase();
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(stripped) ? stripped : fallback;
+    };
+
+    const cleanBrevoKey = (env?.BREVO_API_KEY || (env as any)?.SIB_API_KEY || '').replace(/['"]/g, '').trim();
+    const cleanSenderEmail = cleanEmail(env?.BREVO_SENDER_EMAIL, PRIMARY_DESTINATION);
+    const cleanSenderName = (env?.BREVO_SENDER_NAME || 'Dexvoi').replace(/['"]/g, '').trim() || 'Dexvoi';
+    const cleanDestinationEmail = cleanEmail(env?.NOTIFICATION_EMAIL, PRIMARY_DESTINATION);
+
     const subject = `🔔 Nuevo lead desde Dexvoi - ${formType}`;
 
     const adminHtml = `
@@ -45,7 +57,7 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
           ${selectedSlot ? `<p><strong>📅 Horario Reservado:</strong> ${selectedSlot}</p>` : ''}
           ${primaryConcern || message ? `<p><strong>💬 Consulta / Detalles:</strong> ${primaryConcern || message}</p>` : ''}
         </div>
-        <p style="font-size: 12px; color: #64748B; margin-top: 20px;">Enviado a ${destinationEmail}</p>
+        <p style="font-size: 12px; color: #64748B; margin-top: 20px;">Enviado a ${cleanDestinationEmail}</p>
       </div>
     `;
 
@@ -53,26 +65,25 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
     let provider = 'none';
     let lastError: string | null = null;
 
-    const recipients = [{ email: destinationEmail, name: 'Dexvoi' }];
-    if (destinationEmail !== PRIMARY_DESTINATION) {
+    const recipients = [{ email: cleanDestinationEmail, name: 'Dexvoi' }];
+    if (cleanDestinationEmail !== PRIMARY_DESTINATION) {
       recipients.push({ email: PRIMARY_DESTINATION, name: 'Dexvoi Backup' });
     }
 
     // 1. Envío principal mediante Brevo
-    const brevoKey = env?.BREVO_API_KEY;
-    if (brevoKey) {
+    if (cleanBrevoKey) {
       try {
-        const brevoRes = await fetch('https://api.brevo.com/v3/smtp/email', {
+        let brevoRes = await fetch('https://api.brevo.com/v3/smtp/email', {
           method: 'POST',
           headers: {
-            'api-key': brevoKey.trim(),
+            'api-key': cleanBrevoKey,
             'Content-Type': 'application/json',
             'Accept': 'application/json',
           },
           body: JSON.stringify({
             sender: { 
-              name: env?.BREVO_SENDER_NAME || 'Dexvoi', 
-              email: env?.BREVO_SENDER_EMAIL || 'info@dexvoi.com' 
+              name: cleanSenderName, 
+              email: cleanSenderEmail 
             },
             to: recipients,
             subject,
@@ -84,9 +95,34 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
           emailSent = true;
           provider = 'brevo';
         } else {
-          const errText = await brevoRes.text();
-          lastError = `Brevo HTTP ${brevoRes.status}: ${errText}`;
-          console.warn('[Brevo Error]:', lastError);
+          const firstErrText = await brevoRes.text();
+          console.warn('[Brevo Initial Attempt Failed]:', firstErrText);
+
+          // Reintento con remitente base garantizado info@dexvoi.com
+          const retryRes = await fetch('https://api.brevo.com/v3/smtp/email', {
+            method: 'POST',
+            headers: {
+              'api-key': cleanBrevoKey,
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: JSON.stringify({
+              sender: { name: 'Dexvoi', email: 'info@dexvoi.com' },
+              to: [{ email: PRIMARY_DESTINATION, name: 'Dexvoi' }],
+              subject,
+              htmlContent: adminHtml,
+            }),
+          });
+
+          if (retryRes.ok) {
+            emailSent = true;
+            provider = 'brevo';
+            lastError = null;
+          } else {
+            const retryErr = await retryRes.text();
+            lastError = `Brevo HTTP ${retryRes.status}: ${retryErr}`;
+            console.warn('[Brevo Retry Failed]:', lastError);
+          }
         }
       } catch (e: any) {
         lastError = `Brevo exception: ${e?.message}`;
@@ -97,15 +133,16 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
     }
 
     // 2. Respaldo secundario mediante Resend si Brevo no tuvo éxito
-    if (!emailSent && env?.RESEND_API_KEY) {
+    const cleanResendKey = (env?.RESEND_API_KEY || '').replace(/['"]/g, '').trim();
+    if (!emailSent && cleanResendKey) {
       try {
-        const toEmails = [destinationEmail];
-        if (destinationEmail !== PRIMARY_DESTINATION) toEmails.push(PRIMARY_DESTINATION);
+        const toEmails = [cleanDestinationEmail];
+        if (cleanDestinationEmail !== PRIMARY_DESTINATION) toEmails.push(PRIMARY_DESTINATION);
 
         const resendRes = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${env.RESEND_API_KEY.trim()}`,
+            Authorization: `Bearer ${cleanResendKey}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
@@ -150,17 +187,17 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
         </div>
       `;
 
-      if (provider === 'brevo' && env?.BREVO_API_KEY) {
+      if (provider === 'brevo' && cleanBrevoKey) {
         fetch('https://api.brevo.com/v3/smtp/email', {
           method: 'POST',
           headers: {
-            'api-key': env.BREVO_API_KEY.trim(),
+            'api-key': cleanBrevoKey,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             sender: { 
-              name: env?.BREVO_SENDER_NAME || 'Dexvoi', 
-              email: env?.BREVO_SENDER_EMAIL || 'info@dexvoi.com' 
+              name: 'Dexvoi', 
+              email: 'info@dexvoi.com' 
             },
             to: [{ email: email.trim(), name: fullName || 'Cliente' }],
             subject: confirmationSubject,
@@ -172,14 +209,14 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
 
     return new Response(
       JSON.stringify({
-        success: true,
+        success: emailSent,
         ticketId: leadTicket,
         emailSent,
         provider,
-        destinationEmail,
+        destinationEmail: cleanDestinationEmail,
         errorDetails: emailSent ? undefined : lastError,
       }),
-      { status: 200, headers: { 'Content-Type': 'application/json' } }
+      { status: emailSent ? 200 : 502, headers: { 'Content-Type': 'application/json' } }
     );
   } catch (err: any) {
     return new Response(JSON.stringify({ error: err?.message || 'Error procesando solicitud.' }), {

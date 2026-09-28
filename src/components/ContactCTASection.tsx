@@ -23,6 +23,7 @@ export const ContactCTASection: React.FC<ContactCTASectionProps> = ({ initialUrl
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [ticketId, setTicketId] = useState('');
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   // Update websiteUrl if prop changes
   React.useEffect(() => {
@@ -34,6 +35,7 @@ export const ContactCTASection: React.FC<ContactCTASectionProps> = ({ initialUrl
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitError(null);
 
     try {
       const res = await fetch('/api/lead', {
@@ -50,13 +52,17 @@ export const ContactCTASection: React.FC<ContactCTASectionProps> = ({ initialUrl
           type: 'Formulario de Contacto',
         }),
       });
-      const data = await res.json();
-      setTicketId(data.ticketId || `DEXVOI-AUDIT-${Math.floor(100000 + Math.random() * 900000)}`);
-    } catch {
-      setTicketId(`DEXVOI-AUDIT-${Math.floor(100000 + Math.random() * 900000)}`);
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.success) {
+        setTicketId(data.ticketId || `DEXVOI-AUDIT-${Math.floor(100000 + Math.random() * 900000)}`);
+        setIsSubmitted(true);
+      } else {
+        throw new Error(data.error || data.errorDetails || 'Error al conectar con el servidor.');
+      }
+    } catch (err: any) {
+      setSubmitError(err?.message || 'Error al enviar el formulario. Por favor inténtalo de nuevo.');
     } finally {
       setIsSubmitting(false);
-      setIsSubmitted(true);
     }
   };
 
@@ -243,6 +249,13 @@ export const ContactCTASection: React.FC<ContactCTASectionProps> = ({ initialUrl
                   className="w-full bg-[#0A0F1F] border border-gray-700 rounded-lg px-4 py-3.5 text-white font-sans text-sm focus:outline-none focus:border-[#0066FF] focus:ring-1 focus:ring-[#0066FF] transition-all"
                 />
               </div>
+
+              {/* Error Message */}
+              {submitError && (
+                <div className="p-3 bg-red-950/60 border border-red-500/40 rounded-xl text-red-300 text-xs font-mono">
+                  ⚠️ {submitError}
+                </div>
+              )}
 
               {/* Submit Button */}
               <div className="pt-4">

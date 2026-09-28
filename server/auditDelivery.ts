@@ -403,11 +403,64 @@ export async function executeAndDeliverAudit(
 
   console.log(`✅ [Dexvoi Audit Pipeline] PDF generado correctamente. Tamaño: ${(pdfBuffer.length / 1024).toFixed(1)} KB`);
 
-  // 3. Dispatch Email with Resend
+  // 3. Dispatch Email with Brevo (Primary) or Resend (Secondary)
   let emailDispatched = false;
+  const brevoKey = process.env.BREVO_API_KEY || process.env.SIB_API_KEY;
   const resendKey = process.env.RESEND_API_KEY;
 
-  if (resendKey) {
+  // Intentar envío principal mediante Brevo API v3
+  if (brevoKey) {
+    try {
+      console.log(`📨 [Dexvoi Audit Pipeline] Enviando correo con informe PDF adjunto vía Brevo a ${customerEmail}...`);
+      const brevoRes = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+          'api-key': brevoKey.trim(),
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          sender: { 
+            name: process.env.BREVO_SENDER_NAME || 'Dexvoi Security', 
+            email: process.env.BREVO_SENDER_EMAIL || 'info@dexvoi.com' 
+          },
+          to: [{ email: customerEmail }],
+          subject: `🛡️ [DEXVOI] Tu Informe Oficial de Auditoría Técnica: ${cleanTarget} (${planName})`,
+          htmlContent: `
+            <div style="font-family: Arial, sans-serif; background: #0A0F1F; color: #FFFFFF; padding: 24px; border-radius: 10px; max-width: 600px; margin: 0 auto;">
+              <h1 style="color: #FFFFFF; font-size: 20px; letter-spacing: 2px;">DEXVOI · INFORME OFICIAL</h1>
+              <p style="color: #F5A623; font-weight: bold;">Auditoría Forense para ${cleanTarget} (${planName})</p>
+              <p>Tu informe técnico oficial de ${tier === 'basic' ? '5 páginas' : '20+ páginas'} ha sido generado con éxito y se encuentra adjunto a este correo en formato PDF.</p>
+              <div style="background: #131B33; border: 1px solid #1E293B; border-radius: 8px; padding: 16px; margin: 16px 0;">
+                <p style="margin: 0; font-size: 14px;"><strong>Puntuación Perimetral:</strong> ${auditResult.score}/100 (Grado ${auditResult.grade})</p>
+                <p style="margin: 4px 0 0 0; font-size: 12px; color: #94A3B8;">Tiempo de respuesta TTFB: ${auditResult.responseTimeMs}ms | Cifrado TLS 1.3 verificado</p>
+              </div>
+              <p style="font-size: 13px; color: #94A3B8;">Para cualquier duda técnica sobre la remediación de vulnerabilidades, responde a este correo o contacta con tu arquitecto asignado.</p>
+            </div>
+          `,
+          attachment: [
+            {
+              name: `DEXVOI-Auditoria-${tier.toUpperCase()}-${cleanTarget.replace(/[^a-zA-Z0-9.-]/g, '_')}.pdf`,
+              content: pdfBuffer.toString('base64'),
+            },
+          ],
+        }),
+      });
+
+      if (brevoRes.ok) {
+        emailDispatched = true;
+        console.log(`🎉 [Dexvoi Audit Pipeline] Correo y PDF entregados con éxito vía Brevo a ${customerEmail}!`);
+      } else {
+        const err = await brevoRes.text();
+        console.warn(`⚠️ [Dexvoi Audit Pipeline] Brevo error: ${err}`);
+      }
+    } catch (e: any) {
+      console.warn(`⚠️ [Dexvoi Audit Pipeline] Error Brevo dispatch: ${e.message}`);
+    }
+  }
+
+  // Respaldo secundario si Brevo no estuvo disponible
+  if (!emailDispatched && resendKey) {
     try {
       const resend = new Resend(resendKey);
       const subject = `🛡️ [DEXVOI] Tu Informe Oficial de Auditoría Técnica: ${cleanTarget} (${planName})`;

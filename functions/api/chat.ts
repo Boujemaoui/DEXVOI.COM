@@ -44,15 +44,18 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
         </div>
       `;
 
-      if (env?.BREVO_API_KEY) {
+      const cleanBrevoKey = (env?.BREVO_API_KEY || (env as any)?.SIB_API_KEY || '').replace(/['"]/g, '').trim();
+      const cleanSender = (env?.BREVO_SENDER_EMAIL || 'info@dexvoi.com').replace(/['"]/g, '').trim() || 'info@dexvoi.com';
+
+      if (cleanBrevoKey) {
         fetch('https://api.brevo.com/v3/smtp/email', {
           method: 'POST',
           headers: {
-            'api-key': env.BREVO_API_KEY.trim(),
+            'api-key': cleanBrevoKey,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            sender: { name: 'Dexvoi Chat', email: env?.BREVO_SENDER_EMAIL || 'info@dexvoi.com' },
+            sender: { name: 'Dexvoi Chat', email: cleanSender },
             to: [{ email: destinationEmail, name: 'Dexvoi' }],
             subject: alertSubject,
             htmlContent: alertHtml,

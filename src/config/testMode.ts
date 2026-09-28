@@ -1,26 +1,30 @@
 /**
- * DEXVOI · Modo de Demostración y Prueba de Planes (Stripe Simulation Mode)
+ * DEXVOI · Modo de Pago Stripe Oficial (Producción Conectada)
  * 
- * Permite probar todos los planes (5€, 19€, 49€, 99€) y descargar los informes PDF oficiales
- * sin necesidad de realizar pagos reales en Stripe y sin alterar las claves o enlaces de producción.
- * 
- * Para activar/desactivar:
- * Cambiar STRIPE_TEST_MODE_DEFAULT a false (o usar el interruptor en pantalla).
+ * Sistema de pagos oficial activo (19€ Starter, 49€ Forense, 99€ Premium, 5€ Escáner).
+ * Conecta directamente con las sesiones seguras de Stripe Checkout oficial.
  */
-export const STRIPE_TEST_MODE_DEFAULT = true;
+export const STRIPE_TEST_MODE_DEFAULT = false;
 
 export function isStripeTestMode(): boolean {
-  if (typeof window === 'undefined') return STRIPE_TEST_MODE_DEFAULT;
-  const stored = localStorage.getItem('dexvoi_stripe_test_mode');
-  if (stored !== null) {
-    return stored === 'true';
+  if (typeof window === 'undefined') return false;
+  // Cleanup legacy test key if present so production is immediately active
+  if (localStorage.getItem('dexvoi_stripe_test_mode') === 'true') {
+    localStorage.removeItem('dexvoi_stripe_test_mode');
   }
-  return STRIPE_TEST_MODE_DEFAULT;
+  const stored = localStorage.getItem('dexvoi_stripe_test_mode_v2');
+  return stored === 'true';
 }
 
 export function setStripeTestMode(enabled: boolean): void {
   if (typeof window !== 'undefined') {
-    localStorage.setItem('dexvoi_stripe_test_mode', String(enabled));
+    if (!enabled) {
+      localStorage.removeItem('dexvoi_stripe_test_mode_v2');
+      localStorage.removeItem('dexvoi_stripe_test_mode');
+    } else {
+      localStorage.setItem('dexvoi_stripe_test_mode_v2', 'true');
+    }
     window.dispatchEvent(new Event('dexvoi_test_mode_changed'));
   }
 }
+

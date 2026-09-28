@@ -260,8 +260,8 @@ async function sendViaBrevo(
   replyTo?: { email: string; name?: string }
 ): Promise<{ success: boolean; messageId?: string; error?: string }> {
   try {
-    const senderEmail = process.env.BREVO_SENDER_EMAIL || 'info@dexvoi.com';
-    const senderName = process.env.BREVO_SENDER_NAME || 'Dexvoi';
+    const senderEmail = (process.env.BREVO_SENDER_EMAIL || 'info@dexvoi.com').replace(/['"]/g, '').trim() || 'info@dexvoi.com';
+    const senderName = (process.env.BREVO_SENDER_NAME || 'Dexvoi').replace(/['"]/g, '').trim() || 'Dexvoi';
 
     const payload: any = {
       sender: { name: senderName, email: senderEmail },
@@ -275,15 +275,32 @@ async function sendViaBrevo(
       payload.replyTo = replyTo;
     }
 
-    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+    const cleanKey = apiKey.replace(/['"]/g, '').trim();
+
+    let response = await fetch('https://api.brevo.com/v3/smtp/email', {
       method: 'POST',
       headers: {
-        'api-key': apiKey.trim(),
+        'api-key': cleanKey,
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       },
       body: JSON.stringify(payload),
     });
+
+    // Reintento automático con remitente por defecto si falló
+    if (!response.ok && senderEmail !== 'info@dexvoi.com') {
+      console.warn(`[Brevo] Falló con ${senderEmail}, reintentando con info@dexvoi.com...`);
+      payload.sender = { name: 'Dexvoi', email: 'info@dexvoi.com' };
+      response = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+          'api-key': cleanKey,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+    }
 
     const resJson: any = await response.json().catch(() => ({}));
 
