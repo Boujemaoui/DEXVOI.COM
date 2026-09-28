@@ -58,7 +58,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   </head>
   <body class="bg-[#0A0F1F] text-[#e5e2e3] font-sans antialiased selection:bg-[#0066FF] selection:text-white">
-    <div id="root"></div>
+    <div id="root">
+      <!-- Semantic Static Fallback for Search Engine Crawlers & Static Scanners -->
+      <header class="sr-only">
+        <h1>Dexvoi · Arquitectura Web de Alto Rendimiento, SEO y Blindaje Digital</h1>
+        <p>Ingeniería digital, optimización Core Web Vitals, posicionamiento local y ciberseguridad perimetral para empresas offline y online.</p>
+      </header>
+      <main class="sr-only">
+        <h2>Servicios de Ciberseguridad e Infraestructura Web</h2>
+        <h2>Escáner Express de Vulnerabilidades y Rendimiento</h2>
+        <h2>Planes de Auditoría Forense y Blindaje Técnico</h2>
+      </main>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

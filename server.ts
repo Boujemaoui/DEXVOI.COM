@@ -415,6 +415,20 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
+  // Global Security Headers Middleware
+  app.use((_req, res, next) => {
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+    res.setHeader(
+      'Content-Security-Policy',
+      "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://js.stripe.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://api.stripe.com https://buy.stripe.com https://www.google-analytics.com https://region1.google-analytics.com https://pagespeedonline.googleapis.com https://*.cloudflare.com https://dns.google https://rdap.arin.net https://rdap.db.ripe.net blob:; frame-src 'self' https://buy.stripe.com https://js.stripe.com https://hooks.stripe.com; object-src 'none'; base-uri 'self';"
+    );
+    next();
+  });
+
   // Stripe Webhook Endpoint (Raw Body Handling - CRITICAL: must receive unparsed raw body)
   app.post('/api/webhooks/stripe', express.raw({ type: 'application/json' }), async (req, res) => {
     const signature = req.headers['stripe-signature'];

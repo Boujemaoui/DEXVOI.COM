@@ -434,9 +434,9 @@ export function generateAuditPdf(options: GeneratePdfOptions): Buffer {
   doc.setFontSize(7.5);
   doc.setTextColor(COLOR_GOLD.r, COLOR_GOLD.g, COLOR_GOLD.b);
   doc.text('CABECERA HTTP', margin + 4, headersY + 15.5);
-  doc.text('ESTADO', margin + 55, headersY + 15.5);
-  doc.text('NIVEL RIESGO', margin + 85, headersY + 15.5);
-  doc.text('IMPACTO TÉCNICO', margin + 115, headersY + 15.5);
+  doc.text('ESTADO', margin + 64, headersY + 15.5);
+  doc.text('NIVEL RIESGO', margin + 92, headersY + 15.5);
+  doc.text('IMPACTO TÉCNICO', margin + 116, headersY + 15.5);
 
   const sampleHeaders: any[] = auditResult.headers && auditResult.headers.length > 0 ? auditResult.headers : [
     { name: 'Strict-Transport-Security (HSTS)', status: 'FAIL', importance: 'CRÍTICA', description: 'Obliga a conexiones HTTPS' },
@@ -455,22 +455,27 @@ export function generateAuditPdf(options: GeneratePdfOptions): Buffer {
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(7.5);
     doc.setTextColor(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b);
-    const headerTitle = item.name || item.header || item.headerKey || 'Cabecera de Seguridad';
+    const rawHeaderTitle = (item.name || item.header || item.headerKey || 'Cabecera de Seguridad').toString();
+    // Shorten or clean parentheses to prevent overlap with ESTADO column
+    const headerTitle = rawHeaderTitle.length > 30 
+      ? rawHeaderTitle.replace(/\s*\([^)]*\).*$/, '').slice(0, 28) 
+      : rawHeaderTitle;
     doc.text(headerTitle, margin + 4, rowY);
 
     const isPass = item.status === 'PASS' || item.status === 'present';
     doc.setTextColor(isPass ? COLOR_SUCCESS.r : COLOR_CRITICAL.r, isPass ? COLOR_SUCCESS.g : COLOR_CRITICAL.g, isPass ? COLOR_SUCCESS.b : COLOR_CRITICAL.b);
-    doc.text(isPass ? 'CONFIGURADA' : 'AUSENTE', margin + 55, rowY);
+    doc.text(isPass ? 'CONFIGURADA' : 'AUSENTE', margin + 64, rowY);
 
     const riskLevel = (item.importance || item.risk || 'MEDIA').toString().toUpperCase();
     const riskColor = riskLevel.includes('CRÍT') || riskLevel.includes('CRIT') ? COLOR_CRITICAL : riskLevel.includes('MED') ? COLOR_WARNING : COLOR_SUCCESS;
     doc.setTextColor(riskColor.r, riskColor.g, riskColor.b);
-    doc.text(riskLevel, margin + 85, rowY);
+    doc.text(riskLevel, margin + 92, rowY);
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(7);
     doc.setTextColor(COLOR_MUTED.r, COLOR_MUTED.g, COLOR_MUTED.b);
-    doc.text(item.description || 'Protección perimetral', margin + 115, rowY);
+    const descText = (item.description || 'Protección perimetral').toString();
+    doc.text(descText, margin + 116, rowY, { maxWidth: 60 });
   });
 
   drawFooter(3);

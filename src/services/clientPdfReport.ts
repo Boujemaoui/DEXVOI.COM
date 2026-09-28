@@ -342,7 +342,9 @@ function generateClientSidePdf(
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(8);
     doc.setTextColor(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b);
-    doc.text(h.name, margin + 4, rowY + 1);
+    const rawName = (h.name || '').toString();
+    const cleanName = rawName.length > 30 ? rawName.replace(/\s*\([^)]*\).*$/, '').slice(0, 28) : rawName;
+    doc.text(cleanName, margin + 4, rowY + 1);
 
     const isPass = h.status === 'PASS';
     doc.setTextColor(isPass ? COLOR_SUCCESS.r : COLOR_CRITICAL.r, isPass ? COLOR_SUCCESS.g : COLOR_CRITICAL.g, isPass ? COLOR_SUCCESS.b : COLOR_CRITICAL.b);
