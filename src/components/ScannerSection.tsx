@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Zap, 
   Globe, 
@@ -24,6 +24,7 @@ import {
 import { ScanResult, OsintSecurityAuditResult, AuditIssue } from '../types';
 import { runClientSecurityAudit } from '../services/clientSecurityAudit';
 import { downloadOfficialAuditPdf } from '../services/clientPdfReport';
+import { isStripeTestMode, setStripeTestMode } from '../config/testMode';
 import { useLanguage } from '../i18n/LanguageContext';
 import { navigateTo } from '../utils/navigation';
 
@@ -39,6 +40,7 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
   onOpenOsintModal
 }) => {
   const { t, language } = useLanguage();
+  const [testMode, setTestMode] = useState<boolean>(isStripeTestMode());
   const [urlInput, setUrlInput] = useState('');
   const [businessType, setBusinessType] = useState<string>('offline_online');
   const [isScanning, setIsScanning] = useState(false);
@@ -60,12 +62,46 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [checkoutSuccessMessage, setCheckoutSuccessMessage] = useState<string | null>(null);
 
+  useEffect(() => {
+    const handleSync = () => setTestMode(isStripeTestMode());
+    window.addEventListener('dexvoi_test_mode_changed', handleSync);
+    return () => window.removeEventListener('dexvoi_test_mode_changed', handleSync);
+  }, []);
+
   // Direct Stripe Checkout for official certified 5€ PDF report
   const handleCheckoutPdf5Eur = async (optionalEmail?: string) => {
     if (!result) return;
     setIsCheckingOutPdf(true);
     setCheckoutError(null);
     setCheckoutSuccessMessage(null);
+
+    // MODO DE PRUEBAS / DEMO: Descarga directa del PDF de 5€ sin pasar por Stripe
+    if (testMode) {
+      try {
+        const ok = await downloadOfficialAuditPdf({
+          target: result.url,
+          auditResult: result.rawAuditResult,
+          customerEmail: (optionalEmail || leadEmail).trim() || 'info@dexvoi.com',
+          tier: 'pdf_5eur',
+        });
+        if (ok) {
+          setCheckoutSuccessMessage(
+            language === 'fr'
+              ? '✓ Rapport Officiel PDF (5€) généré et téléchargé avec succès (Mode Test - Sans frais Stripe).'
+              : language === 'en'
+              ? '✓ Official PDF Report (€5) generated and downloaded successfully (Test Mode - Zero Stripe charge).'
+              : '✓ Informe Oficial en PDF (5€) generado y descargado con éxito (Modo Pruebas - Sin cobro en Stripe).'
+          );
+        } else {
+          setCheckoutError('No se pudo generar el archivo PDF en este momento.');
+        }
+      } catch (err: any) {
+        setCheckoutError(err?.message || 'Error al descargar PDF.');
+      } finally {
+        setIsCheckingOutPdf(false);
+      }
+      return;
+    }
 
     try {
       const emailToUse = (optionalEmail || leadEmail).trim() || undefined;
@@ -79,8 +115,13 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
         }),
       });
 
-      const data = await res.json();
-      if (data.url) {
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => null);
+        throw new Error(errorData?.error || `Error del servidor (${res.status})`);
+      }
+
+      const data = await res.json().catch(() => ({}));
+      if (data && data.url) {
         window.open(data.url, '_blank', 'noopener,noreferrer');
         setCheckoutSuccessMessage(
           language === 'fr'
@@ -905,7 +946,12 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
                           {isCheckingOutPdf ? (
                             <>
                               <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#0A0F1F]" />
-                              <span>Conectando con Stripe...</span>
+                              <span>{testMode ? 'Generando PDF Oficial...' : 'Conectando con Stripe...'}</span>
+                            </>
+                          ) : testMode ? (
+                            <>
+                              <Download className="w-4 h-4 text-[#0A0F1F]" />
+                              <span>🧪 Probar y Descargar PDF (5€) [Modo Demo]</span>
                             </>
                           ) : (
                             <>
@@ -915,7 +961,9 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
                           )}
                         </button>
                         <p className="text-[10px] text-gray-500 font-mono text-center">
-                          Stripe Checkout seguro · Recibe el PDF en tu correo al instante.
+                          {testMode 
+                            ? '🧪 Modo de prueba activo: descarga instantánea del PDF de 5 páginas sin cobro.'
+                            : 'Stripe Checkout seguro · Recibe el PDF en tu correo al instante.'}
                         </p>
                       </div>
                     </div>

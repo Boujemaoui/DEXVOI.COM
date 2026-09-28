@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { X, FileText, CheckCircle2, Lock, ArrowRight, Download, CreditCard } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, FileText, CheckCircle2, Lock, ArrowRight, Download, CreditCard, Sparkles } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { downloadOfficialAuditPdf } from '../services/clientPdfReport';
+import { isStripeTestMode, setStripeTestMode } from '../config/testMode';
 
 interface PdfReportModalProps {
   isOpen: boolean;
@@ -24,11 +25,18 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
   defaultTier = 'complete'
 }) => {
   const { language } = useLanguage();
+  const [testMode, setTestMode] = useState<boolean>(isStripeTestMode());
   const [selectedTier, setSelectedTier] = useState<'basic' | 'complete' | 'premium'>(defaultTier);
   const [email, setEmail] = useState('');
   const [website, setWebsite] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [isPaid, setIsPaid] = useState(false);
+
+  useEffect(() => {
+    const handleSync = () => setTestMode(isStripeTestMode());
+    window.addEventListener('dexvoi_test_mode_changed', handleSync);
+    return () => window.removeEventListener('dexvoi_test_mode_changed', handleSync);
+  }, []);
 
   if (!isOpen) return null;
 
@@ -177,17 +185,27 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          fullName: 'Cliente Checkout Stripe',
+          fullName: 'Cliente Checkout (Test/Real)',
           email,
           phone: '',
           businessType: currentTier.name,
           websiteUrl: website,
-          primaryConcern: `Inició pago Stripe: ${currentTier.price}`,
+          primaryConcern: `Solicitó informe: ${currentTier.price} (${currentTier.name})`,
           type: `Stripe Checkout (${currentTier.price})`,
         }),
       });
     } catch {
-      // Continue to Stripe even if background notice fails
+      // Continue even if background notice fails
+    }
+
+    // MODO DE PRUEBA: Permite probar el plan y descargar el PDF oficial sin pagar en Stripe
+    if (testMode) {
+      setIsProcessing(false);
+      setIsPaid(true);
+      setTimeout(() => {
+        handleDownloadSample();
+      }, 300);
+      return;
     }
 
     let targetStripeUrl = currentTier.stripeUrl;
@@ -317,6 +335,34 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
               </p>
             </div>
 
+            {/* Test Mode Switcher in Modal */}
+            <div className="p-3 rounded-xl bg-[#090E1D] border border-gray-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-mono">
+              <div className="flex items-center gap-2">
+                <span className={`w-2.5 h-2.5 rounded-full ${testMode ? 'bg-emerald-400 animate-pulse' : 'bg-blue-400'}`} />
+                <span className="text-gray-200 font-bold">
+                  {testMode ? '🧪 Modo Pruebas Activo' : '🔒 Stripe Conectado'}
+                </span>
+                <span className={`text-[10px] px-2 py-0.5 rounded font-bold ${testMode ? 'bg-emerald-500/20 text-emerald-400' : 'bg-blue-500/20 text-blue-400'}`}>
+                  {testMode ? 'Sin cobro · Descarga Libre' : 'Pasarela Oficial'}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  const nextState = !testMode;
+                  setTestMode(nextState);
+                  setStripeTestMode(nextState);
+                }}
+                className={`px-3 py-1.5 rounded-lg text-[11px] font-bold tracking-wider transition-all cursor-pointer border ${
+                  testMode
+                    ? 'bg-[#1E293B] hover:bg-[#2A374F] text-gray-200 border-gray-600'
+                    : 'bg-[#F5A623] hover:bg-[#FFAE33] text-[#0A0F1F] border-[#F5A623]'
+                }`}
+              >
+                {testMode ? 'Reconectar Stripe Real' : 'Desconectar Stripe (Pruebas)'}
+              </button>
+            </div>
+
             {/* Tiers Selection */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {(Object.keys(tiers) as Array<keyof typeof tiers>).map((key) => {
@@ -437,13 +483,30 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
                 </div>
               </div>
 
+              {testMode && (
+                <div className="p-3 rounded-lg bg-[#131B33] border border-[#F5A623]/40 text-xs font-mono text-[#F5A623] flex items-center justify-between gap-2">
+                  <span>🧪 <strong>MODO DE PRUEBA:</strong> Descarga directa habilitada sin cobro en Stripe.</span>
+                  <span className="text-[10px] text-gray-400">Sin tarjeta</span>
+                </div>
+              )}
+
               <button
                 type="submit"
                 disabled={isProcessing}
-                className="w-full bg-[#635BFF] hover:bg-[#5349e0] text-white py-3.5 rounded-lg font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 font-bold transition-all shadow-lg shadow-[#635BFF]/25 disabled:opacity-50 cursor-pointer"
+                className={`w-full py-3.5 rounded-lg font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 font-bold transition-all shadow-lg disabled:opacity-50 cursor-pointer ${
+                  testMode
+                    ? 'bg-[#0066FF] hover:bg-[#0055DD] text-white shadow-[#0066FF]/25'
+                    : 'bg-[#635BFF] hover:bg-[#5349e0] text-white shadow-[#635BFF]/25'
+                }`}
               >
                 {isProcessing ? (
-                  <span>{language === 'fr' ? 'Connexion à Stripe...' : language === 'en' ? 'Connecting to Stripe Checkout...' : 'Conectando con Stripe Checkout...'}</span>
+                  <span>{language === 'fr' ? 'Génération du rapport...' : language === 'en' ? 'Generating report...' : 'Generando informe...'}</span>
+                ) : testMode ? (
+                  <>
+                    <Download className="w-4 h-4 text-white" />
+                    <span>🧪 Probar Plan & Descargar PDF ({tiers[selectedTier].price})</span>
+                    <ArrowRight className="w-4 h-4 text-white" />
+                  </>
                 ) : (
                   <>
                     <Lock className="w-4 h-4 text-white" />
@@ -452,6 +515,22 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
                   </>
                 )}
               </button>
+
+              {testMode && (
+                <button
+                  type="button"
+                  onClick={handleDownloadSample}
+                  disabled={isDownloadingSample}
+                  className="w-full bg-[#F5A623] hover:bg-[#FFAE33] text-[#0A0F1F] py-2.5 rounded-lg font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 font-bold transition-all shadow-md cursor-pointer disabled:opacity-50"
+                >
+                  <Download className="w-4 h-4 text-[#0A0F1F]" />
+                  <span>
+                    {isDownloadingSample
+                      ? 'Compilando PDF...'
+                      : `Descarga Instantánea: ${tiers[selectedTier].name} (${tiers[selectedTier].pages})`}
+                  </span>
+                </button>
+              )}
 
               <div className="text-center pt-1">
                 <a

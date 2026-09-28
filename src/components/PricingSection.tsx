@@ -1,6 +1,7 @@
-import React from 'react';
-import { Check, Sparkles, Lock, ArrowRight, ExternalLink, CreditCard } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Check, Sparkles, Lock, ArrowRight, ExternalLink, CreditCard, Download } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
+import { isStripeTestMode, setStripeTestMode } from '../config/testMode';
 
 interface PricingSectionProps {
   onOpenPdfModal?: (tier: 'basic' | 'complete' | 'premium') => void;
@@ -12,6 +13,13 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
   onOpenAuditModal,
 }) => {
   const { t, language } = useLanguage();
+  const [testMode, setTestMode] = useState<boolean>(isStripeTestMode());
+
+  useEffect(() => {
+    const handleSync = () => setTestMode(isStripeTestMode());
+    window.addEventListener('dexvoi_test_mode_changed', handleSync);
+    return () => window.removeEventListener('dexvoi_test_mode_changed', handleSync);
+  }, []);
 
   const plans = [
     {
@@ -152,6 +160,44 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
           </p>
         </div>
 
+        {/* Test Mode Notification & Quick Switch Banner */}
+        <div className="mb-10 p-4 rounded-2xl bg-[#0E1528] border border-[#F5A623]/40 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+          <div className="flex items-center gap-3 text-left">
+            <div className="w-9 h-9 rounded-xl bg-[#F5A623]/20 border border-[#F5A623]/40 flex items-center justify-center shrink-0">
+              <Sparkles className="w-4 h-4 text-[#F5A623]" />
+            </div>
+            <div>
+              <div className="text-xs font-mono font-bold text-white flex items-center gap-2">
+                <span>{testMode ? '🧪 MODO DE PRUEBAS ACTIVO' : '🔒 MODO PRODUCCIÓN (STRIPE CONECTADO)'}</span>
+                <span className={`text-[9px] px-2 py-0.5 rounded font-mono ${testMode ? 'bg-emerald-500/20 text-emerald-400 font-bold' : 'bg-blue-500/20 text-blue-400'}`}>
+                  {testMode ? 'SIN COBROS REALES' : 'PASARELA ACTIVA'}
+                </span>
+              </div>
+              <p className="text-[11px] text-gray-400 font-mono mt-0.5">
+                {testMode 
+                  ? 'Puedes seleccionar y probar cualquiera de los planes (19€, 49€, 99€ o 5€) y descargar los informes PDF oficiales sin pagar en Stripe.'
+                  : 'Los botones conectan directamente con las sesiones oficiales de Stripe Checkout.'}
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              const nextState = !testMode;
+              setTestMode(nextState);
+              setStripeTestMode(nextState);
+            }}
+            className={`px-4 py-2 rounded-xl text-xs font-mono font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap border ${
+              testMode
+                ? 'bg-[#1E293B] hover:bg-[#283548] text-gray-200 border-gray-600'
+                : 'bg-[#F5A623] hover:bg-[#FFAE33] text-[#0A0F1F] border-[#F5A623]'
+            }`}
+          >
+            {testMode ? 'Reconectar Stripe (Modo Real)' : 'Desconectar Stripe (Modo Pruebas)'}
+          </button>
+        </div>
+
         {/* Pricing Cards Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
           {plans.map((plan) => (
@@ -225,30 +271,61 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
 
               {/* Action Buttons */}
               <div className="space-y-2.5 pt-4 border-t border-gray-800/80">
-                {/* Direct Stripe Checkout Button */}
-                <a
-                  href={plan.stripeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`w-full py-3.5 px-4 rounded-xl font-mono text-xs uppercase font-bold tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                    plan.highlighted
-                      ? 'bg-[#635BFF] hover:bg-[#5349e0] text-white shadow-lg shadow-[#635BFF]/30'
-                      : 'bg-[#1E293B] hover:bg-[#283548] text-white border border-gray-700'
-                  }`}
-                >
-                  <Lock className="w-3.5 h-3.5" />
-                  <span>{plan.buttonText}</span>
-                  <ExternalLink className="w-3.5 h-3.5 ml-0.5" />
-                </a>
+                {testMode ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => onOpenPdfModal && onOpenPdfModal(plan.tierKey)}
+                      className={`w-full py-3.5 px-4 rounded-xl font-mono text-xs uppercase font-bold tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                        plan.highlighted
+                          ? 'bg-[#0066FF] hover:bg-[#0055DD] text-white shadow-lg shadow-[#0066FF]/30'
+                          : 'bg-[#131B33] hover:bg-[#1C2744] text-white border border-[#0066FF]/50'
+                      }`}
+                    >
+                      <Download className="w-3.5 h-3.5 text-[#F5A623]" />
+                      <span>🧪 Probar Plan & Descargar PDF ({plan.price}€)</span>
+                    </button>
 
-                {/* Custom Modal trigger button */}
-                {onOpenPdfModal && (
-                  <button
-                    onClick={() => onOpenPdfModal(plan.tierKey)}
-                    className="w-full py-2 text-center text-[11px] font-mono text-gray-400 hover:text-white transition-colors cursor-pointer"
-                  >
-                    {language === 'fr' ? 'Ou ouvrir l’assistant de commande guidé →' : language === 'en' ? 'Or open guided order assistant →' : 'O abrir asistente de pedido guiado →'}
-                  </button>
+                    <div className="text-center">
+                      <a
+                        href={plan.stripeUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[10px] font-mono text-gray-500 hover:text-gray-300 inline-flex items-center gap-1 transition-colors"
+                      >
+                        <span>Enlace directo Stripe Oficial ({plan.price}€)</span>
+                        <ExternalLink className="w-2.5 h-2.5" />
+                      </a>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* Direct Stripe Checkout Button */}
+                    <a
+                      href={plan.stripeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`w-full py-3.5 px-4 rounded-xl font-mono text-xs uppercase font-bold tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                        plan.highlighted
+                          ? 'bg-[#635BFF] hover:bg-[#5349e0] text-white shadow-lg shadow-[#635BFF]/30'
+                          : 'bg-[#1E293B] hover:bg-[#283548] text-white border border-gray-700'
+                      }`}
+                    >
+                      <Lock className="w-3.5 h-3.5" />
+                      <span>{plan.buttonText}</span>
+                      <ExternalLink className="w-3.5 h-3.5 ml-0.5" />
+                    </a>
+
+                    {/* Custom Modal trigger button */}
+                    {onOpenPdfModal && (
+                      <button
+                        onClick={() => onOpenPdfModal(plan.tierKey)}
+                        className="w-full py-2 text-center text-[11px] font-mono text-gray-400 hover:text-white transition-colors cursor-pointer"
+                      >
+                        {language === 'fr' ? 'Ou ouvrir l’assistant de commande guidé →' : language === 'en' ? 'Or open guided order assistant →' : 'O abrir asistente de pedido guiado →'}
+                      </button>
+                    )}
+                  </>
                 )}
               </div>
             </div>

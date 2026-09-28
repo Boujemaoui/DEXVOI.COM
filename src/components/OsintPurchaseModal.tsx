@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, ShieldCheck, Lock, CheckCircle2, Download, Terminal, CreditCard, Sparkles, Copy, Check } from 'lucide-react';
 import { OsintSecurityAuditResult } from '../types';
 import { useLanguage } from '../i18n/LanguageContext';
+import { isStripeTestMode } from '../config/testMode';
 
 interface OsintPurchaseModalProps {
   isOpen: boolean;
@@ -34,17 +35,23 @@ export const OsintPurchaseModal: React.FC<OsintPurchaseModalProps> = ({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          fullName: 'Cliente Auditoría OSINT & Seguridad',
+          fullName: 'Cliente Auditoría OSINT & Seguridad (Test/Real)',
           email,
           phone: '',
           businessType: 'Auditoría OSINT & Blindaje',
           websiteUrl: domainInput,
-          primaryConcern: 'Compra de Auditoría Técnica & Seguridad',
+          primaryConcern: 'Compra de Auditoría Técnica & Seguridad (49€)',
           type: 'Stripe Checkout (49€)',
         }),
       });
     } catch {
       // Continue anyway
+    }
+
+    if (isStripeTestMode()) {
+      setIsProcessing(false);
+      setIsPaid(true);
+      return;
     }
 
     let targetStripeUrl = 'https://buy.stripe.com/9B66oI862eUc8Um92NdAk01';

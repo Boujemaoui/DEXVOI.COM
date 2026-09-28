@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Shield, 
   ArrowLeft, 
@@ -9,11 +9,13 @@ import {
   FileText, 
   Sparkles, 
   ArrowRight,
-  HelpCircle
+  HelpCircle,
+  Download
 } from 'lucide-react';
 import { LanguageSelector } from '../components/LanguageSelector';
 import { useLanguage } from '../i18n/LanguageContext';
 import { navigateTo } from '../utils/navigation';
+import { isStripeTestMode, setStripeTestMode } from '../config/testMode';
 
 interface PricingPageProps {
   onNavigateHome: () => void;
@@ -27,6 +29,13 @@ export const PricingPage: React.FC<PricingPageProps> = ({
   onOpenAuditModal
 }) => {
   const { language } = useLanguage();
+  const [testMode, setTestMode] = useState<boolean>(isStripeTestMode());
+
+  useEffect(() => {
+    const handleSync = () => setTestMode(isStripeTestMode());
+    window.addEventListener('dexvoi_test_mode_changed', handleSync);
+    return () => window.removeEventListener('dexvoi_test_mode_changed', handleSync);
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#0A0F1F] text-[#e5e2e3] font-sans pb-24 selection:bg-[#0066FF] selection:text-white">
@@ -107,6 +116,44 @@ export const PricingPage: React.FC<PricingPageProps> = ({
 
       {/* Pricing Cards Grid */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Test Mode Switcher Banner */}
+        <div className="mb-10 p-4 rounded-2xl bg-[#0E1528] border border-[#F5A623]/40 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+          <div className="flex items-center gap-3 text-left">
+            <div className="w-9 h-9 rounded-xl bg-[#F5A623]/20 border border-[#F5A623]/40 flex items-center justify-center shrink-0">
+              <Sparkles className="w-4 h-4 text-[#F5A623]" />
+            </div>
+            <div>
+              <div className="text-xs font-mono font-bold text-white flex items-center gap-2">
+                <span>{testMode ? '🧪 MODO DE PRUEBAS ACTIVO' : '🔒 MODO PRODUCCIÓN (STRIPE CONECTADO)'}</span>
+                <span className={`text-[9px] px-2 py-0.5 rounded font-mono ${testMode ? 'bg-emerald-500/20 text-emerald-400 font-bold' : 'bg-blue-500/20 text-blue-400'}`}>
+                  {testMode ? 'SIN COBROS REALES' : 'PASARELA ACTIVA'}
+                </span>
+              </div>
+              <p className="text-[11px] text-gray-400 font-mono mt-0.5">
+                {testMode 
+                  ? 'Puedes seleccionar y probar cualquiera de los planes (19€, 49€ o 99€) y descargar los informes PDF oficiales sin pagar en Stripe.'
+                  : 'Los botones conectan directamente con las sesiones oficiales de Stripe Checkout.'}
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              const nextState = !testMode;
+              setTestMode(nextState);
+              setStripeTestMode(nextState);
+            }}
+            className={`px-4 py-2 rounded-xl text-xs font-mono font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap border ${
+              testMode
+                ? 'bg-[#1E293B] hover:bg-[#283548] text-gray-200 border-gray-600'
+                : 'bg-[#F5A623] hover:bg-[#FFAE33] text-[#0A0F1F] border-[#F5A623]'
+            }`}
+          >
+            {testMode ? 'Reconectar Stripe (Modo Real)' : 'Desconectar Stripe (Modo Pruebas)'}
+          </button>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
           
           {/* Tier 1: Starter */}
@@ -174,13 +221,24 @@ export const PricingPage: React.FC<PricingPageProps> = ({
 
             <button
               onClick={() => onOpenPdfModal('basic')}
-              className="mt-8 w-full py-3 rounded-xl bg-[#1E293B] hover:bg-[#2A374F] text-white text-xs font-mono font-bold transition-all border border-gray-700 cursor-pointer"
+              className={`mt-8 w-full py-3.5 px-4 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer flex items-center justify-center gap-2 ${
+                testMode
+                  ? 'bg-[#131B33] hover:bg-[#1C2744] text-white border border-[#0066FF]/50 shadow-md'
+                  : 'bg-[#1E293B] hover:bg-[#2A374F] text-white border border-gray-700'
+              }`}
             >
-              {language === 'fr' 
-                ? 'Acheter Rapport Starter (19€)' 
-                : language === 'en' 
-                ? 'Purchase Starter Report (19€)' 
-                : 'Comprar Informe Starter (19€)'}
+              {testMode ? (
+                <>
+                  <Download className="w-3.5 h-3.5 text-[#F5A623]" />
+                  <span>🧪 Probar Plan & Descargar PDF (19€)</span>
+                </>
+              ) : (
+                language === 'fr' 
+                  ? 'Acheter Rapport Starter (19€)' 
+                  : language === 'en' 
+                  ? 'Purchase Starter Report (19€)' 
+                  : 'Comprar Informe Starter (19€)'
+              )}
             </button>
           </div>
 
@@ -262,13 +320,24 @@ export const PricingPage: React.FC<PricingPageProps> = ({
 
             <button
               onClick={() => onOpenPdfModal('complete')}
-              className="mt-8 w-full py-3 rounded-xl bg-[#0066FF] hover:bg-[#0052cc] text-white text-xs font-mono font-bold transition-all shadow-lg shadow-[#0066FF]/30 cursor-pointer"
+              className={`mt-8 w-full py-3.5 px-4 rounded-xl text-xs font-mono font-bold transition-all shadow-lg cursor-pointer flex items-center justify-center gap-2 ${
+                testMode
+                  ? 'bg-[#0066FF] hover:bg-[#0052cc] text-white shadow-[#0066FF]/30'
+                  : 'bg-[#0066FF] hover:bg-[#0052cc] text-white shadow-[#0066FF]/30'
+              }`}
             >
-              {language === 'fr' 
-                ? 'Acheter Audit Complet (49€)' 
-                : language === 'en' 
-                ? 'Purchase Comprehensive (49€)' 
-                : 'Comprar Comprehensive (49€)'}
+              {testMode ? (
+                <>
+                  <Download className="w-3.5 h-3.5 text-[#F5A623]" />
+                  <span>🧪 Probar Plan & Descargar PDF (49€)</span>
+                </>
+              ) : (
+                language === 'fr' 
+                  ? 'Acheter Audit Complet (49€)' 
+                  : language === 'en' 
+                  ? 'Purchase Comprehensive (49€)' 
+                  : 'Comprar Comprehensive (49€)'
+              )}
             </button>
           </div>
 
@@ -337,13 +406,20 @@ export const PricingPage: React.FC<PricingPageProps> = ({
 
             <button
               onClick={() => onOpenPdfModal('premium')}
-              className="mt-8 w-full py-3 rounded-xl bg-[#F5A623] hover:bg-[#e0961f] text-black text-xs font-mono font-bold transition-all cursor-pointer"
+              className="mt-8 w-full py-3.5 px-4 rounded-xl bg-[#F5A623] hover:bg-[#e0961f] text-black text-xs font-mono font-bold transition-all cursor-pointer flex items-center justify-center gap-2 shadow-md"
             >
-              {language === 'fr' 
-                ? 'Acheter Premium + Appel (99€)' 
-                : language === 'en' 
-                ? 'Purchase Premium + Call (99€)' 
-                : 'Comprar Premium + Call (99€)'}
+              {testMode ? (
+                <>
+                  <Download className="w-3.5 h-3.5 text-black" />
+                  <span>🧪 Probar Plan & Descargar PDF (99€)</span>
+                </>
+              ) : (
+                language === 'fr' 
+                  ? 'Acheter Premium + Appel (99€)' 
+                  : language === 'en' 
+                  ? 'Purchase Premium + Call (99€)' 
+                  : 'Comprar Premium + Call (99€)'
+              )}
             </button>
           </div>
 

@@ -5,7 +5,7 @@ interface DownloadPdfOptions {
   target: string;
   auditResult?: OsintSecurityAuditResult;
   customerEmail?: string;
-  tier?: 'free' | 'basic' | 'complete' | 'premium';
+  tier?: 'free' | 'basic' | 'complete' | 'premium' | 'pdf_5eur';
 }
 
 // Brand Colors
@@ -27,7 +27,8 @@ const COLOR_SUCCESS = { r: 16, g: 185, b: 129 };
 export async function downloadOfficialAuditPdf(options: DownloadPdfOptions): Promise<boolean> {
   const { target, auditResult, customerEmail = 'info@dexvoi.com', tier = 'free' } = options;
   const cleanTarget = target.replace(/^https?:\/\//i, '').replace(/\/.*$/, '').trim() || 'dexvoi.com';
-  const filename = `DEXVOI-Auditoria-Oficial-${cleanTarget}.pdf`;
+  const tierName = tier ? tier.toUpperCase() : 'OFICIAL';
+  const filename = `DEXVOI-Informe-${tierName}-${cleanTarget}.pdf`;
 
   // 1. Try server API
   try {
