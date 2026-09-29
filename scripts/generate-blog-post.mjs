@@ -120,6 +120,79 @@ Pagar entre un 15% y un 25% a plataformas agregadoras por reservas de clientes r
 - Sincronización en tiempo real con agendas médicas o planos de sala sin latencia.
 - Propiedad íntegra de la base de datos de pacientes y comensales bajo estricto cumplimiento RGPD.
     `
+  },
+  {
+    topic: 'Blindaje DNS y Mitigación de Spoofing con SPF, DKIM y DMARC en Empresas',
+    category: 'ciberseguridad',
+    categoryLabel: 'Ciberseguridad & Compliance',
+    tags: ['Seguridad DNS', 'DMARC', 'SPF', 'DKIM', 'Anti-Phishing'],
+    readingTimeMinutes: 6,
+    image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80',
+    metaDescription: 'Guía técnica para evitar la suplantación de identidad corporativa y asegurar la entregabilidad de correo electrónico con registros DNS criptográficos.',
+    content: `
+## La amenaza invisible de la suplantación de identidad corporativa
+
+El 91% de los ciberataques contra empresas inician mediante correos electrónicos con remitentes falsificados que imitan el dominio oficial de la compañía.
+
+---
+
+### La tríada obligatoria de blindaje DNS
+
+1. **SPF (Sender Policy Framework):** Especifica qué servidores perimetrales tienen autorización para enviar correo a nombre de tu dominio.
+2. **DKIM (DomainKeys Identified Mail):** Firma criptográfica asimétrica que valida que el contenido del mensaje no fue alterado durante el tránsito.
+3. **DMARC (Domain-based Message Authentication):** Instrucción formal para que los receptores rechacen de plano (\`p=reject\`) cualquier correo no autenticado.
+
+---
+
+### Protocolo de implantación perimetral Dexvoi
+
+Configuramos las directivas DMARC en modo rechazo estricto con informes forenses agregados (RUA/RUF) para neutralizar cualquier intento de suplantación.
+    `
+  },
+  {
+    topic: 'Dominar el Local Pack de 3 en Google Maps para Clínicas Odontológicas y Médicas',
+    category: 'seo-local',
+    categoryLabel: 'SEO Local & Google Maps',
+    tags: ['Google Maps', 'SEO Clínicas', 'Local Pack', 'Captación Pacientes'],
+    readingTimeMinutes: 8,
+    image: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80',
+    metaDescription: 'Estrategias de arquitectura de datos y optimización de señales locales para posicionar tu clínica en los tres primeros resultados de Google Maps.',
+    content: `
+## El 70% de las citas médicas privadas se deciden en el Local Pack de Google
+
+Cuando un paciente busca "implantología dental urgente" o "dermatólogo privado cerca de mí", Google muestra únicamente los 3 perfiles locales más relevantes. Aparecer en la cuarta posición significa invisibilidad comercial.
+
+---
+
+### Los 4 factores determinantes del algoritmo local
+
+- **Consistencia NAP (Name, Address, Phone):** Exactitud milimétrica de datos en directorios médicos autorizados.
+- **Categorización primaria y secundaria:** Selección precisa de especialidades médicas sin canibalización.
+- **Geocodificación y metadatos EXIF:** Contenido fotográfico verificado con coordenadas geoespaciales.
+- **Flujo constante de reseñas con palabras clave:** Opiniones verificadas que mencionan tratamientos concretos.
+    `
+  },
+  {
+    topic: 'Arquitectura Jamstack vs Monolitos WordPress: Comparativa de Rendimiento y Seguridad 2026',
+    category: 'arquitectura-web',
+    categoryLabel: 'Arquitectura Web & Rendimiento',
+    tags: ['Jamstack', 'WordPress', 'Seguridad Web', 'Core Web Vitals'],
+    readingTimeMinutes: 7,
+    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80',
+    metaDescription: 'Análisis forense de por qué los CMS monolíticos son el principal vector de vulnerabilidades y lentitud, y cómo la arquitectura desacoplada resuelve el problema.',
+    content: `
+## El fin de la era monolítica en proyectos digitales de alto nivel
+
+Más del 85% de las vulnerabilidades web explotadas en negocios medianos provienen de plugins desactualizados y bases de datos SQL expuestas en arquitecturas WordPress tradicionales.
+
+---
+
+### Ventajas tangibles de la arquitectura desacoplada Dexvoi
+
+- **Superficie de ataque reducida a cero:** Sin bases de datos SQL en frontend ni paneles de administración expuestos a ataques de fuerza bruta.
+- **Distribución Edge global:** Los archivos estáticos pre-renderizados se sirven desde más de 300 centros de datos Cloudflare en menos de 50ms.
+- **Costes de mantenimiento predecibles:** Sin necesidad de parches de emergencia semanales ni plugins pesados de seguridad.
+    `
   }
 ];
 
@@ -176,11 +249,21 @@ Devuelve ÚNICAMENTE un JSON válido (sin bloques de markdown ni texto adicional
   }
 }`;
 
-    const res = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-      config: { temperature: 0.7 }
-    });
+    let res;
+    try {
+      res = await ai.models.generateContent({
+        model: 'gemini-3.8-flash',
+        contents: prompt,
+        config: { temperature: 0.7 }
+      });
+    } catch (modelErr) {
+      console.warn('Gemini 3.8-flash unavailable, attempting with gemini-2.5-flash:', modelErr.message);
+      res = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: prompt,
+        config: { temperature: 0.7 }
+      });
+    }
 
     const raw = res.text?.trim() || '';
     const clean = raw.replace(/^```json\s*/, '').replace(/\s*```$/, '').trim();

@@ -3,6 +3,28 @@ import { BLOG_POST_SLUGS, BLOG_POST_TRANSLATIONS } from './blogTranslations';
 
 export const INITIAL_BLOG_POSTS: BlogPost[] = [
   {
+    id: 'post-auto-1790694501764',
+    slug: 'blindaje-dns-y-mitigacion-de-spoofing-con-spf-dkim-y-dm',
+    title: "Blindaje DNS y Mitigación de Spoofing con SPF, DKIM y DMARC en Empresas",
+    excerpt: "Guía técnica para evitar la suplantación de identidad corporativa y asegurar la entregabilidad de correo electrónico con registros DNS criptográficos.",
+    category: 'ciberseguridad',
+    categoryLabel: 'Ciberseguridad & Compliance',
+    tags: ["Seguridad DNS","DMARC","SPF","DKIM","Anti-Phishing"],
+    author: {
+      name: 'Dexvoi Intelligence Team',
+      role: 'Especialistas en Blindaje & Rendimiento Digital',
+      badge: 'Verified Lead'
+    },
+    publishedAt: '2026-09-29T15:08:21.764Z',
+    readingTimeMinutes: 6,
+    featuredImage: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80',
+    metaDescription: "Guía técnica para evitar la suplantación de identidad corporativa y asegurar la entregabilidad de correo electrónico con registros DNS criptográficos.",
+    keywords: ["Seguridad DNS","DMARC","SPF","DKIM","Anti-Phishing"],
+    targetServiceUrl: '/auditoria-seguridad',
+    targetServiceLabel: 'Solicitar Diagnóstico Especializado',
+    content: "\n## La amenaza invisible de la suplantación de identidad corporativa\n\nEl 91% de los ciberataques contra empresas inician mediante correos electrónicos con remitentes falsificados que imitan el dominio oficial de la compañía.\n\n---\n\n### La tríada obligatoria de blindaje DNS\n\n1. **SPF (Sender Policy Framework):** Especifica qué servidores perimetrales tienen autorización para enviar correo a nombre de tu dominio.\n2. **DKIM (DomainKeys Identified Mail):** Firma criptográfica asimétrica que valida que el contenido del mensaje no fue alterado durante el tránsito.\n3. **DMARC (Domain-based Message Authentication):** Instrucción formal para que los receptores rechacen de plano (`p=reject`) cualquier correo no autenticado.\n\n---\n\n### Protocolo de implantación perimetral Dexvoi\n\nConfiguramos las directivas DMARC en modo rechazo estricto con informes forenses agregados (RUA/RUF) para neutralizar cualquier intento de suplantación.\n    "
+  },
+  {
     id: 'post-auto-1789304047090',
     slug: 'inteligencia-de-datos-y-agentes-de-ia-en-motores-de-res',
     title: "Inteligencia de Datos y Agentes de IA en Motores de Reservas sin Comisiones",
