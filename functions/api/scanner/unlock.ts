@@ -4,7 +4,7 @@ import {
   buildAdminNotificationText,
   buildUserConfirmationHtml,
   buildUserConfirmationText,
-} from './_emailTemplates.ts';
+} from '../_emailTemplates.ts';
 
 export interface CloudflareEnv {
   BREVO_API_KEY?: string;
