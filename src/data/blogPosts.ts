@@ -3,6 +3,28 @@ import { BLOG_POST_SLUGS, BLOG_POST_TRANSLATIONS } from './blogTranslations';
 
 export const INITIAL_BLOG_POSTS: BlogPost[] = [
   {
+    id: 'post-auto-1790713114174',
+    slug: 'dominar-el-local-pack-de-3-en-google-maps-para-clinicas',
+    title: "Dominar el Local Pack de 3 en Google Maps para Clínicas Odontológicas y Médicas",
+    excerpt: "Estrategias de arquitectura de datos y optimización de señales locales para posicionar tu clínica en los tres primeros resultados de Google Maps.",
+    category: 'seo-local',
+    categoryLabel: 'SEO Local & Google Maps',
+    tags: ["Google Maps","SEO Clínicas","Local Pack","Captación Pacientes"],
+    author: {
+      name: 'Dexvoi Intelligence Team',
+      role: 'Especialistas en Blindaje & Rendimiento Digital',
+      badge: 'Verified Lead'
+    },
+    publishedAt: '2026-09-29T20:18:34.174Z',
+    readingTimeMinutes: 8,
+    featuredImage: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80',
+    metaDescription: "Estrategias de arquitectura de datos y optimización de señales locales para posicionar tu clínica en los tres primeros resultados de Google Maps.",
+    keywords: ["Google Maps","SEO Clínicas","Local Pack","Captación Pacientes"],
+    targetServiceUrl: '/auditoria-seguridad',
+    targetServiceLabel: 'Solicitar Diagnóstico Especializado',
+    content: "\n## El 70% de las citas médicas privadas se deciden en el Local Pack de Google\n\nCuando un paciente busca \"implantología dental urgente\" o \"dermatólogo privado cerca de mí\", Google muestra únicamente los 3 perfiles locales más relevantes. Aparecer en la cuarta posición significa invisibilidad comercial.\n\n---\n\n### Los 4 factores determinantes del algoritmo local\n\n- **Consistencia NAP (Name, Address, Phone):** Exactitud milimétrica de datos en directorios médicos autorizados.\n- **Categorización primaria y secundaria:** Selección precisa de especialidades médicas sin canibalización.\n- **Geocodificación y metadatos EXIF:** Contenido fotográfico verificado con coordenadas geoespaciales.\n- **Flujo constante de reseñas con palabras clave:** Opiniones verificadas que mencionan tratamientos concretos.\n    "
+  },
+  {
     id: 'post-auto-1790694501764',
     slug: 'blindaje-dns-y-mitigacion-de-spoofing-con-spf-dkim-y-dm',
     title: "Blindaje DNS y Mitigación de Spoofing con SPF, DKIM y DMARC en Empresas",
