@@ -1,3 +1,12 @@
+import {
+  normalizeFormCategory,
+  getFormCategoryConfig,
+  buildAdminNotificationHtml,
+  buildAdminNotificationText,
+  buildUserConfirmationHtml,
+  buildUserConfirmationText,
+} from './_emailTemplates.ts';
+
 export interface CloudflareEnv {
   BREVO_API_KEY?: string;
   BREVO_SENDER_EMAIL?: string;
@@ -10,7 +19,7 @@ const PRIMARY_DESTINATION = 'info@dexvoi.com';
 
 /**
  * Cloudflare Pages Function: POST /api/lead
- * Dispatches leads via Brevo or Resend, with full error reporting.
+ * Dispatches leads via Brevo or Resend, with dynamic tailored templates.
  */
 export async function onRequestPost(context: { request: Request; env: CloudflareEnv }): Promise<Response> {
   const { request, env } = context;
@@ -41,25 +50,17 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
     const cleanSenderName = (env?.BREVO_SENDER_NAME || 'Dexvoi').replace(/['"]/g, '').trim() || 'Dexvoi';
     const cleanDestinationEmail = cleanEmail(env?.NOTIFICATION_EMAIL, PRIMARY_DESTINATION);
 
-    const subject = `🔔 Nuevo lead desde Dexvoi - ${formType}`;
+    // Obtener configuración dinámica y plantillas según el tipo de servicio
+    const category = normalizeFormCategory(formType, data);
+    const config = getFormCategoryConfig(category, data, leadTicket);
 
-    const adminHtml = `
-      <div style="font-family: Arial, sans-serif; background: #0A0F1F; color: #FFFFFF; padding: 24px; border-radius: 10px; max-width: 600px;">
-        <h2 style="color: #0066FF; margin-top: 0;">🔔 Nuevo Lead Dexvoi - ${formType}</h2>
-        <p style="color: #F5A623;"><strong>Expediente:</strong> ${leadTicket}</p>
-        <div style="background: #131B33; padding: 16px; border-radius: 8px; line-height: 1.6;">
-          <p><strong>👤 Nombre:</strong> ${fullName || 'No indicado'}</p>
-          <p><strong>📧 Email:</strong> ${email ? `<a href="mailto:${email}" style="color: #38BDF8;">${email}</a>` : 'No indicado'}</p>
-          <p><strong>📱 Teléfono:</strong> ${phone ? `<a href="tel:${phone}" style="color: #10B981;">${phone}</a>` : 'No indicado'}</p>
-          <p><strong>🌐 Web / Dominio:</strong> ${websiteUrl || 'No indicado'}</p>
-          <p><strong>🏢 Sector:</strong> ${businessType || 'No especificado'}</p>
-          ${selectedService ? `<p><strong>🎯 Servicio Seleccionado:</strong> ${selectedService}</p>` : ''}
-          ${selectedSlot ? `<p><strong>📅 Horario Reservado:</strong> ${selectedSlot}</p>` : ''}
-          ${primaryConcern || message ? `<p><strong>💬 Consulta / Detalles:</strong> ${primaryConcern || message}</p>` : ''}
-        </div>
-        <p style="font-size: 12px; color: #64748B; margin-top: 20px;">Enviado a ${cleanDestinationEmail}</p>
-      </div>
-    `;
+    const adminSubject = config.adminSubject;
+    const adminHtml = buildAdminNotificationHtml(data, leadTicket, cleanDestinationEmail);
+    const adminText = buildAdminNotificationText(data, leadTicket, cleanDestinationEmail);
+
+    const userSubject = config.userSubject;
+    const userHtml = buildUserConfirmationHtml(data, leadTicket);
+    const userText = buildUserConfirmationText(data, leadTicket);
 
     let emailSent = false;
     let provider = 'none';
@@ -86,8 +87,9 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
               email: cleanSenderEmail 
             },
             to: recipients,
-            subject,
+            subject: adminSubject,
             htmlContent: adminHtml,
+            textContent: adminText,
           }),
         });
 
@@ -109,8 +111,9 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
             body: JSON.stringify({
               sender: { name: 'Dexvoi', email: 'info@dexvoi.com' },
               to: [{ email: PRIMARY_DESTINATION, name: 'Dexvoi' }],
-              subject,
+              subject: adminSubject,
               htmlContent: adminHtml,
+              textContent: adminText,
             }),
           });
 
@@ -148,8 +151,9 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
           body: JSON.stringify({
             from: 'Dexvoi Leads <onboarding@resend.dev>',
             to: toEmails,
-            subject,
+            subject: adminSubject,
             html: adminHtml,
+            text: adminText,
           }),
         });
 
@@ -168,25 +172,8 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
       }
     }
 
-    // 3. Confirmación automática al cliente si el envío fue exitoso y el cliente facilitó email
+    // 3. Confirmación automática al cliente con la plantilla dinámica si el envío fue exitoso y el cliente facilitó email
     if (emailSent && email && email.includes('@')) {
-      const confirmationSubject = 'Confirmación de solicitud · Dexvoi';
-      const clientHtml = `
-        <div style="font-family: Arial, sans-serif; background: #0A0F1F; color: #FFFFFF; padding: 24px; border-radius: 10px; max-width: 580px;">
-          <h2 style="color: #0066FF; margin-top: 0;">Dexvoi · Arquitectura Digital</h2>
-          <p style="color: #F5A623;"><strong>Expediente:</strong> ${leadTicket}</p>
-          <p>Hola <strong>${fullName || 'Estimado/a cliente'}</strong>,</p>
-          <p>Hemos recibido tu solicitud correspondiente a <strong>${formType}</strong>.</p>
-          <p>Nuestro equipo de ingeniería revisará tu expediente y te contactará en menos de 24 horas laborables.</p>
-          <div style="background: #131B33; padding: 14px; border-radius: 8px; margin: 16px 0; font-size: 13px;">
-            ${websiteUrl ? `<p><strong>Web:</strong> ${websiteUrl}</p>` : ''}
-            ${selectedSlot ? `<p><strong>Horario:</strong> ${selectedSlot}</p>` : ''}
-            <p><strong>Canal prioritario:</strong> info@dexvoi.com</p>
-          </div>
-          <p style="font-size: 12px; color: #64748B;">Dexvoi · Madrid · Casablanca · Londres</p>
-        </div>
-      `;
-
       if (provider === 'brevo' && cleanBrevoKey) {
         fetch('https://api.brevo.com/v3/smtp/email', {
           method: 'POST',
@@ -200,10 +187,26 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
               email: 'info@dexvoi.com' 
             },
             to: [{ email: email.trim(), name: fullName || 'Cliente' }],
-            subject: confirmationSubject,
-            htmlContent: clientHtml,
+            subject: userSubject,
+            htmlContent: userHtml,
+            textContent: userText,
           }),
         }).catch((err) => console.warn('Client confirmation via Brevo failed:', err));
+      } else if (provider === 'resend' && cleanResendKey) {
+        fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${cleanResendKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: 'Dexvoi <onboarding@resend.dev>',
+            to: [email.trim()],
+            subject: userSubject,
+            html: userHtml,
+            text: userText,
+          }),
+        }).catch((err) => console.warn('Client confirmation via Resend failed:', err));
       }
     }
 

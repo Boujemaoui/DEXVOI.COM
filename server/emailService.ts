@@ -1,25 +1,17 @@
 import { Resend } from 'resend';
 import { saveLeadToStorage, updateLeadDeliveryStatus, StoredLead } from './leadStorage.ts';
+import {
+  normalizeFormCategory,
+  getFormCategoryConfig,
+  buildAdminNotificationHtml,
+  buildAdminNotificationText,
+  buildUserConfirmationHtml,
+  buildUserConfirmationText,
+  EmailTemplatePayload,
+} from './emailTemplates.ts';
 
-export interface LeadNotificationPayload {
-  formType: string; // e.g. "Escáner OSINT", "Formulario de Contacto", "Auditoría Gratuita 5 Puntos", "Checkout Auditoría OSINT", etc.
-  fullName?: string;
-  email?: string;
-  phone?: string;
-  websiteUrl?: string;
-  businessType?: string;
-  primaryConcern?: string;
-  message?: string;
-  ticketId?: string;
-  technicalDetails?: {
-    overallScore?: number | string;
-    grade?: string;
-    issuesCount?: number;
-    responseTimeMs?: number;
-    rawDetails?: any;
-  };
-  clientIp?: string;
-  userAgent?: string;
+export interface LeadNotificationPayload extends EmailTemplatePayload {
+  formType: string;
 }
 
 export interface EmailDispatchResult {
@@ -35,214 +27,6 @@ export interface EmailDispatchResult {
 
 // Destinatario oficial de todos los leads, consultas y solicitudes
 const PRIMARY_DESTINATION = 'info@dexvoi.com';
-
-/**
- * Format clean, highly readable HTML for admin notification to info@dexvoi.com
- */
-function buildAdminNotificationHtml(data: LeadNotificationPayload, ticket: string): string {
-  const cleanUrl = data.websiteUrl
-    ? (data.websiteUrl.startsWith('http') ? data.websiteUrl : `https://${data.websiteUrl}`)
-    : null;
-
-  return `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Nuevo Lead Dexvoi</title>
-</head>
-<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #0A0F1F; color: #FFFFFF; margin: 0; padding: 24px;">
-  <div style="max-width: 600px; margin: 0 auto; background: #0D1326; border: 1px solid #0066FF; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
-    
-    <!-- Header -->
-    <div style="background: linear-gradient(135deg, #0066FF, #003399); padding: 24px; text-align: left;">
-      <div style="display: inline-block; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; color: #F5A623; margin-bottom: 8px;">
-        Notificación Comercial Dexvoi
-      </div>
-      <h1 style="margin: 0; font-size: 22px; color: #FFFFFF; font-weight: 800;">
-        🔔 Nuevo Lead Recibido
-      </h1>
-      <p style="margin: 6px 0 0 0; font-size: 14px; color: #E0E7FF;">
-        Tipo: <strong style="color: #FFFFFF;">${data.formType}</strong>
-      </p>
-    </div>
-
-    <!-- Ticket & Timestamp Badge -->
-    <div style="background: #131B33; padding: 12px 24px; border-bottom: 1px solid #1E293B; display: flex; justify-content: space-between; font-size: 13px; color: #94A3B8;">
-      <div>Expediente: <strong style="color: #F5A623;">${ticket}</strong></div>
-      <div style="text-align: right;">Fecha: <strong style="color: #FFFFFF;">${new Date().toLocaleString('es-ES', { timeZone: 'UTC' })} UTC</strong></div>
-    </div>
-
-    <!-- Body Data -->
-    <div style="padding: 24px;">
-      <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 15px; color: #38BDF8; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #1E293B; padding-bottom: 8px;">
-        📋 Datos Completos del Formulario
-      </h3>
-
-      <table style="width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.6;">
-        <tbody>
-          <tr>
-            <td style="padding: 8px 0; color: #94A3B8; width: 38%; vertical-align: top;"><strong>👤 Nombre:</strong></td>
-            <td style="padding: 8px 0; color: #FFFFFF; font-weight: 600;">${data.fullName || '<span style="color: #64748B; font-weight: normal;">No indicado</span>'}</td>
-          </tr>
-          <tr>
-            <td style="padding: 8px 0; color: #94A3B8; vertical-align: top;"><strong>📧 Email:</strong></td>
-            <td style="padding: 8px 0;">
-              ${data.email 
-                ? `<a href="mailto:${data.email}" style="color: #38BDF8; font-weight: bold; text-decoration: none;">${data.email}</a>` 
-                : '<span style="color: #64748B;">No indicado</span>'}
-            </td>
-          </tr>
-          <tr>
-            <td style="padding: 8px 0; color: #94A3B8; vertical-align: top;"><strong>📱 Teléfono / WhatsApp:</strong></td>
-            <td style="padding: 8px 0;">
-              ${data.phone 
-                ? `<a href="tel:${data.phone}" style="color: #10B981; font-weight: bold; text-decoration: none;">${data.phone}</a>` 
-                : '<span style="color: #64748B;">No indicado</span>'}
-            </td>
-          </tr>
-          <tr>
-            <td style="padding: 8px 0; color: #94A3B8; vertical-align: top;"><strong>🌐 Web o Dominio:</strong></td>
-            <td style="padding: 8px 0;">
-              ${cleanUrl 
-                ? `<a href="${cleanUrl}" target="_blank" style="color: #F5A623; font-weight: bold; text-decoration: none;">${data.websiteUrl}</a>` 
-                : '<span style="color: #64748B;">No indicado</span>'}
-            </td>
-          </tr>
-          <tr>
-            <td style="padding: 8px 0; color: #94A3B8; vertical-align: top;"><strong>🏢 Sector / Tipo:</strong></td>
-            <td style="padding: 8px 0; color: #FFFFFF;">${data.businessType || 'General / No especificado'}</td>
-          </tr>
-          ${(data.message || data.primaryConcern) ? `
-          <tr>
-            <td style="padding: 8px 0; color: #94A3B8; vertical-align: top;"><strong>💬 Mensaje / Consulta:</strong></td>
-            <td style="padding: 8px 0; color: #E2E8F0; background: #0A0F1F; padding: 12px; border-radius: 6px; border: 1px solid #1E293B;">
-              ${(data.message || data.primaryConcern || '').replace(/\n/g, '<br/>')}
-            </td>
-          </tr>
-          ` : ''}
-        </tbody>
-      </table>
-
-      ${data.technicalDetails && (data.technicalDetails.overallScore !== undefined || data.technicalDetails.issuesCount !== undefined) ? `
-      <!-- Technical Details Section -->
-      <div style="margin-top: 24px; padding: 16px; background: #0A0F1F; border: 1px solid #1E293B; border-radius: 8px;">
-        <h4 style="margin: 0 0 10px 0; font-size: 13px; color: #F5A623; text-transform: uppercase;">
-          ⚙️ Métricas Técnicas Capturadas (Escáner)
-        </h4>
-        <div style="font-size: 13px; color: #CBD5E1; line-height: 1.6;">
-          ${data.technicalDetails.overallScore !== undefined ? `<div><strong>Puntuación Global:</strong> ${data.technicalDetails.overallScore}/100 (Grado ${data.technicalDetails.grade || 'N/A'})</div>` : ''}
-          ${data.technicalDetails.issuesCount !== undefined ? `<div><strong>Vulnerabilidades / Incidencias:</strong> ${data.technicalDetails.issuesCount} detectadas</div>` : ''}
-          ${data.technicalDetails.responseTimeMs !== undefined ? `<div><strong>Latencia Servidor (TTFB):</strong> ${data.technicalDetails.responseTimeMs}ms</div>` : ''}
-        </div>
-      </div>
-      ` : ''}
-
-      <!-- Action Buttons -->
-      <div style="margin-top: 28px; text-align: center;">
-        ${data.email ? `
-        <a href="mailto:${data.email}?subject=Respuesta%20Dexvoi%20-%20Expediente%20${ticket}&body=Hola%20${encodeURIComponent(data.fullName || '')}%2C%0A%0AGracias%20por%20contactar%20con%20Dexvoi..." 
-           style="display: inline-block; background: #0066FF; color: #FFFFFF; font-weight: bold; font-size: 14px; text-decoration: none; padding: 12px 24px; border-radius: 6px; margin: 4px;">
-          ✉️ Responder por Email
-        </a>
-        ` : ''}
-        ${data.phone ? `
-        <a href="https://wa.me/${data.phone.replace(/[^0-9]/g, '')}?text=Hola%20${encodeURIComponent(data.fullName || '')}%2C%20te%20escribimos%20desde%20Dexvoi%20respecto%20a%20tu%20solicitud..." 
-           style="display: inline-block; background: #10B981; color: #FFFFFF; font-weight: bold; font-size: 14px; text-decoration: none; padding: 12px 24px; border-radius: 6px; margin: 4px;">
-          💬 Abrir WhatsApp
-        </a>
-        ` : ''}
-      </div>
-
-    </div>
-
-    <!-- Footer -->
-    <div style="background: #080C19; padding: 16px 24px; border-top: 1px solid #1E293B; text-align: center; font-size: 12px; color: #64748B;">
-      Este lead ha sido notificado a <strong>${PRIMARY_DESTINATION}</strong> y archivado de forma segura en la base de datos de Dexvoi.
-    </div>
-
-  </div>
-</body>
-</html>
-  `.trim();
-}
-
-/**
- * Format plain text for email clients that do not support HTML
- */
-function buildAdminNotificationText(data: LeadNotificationPayload, ticket: string): string {
-  return `
-🔔 NUEVO LEAD DESDE DEXVOI - ${data.formType}
-==================================================
-Expediente: ${ticket}
-Fecha: ${new Date().toISOString()}
-
-DATOS DEL CLIENTE:
-- Nombre: ${data.fullName || 'No indicado'}
-- Email: ${data.email || 'No indicado'}
-- Teléfono: ${data.phone || 'No indicado'}
-- Web / Dominio: ${data.websiteUrl || 'No indicado'}
-- Sector: ${data.businessType || 'No especificado'}
-- Mensaje / Preocupación: ${data.message || data.primaryConcern || 'No indicado'}
-
-${data.technicalDetails ? `
-MÉTRICAS TÉCNICAS:
-- Score: ${data.technicalDetails.overallScore ?? 'N/A'}/100 (Grado ${data.technicalDetails.grade ?? 'N/A'})
-- Incidencias: ${data.technicalDetails.issuesCount ?? 0}
-- Latencia: ${data.technicalDetails.responseTimeMs ? `${data.technicalDetails.responseTimeMs}ms` : 'N/A'}
-` : ''}
-
-Notificación enviada a: ${PRIMARY_DESTINATION}
-==================================================
-  `.trim();
-}
-
-/**
- * Format automated confirmation email for the user
- */
-function buildUserConfirmationHtml(data: LeadNotificationPayload, ticket: string): string {
-  const userName = data.fullName ? data.fullName.trim() : 'Estimado/a cliente';
-  return `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Confirmación Dexvoi</title>
-</head>
-<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #0A0F1F; color: #FFFFFF; margin: 0; padding: 24px;">
-  <div style="max-width: 580px; margin: 0 auto; background: #0D1326; border: 1px solid #1E293B; border-radius: 12px; padding: 28px; box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
-    <div style="border-bottom: 1px solid #1E293B; padding-bottom: 16px; margin-bottom: 20px;">
-      <h2 style="color: #0066FF; margin: 0 0 6px 0; font-size: 22px;">Dexvoi · Arquitectura Digital & Ciberseguridad</h2>
-      <p style="color: #94A3B8; font-size: 13px; margin: 0;">Expediente Técnico: <strong style="color: #F5A623;">${ticket}</strong></p>
-    </div>
-
-    <p style="font-size: 15px; color: #E2E8F0; line-height: 1.6;">
-      Hola <strong>${userName}</strong>,
-    </p>
-
-    <p style="font-size: 14px; color: #CBD5E1; line-height: 1.6;">
-      Hemos recibido correctamente tu solicitud a través de nuestro <strong>${data.formType}</strong>. Nuestro equipo de ingenieros ya tiene asignado tu expediente para revisión técnica.
-    </p>
-
-    <div style="background: #131B33; border: 1px solid #1E293B; border-radius: 8px; padding: 16px; margin: 20px 0; font-size: 13px; line-height: 1.7; color: #CBD5E1;">
-      ${data.websiteUrl ? `<div><strong>Sitio Web / Dominio:</strong> <span style="color: #38BDF8;">${data.websiteUrl}</span></div>` : ''}
-      <div><strong>Tipo de Solicitud:</strong> ${data.formType}</div>
-      <div><strong>Compromiso de Respuesta:</strong> <span style="color: #10B981; font-weight: bold;">En menos de 24 horas laborables</span></div>
-    </div>
-
-    <p style="font-size: 13px; color: #94A3B8; line-height: 1.6;">
-      Si necesitas aportar información adicional de forma urgente, puedes responder directamente a este correo (<a href="mailto:info@dexvoi.com" style="color: #38BDF8;">info@dexvoi.com</a>).
-    </p>
-
-    <div style="margin-top: 28px; padding-top: 16px; border-top: 1px solid #1E293B; font-size: 12px; color: #64748B;">
-      Dexvoi · Madrid · Casablanca · Londres<br/>
-      <a href="https://dexvoi.com" style="color: #38BDF8; text-decoration: none;">dexvoi.com</a> · <a href="mailto:info@dexvoi.com" style="color: #38BDF8; text-decoration: none;">info@dexvoi.com</a>
-    </div>
-  </div>
-</body>
-</html>
-  `.trim();
-}
 
 /**
  * Dispatch email via Brevo REST API v3
@@ -394,9 +178,16 @@ export async function processLeadSubmission(payload: LeadNotificationPayload): P
     } : undefined,
   });
 
-  const subject = `🔔 Nuevo lead desde Dexvoi - ${payload.formType}`;
-  const adminHtml = buildAdminNotificationHtml(payload, ticketId);
-  const adminText = buildAdminNotificationText(payload, ticketId);
+  const category = normalizeFormCategory(payload.formType, payload);
+  const config = getFormCategoryConfig(category, payload, ticketId);
+
+  const adminSubject = config.adminSubject;
+  const adminHtml = buildAdminNotificationHtml(payload, ticketId, PRIMARY_DESTINATION);
+  const adminText = buildAdminNotificationText(payload, ticketId, PRIMARY_DESTINATION);
+
+  const userSubject = config.userSubject;
+  const userHtml = buildUserConfirmationHtml(payload, ticketId);
+  const userText = buildUserConfirmationText(payload, ticketId);
 
   let adminDispatched = false;
   let userConfirmed = false;
@@ -418,7 +209,7 @@ export async function processLeadSubmission(payload: LeadNotificationPayload): P
     const brevoResult = await sendViaBrevo(
       brevoKey,
       adminRecipients.map((em) => ({ email: em, name: 'Dexvoi' })),
-      subject,
+      adminSubject,
       adminHtml,
       adminText,
       payload.email ? { email: payload.email, name: payload.fullName || 'Lead Dexvoi' } : undefined
@@ -429,17 +220,19 @@ export async function processLeadSubmission(payload: LeadNotificationPayload): P
       providerUsed = 'brevo';
       console.log(`✅ [EmailService] Notificación entregada a ${adminRecipients.join(', ')} vía Brevo!`);
 
-      // Enviar confirmación automática al usuario si proporcionó su email
+      // Enviar confirmación automática adaptada al usuario si proporcionó su email
       if (payload.email) {
-        const userHtml = buildUserConfirmationHtml(payload, ticketId);
         const userConfirmResult = await sendViaBrevo(
           brevoKey,
           [{ email: payload.email, name: payload.fullName || 'Cliente' }],
-          `Confirmación de solicitud en Dexvoi · ${payload.formType}`,
+          userSubject,
           userHtml,
-          `Hola ${payload.fullName || ''}, hemos recibido tu solicitud con expediente ${ticketId}. Te responderemos en menos de 24h.`
+          userText
         );
         userConfirmed = userConfirmResult.success;
+        if (userConfirmed) {
+          console.log(`🎉 [EmailService] Confirmación dinámica entregada a ${payload.email} vía Brevo!`);
+        }
       }
     } else {
       console.warn(`⚠️ [EmailService] Brevo reportó error: ${brevoResult.error}.`);
@@ -453,7 +246,7 @@ export async function processLeadSubmission(payload: LeadNotificationPayload): P
     const resendResult = await sendViaResend(
       resendKey,
       adminRecipients,
-      subject,
+      adminSubject,
       adminHtml,
       'info@dexvoi.com',
       payload.email
@@ -465,11 +258,10 @@ export async function processLeadSubmission(payload: LeadNotificationPayload): P
       console.log(`✅ [EmailService] Notificación entregada a ${adminRecipients.join(', ')} vía Resend!`);
 
       if (payload.email) {
-        const userHtml = buildUserConfirmationHtml(payload, ticketId);
         const userRes = await sendViaResend(
           resendKey,
           [payload.email],
-          `Confirmación de solicitud en Dexvoi · ${payload.formType}`,
+          userSubject,
           userHtml,
           'info@dexvoi.com'
         );

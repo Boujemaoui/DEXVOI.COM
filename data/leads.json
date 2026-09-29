@@ -1,5 +1,54 @@
 [
   {
+    "ticketId": "DEXVOI-MUMVM4GI-841",
+    "formType": "Reserva de Cita en Agenda",
+    "fullName": "Laura Valenzuela",
+    "email": "saidsahar2013@gmail.com",
+    "phone": "+34687654321",
+    "websiteUrl": "restaurantevalenzuela.com",
+    "clientIp": "127.0.0.1",
+    "userAgent": "curl/7.88.1",
+    "emailStatus": {
+      "dispatchedToAdmin": true,
+      "adminEmail": "info@dexvoi.com",
+      "provider": "brevo",
+      "dispatchedAt": "2026-09-29T16:13:56.548Z"
+    },
+    "confirmationStatus": {
+      "sentToUser": true,
+      "userEmail": "saidsahar2013@gmail.com",
+      "dispatchedAt": "2026-09-29T16:13:56.548Z"
+    },
+    "id": "LEAD-1790698436370-7252",
+    "createdAt": 1790698436370,
+    "timestamp": "2026-09-29T16:13:56.370Z"
+  },
+  {
+    "ticketId": "DEXVOI-MUMVM1ED-731",
+    "formType": "Auditoría Gratuita 5 Puntos",
+    "fullName": "Dr. Alberto Morales",
+    "email": "saidsahar2013@gmail.com",
+    "phone": "+34612345678",
+    "websiteUrl": "clinicamorales.es",
+    "businessType": "Salud, Clínicas & Bienestar",
+    "clientIp": "127.0.0.1",
+    "userAgent": "curl/7.88.1",
+    "emailStatus": {
+      "dispatchedToAdmin": true,
+      "adminEmail": "info@dexvoi.com",
+      "provider": "brevo",
+      "dispatchedAt": "2026-09-29T16:13:52.997Z"
+    },
+    "confirmationStatus": {
+      "sentToUser": true,
+      "userEmail": "saidsahar2013@gmail.com",
+      "dispatchedAt": "2026-09-29T16:13:52.997Z"
+    },
+    "id": "LEAD-1790698432406-6937",
+    "createdAt": 1790698432406,
+    "timestamp": "2026-09-29T16:13:52.406Z"
+  },
+  {
     "ticketId": "DEXVOI-MULLR2DM-448",
     "formType": "Formulario de Contacto",
     "fullName": "Cliente Verificacion",

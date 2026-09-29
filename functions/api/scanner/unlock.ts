@@ -1,3 +1,11 @@
+import {
+  getFormCategoryConfig,
+  buildAdminNotificationHtml,
+  buildAdminNotificationText,
+  buildUserConfirmationHtml,
+  buildUserConfirmationText,
+} from './_emailTemplates.ts';
+
 export interface CloudflareEnv {
   BREVO_API_KEY?: string;
   BREVO_SENDER_EMAIL?: string;
@@ -11,7 +19,7 @@ const PRIMARY_DESTINATION = 'info@dexvoi.com';
 /**
  * Cloudflare Pages Function: POST /api/scanner/unlock
  * Uses Brevo as the primary email delivery provider.
- * Note: Cloudflare Email Workers integration remains on hold until the paid plan is contracted.
+ * Dispatches tailored notifications to info@dexvoi.com and confirmation to the user.
  */
 export async function onRequestPost(context: { request: Request; env: CloudflareEnv }): Promise<Response> {
   const { request, env } = context;
@@ -40,25 +48,30 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
 
     const cleanTarget = String(websiteUrl || 'dexvoi.com').replace(/^https?:\/\//i, '').replace(/\/.*$/, '').trim();
     const cleanEmail = email.trim().toLowerCase();
-    const ticketId = `SCAN-LEAD-${Math.floor(100000 + Math.random() * 900000)}`;
-    const subject = `🔔 Nuevo lead desde Dexvoi - Escáner OSINT`;
+    const ticketId = `SCAN-${Math.floor(100000 + Math.random() * 900000)}`;
 
-    const adminHtml = `
-      <div style="font-family: Arial, sans-serif; background: #0A0F1F; color: #FFFFFF; padding: 24px; border-radius: 10px; max-width: 600px;">
-        <h2 style="color: #0066FF; margin-top: 0;">🔔 Nuevo Lead desde Dexvoi - Escáner OSINT</h2>
-        <p style="color: #F5A623;"><strong>Expediente:</strong> ${ticketId}</p>
-        <div style="background: #131B33; padding: 16px; border-radius: 8px; line-height: 1.6;">
-          <p><strong>🌐 Dominio Auditado:</strong> <a href="https://${cleanTarget}" target="_blank" style="color: #38BDF8;">${cleanTarget}</a></p>
-          <p><strong>📧 Email Capturado:</strong> <a href="mailto:${cleanEmail}" style="color: #F5A623;">${cleanEmail}</a></p>
-          ${fullName ? `<p><strong>👤 Nombre:</strong> ${fullName}</p>` : ''}
-          ${phone ? `<p><strong>📱 Teléfono:</strong> <a href="tel:${phone}" style="color: #10B981;">${phone}</a></p>` : ''}
-          <p><strong>📊 Score Global:</strong> ${overallScore ?? 'N/A'}/100 (Grado ${grade ?? 'N/A'})</p>
-          <p><strong>⚠️ Incidencias técnicas:</strong> ${issuesCount}</p>
-          <p><strong>🏢 Sector:</strong> ${businessType}</p>
-        </div>
-        <p style="font-size: 12px; color: #64748B; margin-top: 20px;">Enviado a ${destinationEmail}</p>
-      </div>
-    `;
+    const templatePayload = {
+      formType: 'Escáner OSINT',
+      fullName,
+      email: cleanEmail,
+      phone,
+      websiteUrl: cleanTarget,
+      businessType,
+      technicalDetails: {
+        overallScore,
+        grade,
+        issuesCount,
+      },
+    };
+
+    const config = getFormCategoryConfig('osint_scanner', templatePayload, ticketId);
+    const adminSubject = config.adminSubject;
+    const adminHtml = buildAdminNotificationHtml(templatePayload, ticketId, destinationEmail);
+    const adminText = buildAdminNotificationText(templatePayload, ticketId, destinationEmail);
+
+    const userSubject = config.userSubject;
+    const userHtml = buildUserConfirmationHtml(templatePayload, ticketId);
+    const userText = buildUserConfirmationText(templatePayload, ticketId);
 
     let emailSent = false;
     let provider = 'none';
@@ -69,7 +82,7 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
       recipients.push({ email: PRIMARY_DESTINATION, name: 'Dexvoi Backup' });
     }
 
-    // Envío principal mediante Brevo
+    // 1. Envío principal mediante Brevo
     if (cleanBrevoKey) {
       try {
         let brevoRes = await fetch('https://api.brevo.com/v3/smtp/email', {
@@ -85,8 +98,9 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
               email: cleanSenderEmail 
             },
             to: recipients,
-            subject,
+            subject: adminSubject,
             htmlContent: adminHtml,
+            textContent: adminText,
           }),
         });
 
@@ -105,8 +119,9 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
             body: JSON.stringify({
               sender: { name: 'Dexvoi', email: 'info@dexvoi.com' },
               to: [{ email: PRIMARY_DESTINATION, name: 'Dexvoi' }],
-              subject,
+              subject: adminSubject,
               htmlContent: adminHtml,
+              textContent: adminText,
             }),
           });
 
@@ -125,8 +140,9 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
       }
     }
 
-    // Respaldo secundario mediante Resend
-    if (!emailSent && env?.RESEND_API_KEY) {
+    // 2. Respaldo secundario mediante Resend
+    const cleanResendKey = (env?.RESEND_API_KEY || '').replace(/['"]/g, '').trim();
+    if (!emailSent && cleanResendKey) {
       try {
         const toEmails = [destinationEmail];
         if (destinationEmail !== PRIMARY_DESTINATION) toEmails.push(PRIMARY_DESTINATION);
@@ -134,14 +150,15 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
         const resendRes = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${env.RESEND_API_KEY.trim()}`,
+            Authorization: `Bearer ${cleanResendKey}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             from: 'Dexvoi Scanner <onboarding@resend.dev>',
             to: toEmails,
-            subject,
+            subject: adminSubject,
             html: adminHtml,
+            text: adminText,
           }),
         });
         if (resendRes.ok) {
@@ -154,6 +171,41 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
       } catch (e: any) {
         lastError = e?.message;
         console.warn('Resend edge dispatch failed:', e);
+      }
+    }
+
+    // 3. Confirmación al usuario si facilitó email
+    if (cleanEmail && cleanEmail.includes('@')) {
+      if (provider === 'brevo' && cleanBrevoKey) {
+        fetch('https://api.brevo.com/v3/smtp/email', {
+          method: 'POST',
+          headers: {
+            'api-key': cleanBrevoKey,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            sender: { name: 'Dexvoi', email: 'info@dexvoi.com' },
+            to: [{ email: cleanEmail, name: fullName || 'Cliente' }],
+            subject: userSubject,
+            htmlContent: userHtml,
+            textContent: userText,
+          }),
+        }).catch((err) => console.warn('User confirmation scan unlock failed:', err));
+      } else if (provider === 'resend' && cleanResendKey) {
+        fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${cleanResendKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: 'Dexvoi <onboarding@resend.dev>',
+            to: [cleanEmail],
+            subject: userSubject,
+            html: userHtml,
+            text: userText,
+          }),
+        }).catch((err) => console.warn('User confirmation scan unlock failed:', err));
       }
     }
 

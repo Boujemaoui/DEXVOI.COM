@@ -1,3 +1,11 @@
+import {
+  getFormCategoryConfig,
+  buildAdminNotificationHtml,
+  buildAdminNotificationText,
+  buildUserConfirmationHtml,
+  buildUserConfirmationText,
+} from './_emailTemplates.ts';
+
 export interface CloudflareEnv {
   GEMINI_API_KEY?: string;
   BREVO_API_KEY?: string;
@@ -33,16 +41,24 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
 
     if (hasContactDetails) {
       const destinationEmail = (env?.NOTIFICATION_EMAIL || PRIMARY_DESTINATION).trim();
-      const alertSubject = `🔔 Nuevo Lead desde Chat Dexvoi: ${emailMatch ? emailMatch[0] : phoneMatch ? phoneMatch[0] : 'Contacto'}`;
-      const alertHtml = `
-        <div style="font-family: Arial, sans-serif; background: #0A0F1F; color: #FFFFFF; padding: 20px; border-radius: 8px;">
-          <h2 style="color: #0066FF;">🔔 Contacto recibido en Chat Virtual</h2>
-          <p><strong>Email:</strong> ${emailMatch ? emailMatch[0] : 'No facilitado'}</p>
-          <p><strong>Teléfono:</strong> ${phoneMatch ? phoneMatch[0] : 'No facilitado'}</p>
-          <p><strong>Mensaje completo:</strong> ${trimmed}</p>
-          <p style="font-size: 11px; color: #64748B;">Recibido en directo desde el Asistente Virtual en dexvoi.com</p>
-        </div>
-      `;
+      const ticketId = `CHAT-${Math.floor(100000 + Math.random() * 900000)}`;
+      const templatePayload = {
+        formType: 'Chat Asistente Virtual',
+        fullName: 'Visitante Chat Dexvoi',
+        email: emailMatch ? emailMatch[0] : undefined,
+        phone: phoneMatch ? phoneMatch[0] : undefined,
+        message: trimmed,
+        primaryConcern: trimmed,
+      };
+
+      const config = getFormCategoryConfig('ai_chat', templatePayload, ticketId);
+      const adminSubject = config.adminSubject;
+      const adminHtml = buildAdminNotificationHtml(templatePayload, ticketId, destinationEmail);
+      const adminText = buildAdminNotificationText(templatePayload, ticketId, destinationEmail);
+
+      const userSubject = config.userSubject;
+      const userHtml = buildUserConfirmationHtml(templatePayload, ticketId);
+      const userText = buildUserConfirmationText(templatePayload, ticketId);
 
       const cleanBrevoKey = (env?.BREVO_API_KEY || (env as any)?.SIB_API_KEY || '').replace(/['"]/g, '').trim();
       const cleanSender = (env?.BREVO_SENDER_EMAIL || 'info@dexvoi.com').replace(/['"]/g, '').trim() || 'info@dexvoi.com';
@@ -57,24 +73,62 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
           body: JSON.stringify({
             sender: { name: 'Dexvoi Chat', email: cleanSender },
             to: [{ email: destinationEmail, name: 'Dexvoi' }],
-            subject: alertSubject,
-            htmlContent: alertHtml,
+            subject: adminSubject,
+            htmlContent: adminHtml,
+            textContent: adminText,
           }),
         }).catch((e) => console.warn('Chat lead Brevo dispatch warning:', e));
+
+        // Enviar confirmación al usuario si facilitó email
+        if (emailMatch) {
+          fetch('https://api.brevo.com/v3/smtp/email', {
+            method: 'POST',
+            headers: {
+              'api-key': cleanBrevoKey,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              sender: { name: 'Dexvoi', email: 'info@dexvoi.com' },
+              to: [{ email: emailMatch[0], name: 'Cliente' }],
+              subject: userSubject,
+              htmlContent: userHtml,
+              textContent: userText,
+            }),
+          }).catch((e) => console.warn('Chat user confirmation warning:', e));
+        }
       } else if (env?.RESEND_API_KEY) {
+        const cleanResendKey = env.RESEND_API_KEY.replace(/['"]/g, '').trim();
         fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${env.RESEND_API_KEY.trim()}`,
+            Authorization: `Bearer ${cleanResendKey}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             from: 'Dexvoi Chat <onboarding@resend.dev>',
             to: [destinationEmail],
-            subject: alertSubject,
-            html: alertHtml,
+            subject: adminSubject,
+            html: adminHtml,
+            text: adminText,
           }),
         }).catch((e) => console.warn('Chat lead Resend dispatch warning:', e));
+
+        if (emailMatch) {
+          fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${cleanResendKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              from: 'Dexvoi <onboarding@resend.dev>',
+              to: [emailMatch[0]],
+              subject: userSubject,
+              html: userHtml,
+              text: userText,
+            }),
+          }).catch((e) => console.warn('Chat user confirmation warning:', e));
+        }
       }
     }
 
