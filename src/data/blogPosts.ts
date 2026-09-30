@@ -3,6 +3,28 @@ import { BLOG_POST_SLUGS, BLOG_POST_TRANSLATIONS } from './blogTranslations';
 
 export const INITIAL_BLOG_POSTS: BlogPost[] = [
   {
+    id: 'post-auto-1790778226577',
+    slug: 'arquitectura-jamstack-vs-monolitos-wordpress-comparativ',
+    title: "Arquitectura Jamstack vs Monolitos WordPress: Comparativa de Rendimiento y Seguridad 2026",
+    excerpt: "Análisis forense de por qué los CMS monolíticos son el principal vector de vulnerabilidades y lentitud, y cómo la arquitectura desacoplada resuelve el problema.",
+    category: 'arquitectura-web',
+    categoryLabel: 'Arquitectura Web & Rendimiento',
+    tags: ["Jamstack","WordPress","Seguridad Web","Core Web Vitals"],
+    author: {
+      name: 'Dexvoi Intelligence Team',
+      role: 'Especialistas en Blindaje & Rendimiento Digital',
+      badge: 'Verified Lead'
+    },
+    publishedAt: '2026-09-30T14:23:46.577Z',
+    readingTimeMinutes: 7,
+    featuredImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80',
+    metaDescription: "Análisis forense de por qué los CMS monolíticos son el principal vector de vulnerabilidades y lentitud, y cómo la arquitectura desacoplada resuelve el problema.",
+    keywords: ["Jamstack","WordPress","Seguridad Web","Core Web Vitals"],
+    targetServiceUrl: '/auditoria-seguridad',
+    targetServiceLabel: 'Solicitar Diagnóstico Especializado',
+    content: "\n## El fin de la era monolítica en proyectos digitales de alto nivel\n\nMás del 85% de las vulnerabilidades web explotadas en negocios medianos provienen de plugins desactualizados y bases de datos SQL expuestas en arquitecturas WordPress tradicionales.\n\n---\n\n### Ventajas tangibles de la arquitectura desacoplada Dexvoi\n\n- **Superficie de ataque reducida a cero:** Sin bases de datos SQL en frontend ni paneles de administración expuestos a ataques de fuerza bruta.\n- **Distribución Edge global:** Los archivos estáticos pre-renderizados se sirven desde más de 300 centros de datos Cloudflare en menos de 50ms.\n- **Costes de mantenimiento predecibles:** Sin necesidad de parches de emergencia semanales ni plugins pesados de seguridad.\n    "
+  },
+  {
     id: 'post-auto-1790713114174',
     slug: 'dominar-el-local-pack-de-3-en-google-maps-para-clinicas',
     title: "Dominar el Local Pack de 3 en Google Maps para Clínicas Odontológicas y Médicas",
