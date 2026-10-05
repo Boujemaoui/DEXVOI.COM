@@ -683,40 +683,51 @@ async function startServer() {
     }
   });
 
-  // Create Stripe Checkout Session endpoint (5€ PDF, 19€ Basic, 49€ Complete, 99€ Premium)
+  // Create Stripe Checkout Session endpoint ($5 USD PDF, $49 USD Complete, $99 USD Premium)
   app.post('/api/create-checkout-session', async (req, res) => {
     try {
-      const { websiteUrl = 'dexvoi.com', customerEmail, planTier = 'pdf_5eur' } = req.body;
+      const { websiteUrl = 'dexvoi.com', customerEmail, planTier = 'pdf_5usd' } = req.body;
       const cleanUrl = String(websiteUrl).replace(/^https?:\/\//i, '').replace(/\/.*$/, '').trim() || 'dexvoi.com';
 
-      const tierConfigs: Record<string, { amount: number; name: string; description: string; fallbackUrl: string }> = {
+      const tierConfigs: Record<string, { amount: number; currency: string; name: string; description: string; fallbackUrl: string }> = {
+        pdf_5usd: {
+          amount: 500, // $5.00 USD
+          currency: 'usd',
+          name: 'DEXVOI · Informe Técnico Oficial en PDF ($5 USD)',
+          description: `Diagnóstico forense y guía de remediación técnica perimetral para ${cleanUrl}`,
+          fallbackUrl: 'https://buy.stripe.com/aFa00kaea4fy0nQ6UFdAk00'
+        },
         pdf_5eur: {
-          amount: 500,
-          name: 'DEXVOI · Informe Técnico Oficial en PDF (5 Páginas)',
+          amount: 500, // $5.00 USD
+          currency: 'usd',
+          name: 'DEXVOI · Informe Técnico Oficial en PDF ($5 USD)',
           description: `Diagnóstico forense y guía de remediación técnica perimetral para ${cleanUrl}`,
           fallbackUrl: 'https://buy.stripe.com/aFa00kaea4fy0nQ6UFdAk00'
         },
         basic: {
-          amount: 1900,
-          name: 'Plan Básico (19€) · Auditoría Perimetral',
+          amount: 1900, // $19.00 USD
+          currency: 'usd',
+          name: 'Plan Básico ($19 USD) · Informe Oficial en PDF (5 Páginas)',
           description: `Auditoría Starter y hoja de ruta para ${cleanUrl}`,
           fallbackUrl: 'https://buy.stripe.com/aFa00kaea4fy0nQ6UFdAk00'
         },
         complete: {
           amount: 4900,
-          name: 'Plan Completo (49€) · Auditoría Forense (20+ Páginas)',
+          currency: 'usd',
+          name: 'Plan Completo ($49 USD) · Auditoría Forense (20+ Páginas)',
           description: `Auditoría Forense exhaustiva, OSINT y scripts Nginx/Apache para ${cleanUrl}`,
           fallbackUrl: 'https://buy.stripe.com/9B66oI862eUc8Um92NdAk01'
         },
         premium: {
           amount: 9900,
-          name: 'Plan Premium VIP (99€) · Consultoría 1-a-1',
+          currency: 'usd',
+          name: 'Plan Premium VIP ($99 USD) · Consultoría 1-a-1',
           description: `Auditoría Forense + Sesión Estratégica 1-a-1 de 45 min con el Arquitecto Principal`,
           fallbackUrl: 'https://buy.stripe.com/14A5kE0DA7rKgmO4MxdAk02'
         },
       };
 
-      const selectedConfig = tierConfigs[planTier] || tierConfigs.pdf_5eur;
+      const selectedConfig = tierConfigs[planTier] || tierConfigs.pdf_5usd;
 
       const stripe = getStripeClient();
       if (stripe) {
@@ -726,7 +737,7 @@ async function startServer() {
           line_items: [
             {
               price_data: {
-                currency: 'eur',
+                currency: selectedConfig.currency,
                 product_data: {
                   name: selectedConfig.name,
                   description: selectedConfig.description,
@@ -782,7 +793,9 @@ async function startServer() {
         }
       }
 
-      const cleanTier = tier === 'basic' ? 'basic' : tier === 'premium' ? 'premium' : tier === 'free' ? 'free' : 'complete';
+      const cleanTier: any = (tier === 'pdf_5usd' || tier === 'pdf_5eur')
+        ? 'pdf_5usd'
+        : tier === 'basic' ? 'basic' : tier === 'premium' ? 'premium' : tier === 'free' ? 'free' : 'complete';
 
       const pdfBuffer = generateAuditPdf({
         auditResult,

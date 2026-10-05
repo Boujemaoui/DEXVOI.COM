@@ -9,6 +9,9 @@ import {
   MobileAudit,
   AccessibilityAudit,
   ContentAudit,
+  ContentKeywordItem,
+  StructuredDataAudit,
+  AdvancedSecurityAudit,
   TechStackAudit,
   OverallCategoryScores,
 } from '../../src/types';
@@ -60,7 +63,7 @@ interface DoHResponse {
   Answer?: DoHAnswer[];
 }
 
-async function queryDnsRecord(name: string, type: 'A' | 'AAAA' | 'MX' | 'TXT'): Promise<DoHAnswer[]> {
+async function queryDnsRecord(name: string, type: 'A' | 'AAAA' | 'MX' | 'TXT' | 'CAA'): Promise<DoHAnswer[]> {
   try {
     const cfUrl = `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(name)}&type=${type}`;
     const res = await fetch(cfUrl, {
@@ -102,15 +105,18 @@ interface DnsData {
   hasSpf: boolean;
   hasDmarc: boolean;
   dmarcRecord: string | null;
+  caaRecords: string[];
+  hasCaa: boolean;
 }
 
 async function resolveRealDns(hostname: string): Promise<DnsData> {
-  const [aAnswers, aaaaAnswers, mxAnswers, txtAnswers, dmarcAnswers] = await Promise.allSettled([
+  const [aAnswers, aaaaAnswers, mxAnswers, txtAnswers, dmarcAnswers, caaAnswers] = await Promise.allSettled([
     queryDnsRecord(hostname, 'A'),
     queryDnsRecord(hostname, 'AAAA'),
     queryDnsRecord(hostname, 'MX'),
     queryDnsRecord(hostname, 'TXT'),
     queryDnsRecord(`_dmarc.${hostname}`, 'TXT'),
+    queryDnsRecord(hostname, 'CAA'),
   ]);
 
   let ip: string | null = null;
@@ -154,7 +160,13 @@ async function resolveRealDns(hostname: string): Promise<DnsData> {
     }
   }
 
-  return { ip, ipFamily, mxRecords, hasSpf, hasDmarc, dmarcRecord };
+  let caaRecords: string[] = [];
+  if (caaAnswers.status === 'fulfilled' && caaAnswers.value.length > 0) {
+    caaRecords = caaAnswers.value.map(t => t.data.replace(/^"|"$/g, '').trim());
+  }
+  const hasCaa = caaRecords.length > 0;
+
+  return { ip, ipFamily, mxRecords, hasSpf, hasDmarc, dmarcRecord, caaRecords, hasCaa };
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -437,8 +449,308 @@ export async function executeRealSecurityAudit(options: {
     }
   }
 
-  // Sondeo DNS en paralelo (IP, MX, SPF, DMARC)
-  const dnsData = await resolveRealDns(hostname);
+  // Sondeo DNS en paralelo (IP, MX, SPF, DMARC, CAA) y Prospección de Redirecciones Encadenadas
+  const [dnsData, redirectHops] = await Promise.all([
+    resolveRealDns(hostname),
+    (async () => {
+      const hops: Array<{ url: string; status: number }> = [];
+      try {
+        let probeUrl = `http://${hostname}`;
+        let hopCountLimit = 0;
+        while (hopCountLimit < 5) {
+          const probeRes = await fetch(probeUrl, {
+            method: 'GET',
+            redirect: 'manual',
+            headers: { 'User-Agent': 'Mozilla/5.0 DexvoiSecurityAuditor/3.0' },
+            signal: AbortSignal.timeout(3000),
+          });
+          hops.push({ url: probeUrl, status: probeRes.status });
+          if ([301, 302, 307, 308].includes(probeRes.status)) {
+            const nextLoc = probeRes.headers.get('location');
+            if (nextLoc) {
+              probeUrl = new URL(nextLoc, probeUrl).href;
+              hopCountLimit++;
+            } else {
+              break;
+            }
+          } else {
+            break;
+          }
+        }
+      } catch {
+        if (hops.length === 0) {
+          hops.push({ url: effectiveUrl, status: httpStatus });
+        }
+      }
+      return hops;
+    })(),
+  ]);
+
+  // ===============================================================================================
+  // BLOQUE 1: ANÁLISIS DE CONTENIDO & ENLACES (EXTRACCIÓN REAL)
+  // ===============================================================================================
+  const cleanHtmlForText = htmlBody
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '')
+    .replace(/<noscript\b[^>]*>[\s\S]*?<\/noscript>/gi, '')
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/<[^>]+>/g, ' ');
+
+  const plainText = cleanHtmlForText
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const words = plainText
+    .split(/\s+/)
+    .map(w => w.replace(/[^\w\sáéíóúÁÉÍÓÚñÑüÜ]/g, '').trim())
+    .filter(w => w.length >= 2 && !/^\d+$/.test(w));
+
+  const wordCount = words.length;
+  const isThinContent = wordCount < 300;
+  const thinContentWarning = isThinContent
+    ? `Contenido inferior a 300 palabras (${wordCount} palabras detectadas). Riesgo de penalización por "thin content".`
+    : null;
+
+  // Text-to-HTML ratio
+  const textBytes = new TextEncoder().encode(plainText).length;
+  const htmlTotalBytes = new TextEncoder().encode(htmlBody).length;
+  const textToHtmlRatio = htmlTotalBytes > 0 ? Number(((textBytes / htmlTotalBytes) * 100).toFixed(1)) : 0;
+  const textToHtmlStatus: 'PASS' | 'WARN' | 'FAIL' =
+    textToHtmlRatio >= 12 ? 'PASS' : textToHtmlRatio >= 8 ? 'WARN' : 'FAIL';
+
+  // Conteo y densidad de palabras clave
+  const stopWords = new Set([
+    'de', 'la', 'el', 'en', 'y', 'a', 'que', 'los', 'se', 'del', 'las', 'por', 'un', 'para',
+    'con', 'no', 'una', 'su', 'al', 'lo', 'como', 'más', 'pero', 'sus', 'le', 'ya', 'o',
+    'este', 'ha', 'sí', 'porque', 'esta', 'son', 'entre', 'está', 'cuando', 'muy', 'sin',
+    'sobre', 'ser', 'tiene', 'también', 'me', 'hasta', 'hay', 'donde', 'quien', 'desde',
+    'todo', 'nos', 'durante', 'todos', 'uno', 'les', 'ni', 'contra', 'otros', 'ese', 'eso',
+    'ante', 'ellos', 'esto', 'mí', 'antes', 'algunos', 'qué', 'unos', 'yo', 'otro', 'otras',
+    'otra', 'él', 'tanto', 'esa', 'estos', 'mucho', 'quienes', 'nada', 'muchos', 'cual',
+    'sea', 'poco', 'ella', 'estar', 'haber', 'estas', 'estaba', 'estamos', 'algunas', 'algo',
+    'nosotros', 'mi', 'mis', 'tú', 'te', 'ti', 'tu', 'tus', 'the', 'and', 'of', 'to', 'in',
+    'a', 'is', 'that', 'for', 'on', 'with', 'as', 'by', 'at', 'it', 'from', 'this', 'an',
+    'be', 'are', 'was', 'or', 'you', 'your', 'we', 'our', 'all', 'can', 'has', 'not'
+  ]);
+
+  const wordFreqMap = new Map<string, number>();
+  for (const rawW of words) {
+    const w = rawW.toLowerCase();
+    if (w.length >= 3 && !stopWords.has(w)) {
+      wordFreqMap.set(w, (wordFreqMap.get(w) || 0) + 1);
+    }
+  }
+
+  const topKeywords: ContentKeywordItem[] = Array.from(wordFreqMap.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([word, count]) => {
+      const densityPct = wordCount > 0 ? ((count / wordCount) * 100).toFixed(1) : '0';
+      return {
+        word,
+        count,
+        density: `${densityPct}%`,
+        inTitle: titleText ? titleText.toLowerCase().includes(word) : false,
+        inH1: h1Texts.some(h => h.toLowerCase().includes(word)),
+        inMetaDescription: metaDescText ? metaDescText.toLowerCase().includes(word) : false,
+      };
+    });
+
+  // Conteo de enlaces internos y externos (nofollow, sponsored, ugc)
+  const linkMatches = htmlBody.matchAll(/<a\b([^>]*)>/gi);
+  let internalCount = 0;
+  let externalCount = 0;
+  let nofollowCount = 0;
+  let sponsoredCount = 0;
+  let ugcCount = 0;
+  const internalSampleHrefs = new Set<string>();
+
+  for (const match of linkMatches) {
+    const attrs = match[1];
+    const hrefMatch = attrs.match(/href=["']([^"']*)["']/i);
+    const relMatch = attrs.match(/rel=["']([^"']*)["']/i);
+
+    if (!hrefMatch) continue;
+    const href = hrefMatch[1].trim();
+    const rel = relMatch ? relMatch[1].toLowerCase() : '';
+
+    if (rel.includes('nofollow')) nofollowCount++;
+    if (rel.includes('sponsored')) sponsoredCount++;
+    if (rel.includes('ugc')) ugcCount++;
+
+    if (href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('javascript:')) {
+      continue;
+    }
+
+    const isExternal = /^https?:\/\//i.test(href) && !href.toLowerCase().includes(hostname.toLowerCase());
+    if (isExternal) {
+      externalCount++;
+    } else {
+      internalCount++;
+      if (internalSampleHrefs.size < 10) {
+        if (href.startsWith('/') && href.length > 1 && !href.startsWith('//') && !href.includes('.')) {
+          internalSampleHrefs.add(href);
+        }
+      }
+    }
+  }
+
+  // Muestra de verificación de enlaces rotos (hasta 10 internos)
+  const brokenLinksList: Array<{ url: string; status: number; text?: string }> = [];
+  const checkedHrefs = Array.from(internalSampleHrefs).slice(0, 10);
+  if (checkedHrefs.length > 0) {
+    const checkPromises = checkedHrefs.map(async (path) => {
+      const fullLink = new URL(path, effectiveUrl).href;
+      try {
+        const probe = await fetch(fullLink, {
+          method: 'HEAD',
+          headers: { 'User-Agent': 'Mozilla/5.0 DexvoiSecurityAuditor/3.0' },
+          signal: AbortSignal.timeout(2500),
+        });
+        if (probe.status >= 400 && probe.status !== 405) {
+          brokenLinksList.push({ url: fullLink, status: probe.status });
+        }
+      } catch {
+        // Ignorar timeouts transitorios de muestra
+      }
+    });
+    await Promise.allSettled(checkPromises);
+  }
+
+  // ===============================================================================================
+  // BLOQUE 2: DATOS ESTRUCTURADOS (JSON-LD, SCHEMA.ORG, OPENGRAPH, TWITTER)
+  // ===============================================================================================
+  const jsonLdMatches = htmlBody.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi);
+  const schemaTypesSet = new Set<string>();
+  const jsonLdSyntaxErrors: string[] = [];
+  let jsonLdCount = 0;
+
+  for (const match of jsonLdMatches) {
+    jsonLdCount++;
+    const rawJson = match[1].trim();
+    try {
+      const parsed = JSON.parse(rawJson);
+      const extractTypes = (obj: any) => {
+        if (!obj || typeof obj !== 'object') return;
+        if (Array.isArray(obj)) {
+          obj.forEach(extractTypes);
+          return;
+        }
+        if (obj['@type']) {
+          if (Array.isArray(obj['@type'])) {
+            obj['@type'].forEach((t: any) => typeof t === 'string' && schemaTypesSet.add(t));
+          } else if (typeof obj['@type'] === 'string') {
+            schemaTypesSet.add(obj['@type']);
+          }
+        }
+        if (Array.isArray(obj['@graph'])) {
+          obj['@graph'].forEach(extractTypes);
+        }
+      };
+      extractTypes(parsed);
+    } catch (err: any) {
+      jsonLdSyntaxErrors.push(`Error al parsear bloque JSON-LD #${jsonLdCount}: ${err?.message || 'Sintaxis inválida'}`);
+    }
+  }
+
+  const hasJsonLd = jsonLdCount > 0;
+  const schemaTypes = Array.from(schemaTypesSet);
+  const isValidSyntax = jsonLdSyntaxErrors.length === 0;
+
+  const ogUrlMatch =
+    htmlBody.match(/<meta\b(?=[^>]*property=["']og:url["'])(?=[^>]*content=["']([^"']*)["'])[^>]*>/i) ||
+    htmlBody.match(/<meta\b(?=[^>]*name=["']og:url["'])(?=[^>]*content=["']([^"']*)["'])[^>]*>/i);
+  const ogTypeMatch =
+    htmlBody.match(/<meta\b(?=[^>]*property=["']og:type["'])(?=[^>]*content=["']([^"']*)["'])[^>]*>/i) ||
+    htmlBody.match(/<meta\b(?=[^>]*name=["']og:type["'])(?=[^>]*content=["']([^"']*)["'])[^>]*>/i);
+
+  const ogTitleVal = ogTitleMatch ? ogTitleMatch[1].trim() : null;
+  const ogImageVal = ogImageMatch ? ogImageMatch[1].trim() : null;
+  const ogDescVal = ogDescMatch ? ogDescMatch[1].trim() : null;
+  const ogUrlVal = ogUrlMatch ? ogUrlMatch[1].trim() : null;
+  const ogTypeVal = ogTypeMatch ? ogTypeMatch[1].trim() : null;
+
+  const openGraphComplete = Boolean(ogTitleVal && ogImageVal && ogDescVal);
+
+  const twCardTypeMatch =
+    htmlBody.match(/<meta\b(?=[^>]*name=["']twitter:card["'])(?=[^>]*content=["']([^"']*)["'])[^>]*>/i) ||
+    htmlBody.match(/<meta\b(?=[^>]*property=["']twitter:card["'])(?=[^>]*content=["']([^"']*)["'])[^>]*>/i);
+  const twTitleMatch =
+    htmlBody.match(/<meta\b(?=[^>]*name=["']twitter:title["'])(?=[^>]*content=["']([^"']*)["'])[^>]*>/i) ||
+    htmlBody.match(/<meta\b(?=[^>]*property=["']twitter:title["'])(?=[^>]*content=["']([^"']*)["'])[^>]*>/i);
+  const twDescMatch =
+    htmlBody.match(/<meta\b(?=[^>]*name=["']twitter:description["'])(?=[^>]*content=["']([^"']*)["'])[^>]*>/i) ||
+    htmlBody.match(/<meta\b(?=[^>]*property=["']twitter:description["'])(?=[^>]*content=["']([^"']*)["'])[^>]*>/i);
+  const twImageMatch =
+    htmlBody.match(/<meta\b(?=[^>]*name=["']twitter:image["'])(?=[^>]*content=["']([^"']*)["'])[^>]*>/i) ||
+    htmlBody.match(/<meta\b(?=[^>]*property=["']twitter:image["'])(?=[^>]*content=["']([^"']*)["'])[^>]*>/i);
+
+  const twCardTypeVal = twCardTypeMatch ? twCardTypeMatch[1].trim() : null;
+  const twTitleVal = twTitleMatch ? twTitleMatch[1].trim() : null;
+  const twDescVal = twDescMatch ? twDescMatch[1].trim() : null;
+  const twImageVal = twImageMatch ? twImageMatch[1].trim() : null;
+  const twitterCardComplete = Boolean(twCardTypeVal && twTitleVal && (twImageVal || twDescVal));
+
+  // ===============================================================================================
+  // BLOQUE 3: SEGURIDAD AVANZADA (CAA, CACHÉ, REDIRECCIONES, CONTENIDO MIXTO, FAVICON)
+  // ===============================================================================================
+  // 1. Registro CAA en DNS
+  const caaExists = dnsData.hasCaa;
+  const caaRecords = dnsData.caaRecords;
+
+  // 2. Cabeceras de Caché
+  const cacheControlVal = rawHeaders['cache-control'] || null;
+  const expiresVal = rawHeaders['expires'] || null;
+  const etagVal = rawHeaders['etag'] || null;
+  const hasProperCaching = Boolean(cacheControlVal && (cacheControlVal.includes('max-age') || cacheControlVal.includes('public') || cacheControlVal.includes('no-cache')));
+
+  // 3. Redirecciones encadenadas
+  const redirectHopCount = Math.max(1, redirectHops.length - 1);
+  const hasRedirectChain = redirectHops.length > 2;
+
+  // 4. Contenido mixto (HTTP en HTTPS)
+  const mixedContentUrls: string[] = [];
+  if (isHttps) {
+    const mixedMatches = htmlBody.matchAll(/<(?:img|script|link|iframe)\b[^>]*(?:src|href)=["'](http:\/\/[^"']+)["']/gi);
+    for (const m of mixedMatches) {
+      if (m[1] && !mixedContentUrls.includes(m[1])) {
+        mixedContentUrls.push(m[1]);
+      }
+      if (mixedContentUrls.length >= 5) break;
+    }
+  }
+  const hasMixedContent = mixedContentUrls.length > 0;
+
+  // 5. Favicon presente y formato
+  const faviconMatch =
+    htmlBody.match(/<link\b(?=[^>]*rel=["'][^"']*icon[^"']*["'])(?=[^>]*href=["']([^"']*)["'])[^>]*>/i) ||
+    htmlBody.match(/<link\b(?=[^>]*href=["']([^"']*)["'])(?=[^>]*rel=["'][^"']*icon[^"']*["'])[^>]*>/i);
+  let faviconUrl: string | null = null;
+  let faviconFormat: string | null = null;
+  let hasFavicon = false;
+
+  if (faviconMatch && faviconMatch[1]) {
+    const rawFav = faviconMatch[1].trim();
+    faviconUrl = rawFav.startsWith('http') ? rawFav : new URL(rawFav, effectiveUrl).href;
+    hasFavicon = true;
+  } else {
+    faviconUrl = `${origin}/favicon.ico`;
+    hasFavicon = true; // estándar por omisión
+  }
+
+  if (faviconUrl) {
+    const lowerFav = faviconUrl.toLowerCase();
+    if (lowerFav.endsWith('.svg') || lowerFav.includes('.svg?')) faviconFormat = 'SVG';
+    else if (lowerFav.endsWith('.png') || lowerFav.includes('.png?')) faviconFormat = 'PNG';
+    else if (lowerFav.endsWith('.webp')) faviconFormat = 'WebP';
+    else faviconFormat = 'ICO';
+  }
 
   // ===============================================================================================
   // CAPA 2: MÉTRICAS DE RENDIMIENTO REALES (con PAGESPEED_API_KEY)
@@ -891,6 +1203,162 @@ export async function executeRealSecurityAudit(options: {
     });
   }
 
+  // ===============================================================================================
+  // EVALUACIÓN DE ISSUES: BLOQUE 1 (CONTENIDO)
+  // ===============================================================================================
+  if (isThinContent) {
+    issues.push({
+      id: 'CONT-THIN-CONTENT',
+      title: `Contenido Escaso Detectado (${wordCount} palabras)`,
+      severity: 'HIGH',
+      category: 'Contenido',
+      description: `La página solo cuenta con ${wordCount} palabras legibles en el DOM. Google penaliza los sitios con menos de 300 palabras bajo el criterio de "thin content".`,
+      businessImpact: 'Limitación drástica de indexación orgánica, pérdida de autoridad temática y fuga de clientes potenciales.',
+      solution: 'Expandir el contenido a más de 600 palabras orientadas a solucionar problemas específicos del cliente.',
+    });
+  }
+
+  if (textToHtmlStatus === 'FAIL') {
+    issues.push({
+      id: 'CONT-TEXT-HTML-RATIO-LOW',
+      title: `Ratio Texto-HTML Crítico (${textToHtmlRatio}%)`,
+      severity: 'MEDIUM',
+      category: 'Contenido',
+      description: `El volumen de texto visible representa solo el ${textToHtmlRatio}% del peso HTML total. Un ratio inferior al 8% indica exceso de código residual o templates sobrecargados.`,
+      businessImpact: 'Rastreo más costoso para buscadores y tiempos de renderizado innecesariamente altos.',
+      solution: 'Limpiar código inline, scripts redundantes y aumentar el volumen de contenido textual de valor.',
+    });
+  }
+
+  if (brokenLinksList.length > 0) {
+    issues.push({
+      id: 'CONT-BROKEN-LINKS',
+      title: `Enlaces Internos Rotos Detectados (${brokenLinksList.length} enlaces con error)`,
+      severity: 'HIGH',
+      category: 'Contenido',
+      description: `Se detectaron enlaces rotos que devuelven código de error HTTP: ${brokenLinksList.map(b => `${b.url} [${b.status}]`).join(', ')}.`,
+      businessImpact: 'Ruptura del embudo de ventas, incremento de rebote y penalización del presupuesto de rastreo de Googlebot.',
+      solution: 'Corregir los hipervínculos o configurar redirecciones 301 permanentes hacia páginas vigentes.',
+    });
+  }
+
+  // ===============================================================================================
+  // EVALUACIÓN DE ISSUES: BLOQUE 2 (DATOS ESTRUCTURADOS)
+  // ===============================================================================================
+  if (jsonLdSyntaxErrors.length > 0) {
+    issues.push({
+      id: 'STRUCT-JSONLD-SYNTAX-ERROR',
+      title: 'Error Crítico de Sintaxis en JSON-LD',
+      severity: 'HIGH',
+      category: 'Datos Estructurados',
+      description: `Se detectaron errores de parseo en los bloques de datos estructurados: ${jsonLdSyntaxErrors.join('; ')}.`,
+      businessImpact: 'Google ignora por completo los fragmentos enriquecidos (Rich Snippets), perdiendo visibilidad visual.',
+      solution: 'Validar y corregir el JSON en Google Rich Results Test eliminando comas o comillas inválidas.',
+    });
+  } else if (!hasJsonLd) {
+    issues.push({
+      id: 'STRUCT-NO-JSONLD',
+      title: 'Sin Datos Estructurados Schema.org (JSON-LD)',
+      severity: 'MEDIUM',
+      category: 'Datos Estructurados',
+      description: 'El sitio no contiene marcado semántico JSON-LD (Organization, LocalBusiness, WebSite).',
+      businessImpact: 'Invisibilidad en el Knowledge Graph de Google y menor tasa de clics (CTR) en los resultados de búsqueda.',
+      solution: 'Añadir un bloque <script type="application/ld+json"> con el esquema de Organization o LocalBusiness.',
+    });
+  }
+
+  if (!openGraphComplete) {
+    issues.push({
+      id: 'STRUCT-OG-INCOMPLETE',
+      title: 'Etiquetas OpenGraph Incompletas',
+      severity: 'LOW',
+      category: 'Datos Estructurados',
+      description: `Faltan etiquetas esenciales de previsualización social: ${!ogTitleVal ? 'og:title ' : ''}${!ogImageVal ? 'og:image ' : ''}${!ogDescVal ? 'og:description' : ''}.`,
+      businessImpact: 'Al compartir el enlace en WhatsApp, LinkedIn o redes, aparece sin imagen o con textos genéricos.',
+      solution: 'Definir og:title, og:image (1200x630px) y og:description en el <head>.',
+    });
+  }
+
+  // ===============================================================================================
+  // EVALUACIÓN DE ISSUES: BLOQUE 3 (SEGURIDAD AVANZADA)
+  // ===============================================================================================
+  if (!caaExists) {
+    issues.push({
+      id: 'SEC-CAA-MISSING',
+      title: 'Ausencia de Registro DNS CAA (Control de Emisión SSL)',
+      severity: 'MEDIUM',
+      category: 'Seguridad Avanzada',
+      description: 'No existe registro CAA en los DNS públicos para restringir qué autoridades certificadoras pueden emitir certificados para este dominio.',
+      businessImpact: 'Riesgo de que una CA comprometida emita certificados fraudulentos sin conocimiento de los administradores.',
+      solution: 'Publicar registro DNS tipo CAA indicando las CAs autorizadas.',
+      codeSnippet: `Tipo: CAA\nNombre: @\nValor: 0 issue "letsencrypt.org"\nValor adicional: 0 iodef "mailto:security@${hostname}"`,
+    });
+  }
+
+  if (hasMixedContent) {
+    issues.push({
+      id: 'SEC-MIXED-CONTENT',
+      title: 'Contenido Mixto Inseguro Detectado (HTTP en HTTPS)',
+      severity: 'HIGH',
+      category: 'Seguridad Avanzada',
+      description: `Se detectaron ${mixedContentUrls.length} recursos no cifrados cargados mediante HTTP en una página segura: ${mixedContentUrls.slice(0, 3).join(', ')}.`,
+      businessImpact: 'Los navegadores bloquean la carga de scripts o muestran el candado rojo roto, perdiendo clientes por desconfianza.',
+      solution: 'Actualizar las URLs de imágenes, scripts y CSS a protocolo HTTPS relativo o absoluto.',
+    });
+  }
+
+  if (hasRedirectChain) {
+    issues.push({
+      id: 'SEC-REDIRECT-CHAIN',
+      title: `Cadena de Redirecciones Múltiples (${redirectHops.length - 1} saltos detectados)`,
+      severity: 'MEDIUM',
+      category: 'Seguridad Avanzada',
+      description: `El dominio encadena varias redirecciones antes de resolver: ${redirectHops.map(h => `${h.url} [${h.status}]`).join(' -> ')}.`,
+      businessImpact: 'Cada salto añade de 150 a 400ms de retraso innecesario, desgastando el presupuesto de rastreo de bots.',
+      solution: 'Configurar una regla 301 directa en un único paso hacia la URL final canónica en HTTPS.',
+    });
+  }
+
+  if (!hasProperCaching) {
+    issues.push({
+      id: 'SEC-CACHE-CONTROL-MISSING',
+      title: 'Cabeceras de Caché HTTP Inexistentes (Cache-Control)',
+      severity: 'LOW',
+      category: 'Seguridad Avanzada',
+      description: 'El servidor no especifica directivas Cache-Control ni Expires para el control de almacenamiento temporal.',
+      businessImpact: 'Sobrecarga de peticiones repetitivas al servidor y experiencia más lenta para usuarios recurrentes.',
+      solution: 'Configurar add_header Cache-Control "public, max-age=3600" en Nginx o mod_headers en Apache.',
+    });
+  }
+
+  // Puntuación de Contenido
+  let contentScore = 95;
+  if (isThinContent) contentScore -= 35;
+  if (textToHtmlStatus === 'FAIL') contentScore -= 20;
+  else if (textToHtmlStatus === 'WARN') contentScore -= 10;
+  if (brokenLinksList.length > 0) contentScore -= Math.min(30, brokenLinksList.length * 15);
+  if (internalCount === 0) contentScore -= 15;
+  contentScore = Math.max(20, Math.min(100, contentScore));
+
+  // Puntuación de Datos Estructurados
+  let structuredDataScore = 40;
+  if (hasJsonLd) structuredDataScore += 25;
+  if (schemaTypes.length > 0) structuredDataScore += 15;
+  if (isValidSyntax && hasJsonLd) structuredDataScore += 10;
+  if (openGraphComplete) structuredDataScore += 15;
+  if (twitterCardComplete) structuredDataScore += 10;
+  if (jsonLdSyntaxErrors.length > 0) structuredDataScore -= 25;
+  structuredDataScore = Math.max(20, Math.min(100, structuredDataScore));
+
+  // Puntuación de Seguridad Avanzada
+  let advancedSecurityScore = 95;
+  if (!caaExists) advancedSecurityScore -= 15;
+  if (!hasProperCaching) advancedSecurityScore -= 15;
+  if (hasRedirectChain) advancedSecurityScore -= 15;
+  if (hasMixedContent) advancedSecurityScore -= 35;
+  if (!hasFavicon) advancedSecurityScore -= 10;
+  advancedSecurityScore = Math.max(20, Math.min(100, advancedSecurityScore));
+
   securityScore = Math.max(20, Math.min(100, securityScore));
 
   // Puntuación global SEO
@@ -1082,6 +1550,116 @@ ServerTokens Prod
       headingStructureValid: h1Count === 1,
       status: a11yScore >= 80 ? 'PASS' : 'WARN',
     },
+    content: {
+      score: contentScore,
+      wordCount,
+      isThinContent,
+      thinContentWarning,
+      textToHtmlRatio,
+      textToHtmlStatus,
+      topKeywords,
+      links: {
+        internalCount,
+        externalCount,
+        nofollowCount,
+        sponsoredCount,
+        ugcCount,
+        totalCount: internalCount + externalCount,
+      },
+      brokenLinks: {
+        checkedCount: checkedHrefs.length,
+        brokenCount: brokenLinksList.length,
+        brokenUrls: brokenLinksList,
+        status: brokenLinksList.length === 0 ? 'PASS' : 'FAIL',
+      },
+    },
+    structuredData: {
+      score: structuredDataScore,
+      hasJsonLd,
+      jsonLdCount,
+      schemaTypes,
+      syntaxErrors: jsonLdSyntaxErrors,
+      isValidSyntax,
+      openGraph: {
+        hasTitle: Boolean(ogTitleVal),
+        title: ogTitleVal,
+        hasImage: Boolean(ogImageVal),
+        imageUrl: ogImageVal,
+        hasDescription: Boolean(ogDescVal),
+        description: ogDescVal,
+        hasUrl: Boolean(ogUrlVal),
+        url: ogUrlVal,
+        hasType: Boolean(ogTypeVal),
+        type: ogTypeVal,
+        isComplete: openGraphComplete,
+        status: openGraphComplete ? 'PASS' : 'WARN',
+      },
+      twitterCard: {
+        exists: Boolean(twCardTypeVal),
+        cardType: twCardTypeVal,
+        hasTitle: Boolean(twTitleVal),
+        title: twTitleVal,
+        hasDescription: Boolean(twDescVal),
+        description: twDescVal,
+        hasImage: Boolean(twImageVal),
+        imageUrl: twImageVal,
+        isComplete: twitterCardComplete,
+        status: twitterCardComplete ? 'PASS' : 'WARN',
+      },
+      status: structuredDataScore >= 75 ? 'PASS' : structuredDataScore >= 50 ? 'WARN' : 'FAIL',
+      recommendation: hasJsonLd
+        ? `Marcado semántico JSON-LD activo (${schemaTypes.join(', ') || 'Schema.org'}).`
+        : 'Implementar Schema.org JSON-LD para habilitar Rich Snippets en Google.',
+    },
+    advancedSecurity: {
+      score: advancedSecurityScore,
+      caaRecord: {
+        exists: caaExists,
+        records: caaRecords,
+        status: caaExists ? 'PASS' : 'WARN',
+        recommendation: caaExists
+          ? `Registro CAA verificado (${caaRecords.length} directivas autorizadas).`
+          : 'Añadir registro DNS CAA para blindar la emisión de certificados SSL contra autoridades no autorizadas.',
+      },
+      cacheHeaders: {
+        cacheControl: cacheControlVal,
+        expires: expiresVal,
+        etag: etagVal,
+        hasProperCaching,
+        status: hasProperCaching ? 'PASS' : 'WARN',
+        recommendation: hasProperCaching
+          ? 'Directivas de caché HTTP correctamente configuradas.'
+          : 'Configurar cabecera Cache-Control con directivas max-age para acelerar visitas recurrentes.',
+      },
+      redirectChains: {
+        detected: hasRedirectChain,
+        hopCount: redirectHopCount,
+        chain: redirectHops,
+        status: hasRedirectChain ? 'WARN' : 'PASS',
+        recommendation: hasRedirectChain
+          ? `Se detectaron ${redirectHopCount} saltos de redirección. Consolidar en un único salto 301 directo.`
+          : 'Ruta de resolución sin cadenas de redirección innecesarias.',
+      },
+      mixedContent: {
+        hasMixedContent,
+        httpResourcesCount: mixedContentUrls.length,
+        sampleHttpUrls: mixedContentUrls,
+        status: hasMixedContent ? 'FAIL' : 'PASS',
+        recommendation: hasMixedContent
+          ? `Se detectaron ${mixedContentUrls.length} recursos HTTP sin cifrar. Migrar a HTTPS para evitar bloqueos del navegador.`
+          : 'Todos los recursos internos y externos cargan mediante protocolo cifrado seguro.',
+      },
+      favicon: {
+        exists: hasFavicon,
+        url: faviconUrl,
+        format: faviconFormat,
+        status: hasFavicon ? 'PASS' : 'WARN',
+        recommendation: hasFavicon
+          ? `Favicon detectado en formato ${faviconFormat || 'estándar'}.`
+          : 'Añadir favicon en formato SVG moderno con fallback ICO para navegadores antiguos.',
+      },
+      status: advancedSecurityScore >= 80 ? 'PASS' : advancedSecurityScore >= 55 ? 'WARN' : 'FAIL',
+    },
     issues,
     overallCategoryScores: {
       security: securityScore,
@@ -1089,6 +1667,9 @@ ServerTokens Prod
       seo: seoScore,
       mobile: mobileScore,
       accessibility: a11yScore,
+      content: contentScore,
+      structuredData: structuredDataScore,
+      advancedSecurity: advancedSecurityScore,
     },
   };
 

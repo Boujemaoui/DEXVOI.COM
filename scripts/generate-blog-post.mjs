@@ -58,15 +58,9 @@ Muchos competidores desleales o bots automáticos publican valoraciones sin habe
 
 ### Protocolo de respuesta e impugnación ante Google
 
-- **Monitoreo de huella IP y patrones temporales:** Las campañas de desprestigio suelen concentrar varias valoraciones sin texto en intervalos de menos de 48 horas.
-- **Respuesta institucional asertiva:** Nunca entres en conflicto público. Responde con un mensaje profesional indicando que no consta reserva a ese nombre y ofreciendo canal directo con gerencia.
-- **Impugnación formal por vulneración de políticas:** Solicita la retirada alegando conflicto de interés y contenido falso con pruebas del registro interno de reservas.
-
----
-
-### Solución Dexvoi: Ficha blindada y reputación proactiva
-
-Diseñamos sistemas que canalizan las valoraciones positivas de comensales reales directamente a Google Maps mientras resuelven incidencias de forma privada.
+1. **Monitoreo perimetral 24/7:** Detección en menos de 15 minutos de cualquier valoración anómala mediante alertas API.
+2. **Impugnación por infracción de políticas de contenido:** Solicitud de retirada por conflicto de interés, contenido promocional o difamación comercial según los términos de Google.
+3. **Estrategia proactiva de reseñas verificadas:** Automatización de recordatorios pos-servicio para diluir el impacto de cualquier reseña aislada.
     `
   },
   {
@@ -78,25 +72,17 @@ Diseñamos sistemas que canalizan las valoraciones positivas de comensales reale
     image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80',
     metaDescription: 'Cómo optimizar Interaction to Next Paint (INP) y Largest Contentful Paint (LCP) para lograr puntuaciones perfectas de 100/100 en Google PageSpeed.',
     content: `
-## La nueva métrica reina de Google: INP (Interaction to Next Paint)
+## La velocidad web como factor decisivo de posicionamiento y conversión
 
-Desde la actualización de los algoritmos de Google, **la interactividad y la respuesta instantánea del usuario (INP)** determinan qué webs merecen las primeras posiciones orgánicas.
-
-Si un paciente hace clic en "Pedir cita" o un comensal pulsa "Ver menú" y la interfaz se congela durante más de 200 milisegundos, Google penaliza el dominio.
+En 2026, Google penaliza severamente las páginas lentas. La métrica **INP (Interaction to Next Paint)** mide la capacidad de respuesta de la web ante clics del usuario, sustituyendo al antiguo FID.
 
 ---
 
-### Por qué los CMS clásicos fallan en INP
+### Cómo pasamos de 4 segundos a 250 milisegundos
 
-- Exceso de archivos JavaScript sin optimizar de múltiples plugins.
-- Bloqueo del hilo principal de renderizado del navegador (*Main Thread Block*).
-- Fuentes web y banners de cookies mal implementados.
-
----
-
-### La ingeniería de Dexvoi: Rendimiento al extremo
-
-En Dexvoi compilamos el código con empaquetadores de última generación y aplicamos división de código (*code-splitting*), logrando **LCP inferior a 0.8s e INP bajo 50ms**.
+- **Eliminación de monolitos pesados:** Sustitución de CMS basados en PHP por arquitecturas estáticas compiladas en Edge CDN.
+- **Optimización de imágenes WebP/AVIF con compresión sin pérdidas:** Reducción de hasta un 85% del peso de los recursos visuales.
+- **División inteligente de código (Code Splitting):** Carga única y exclusiva de los componentes necesarios para la vista activa.
     `
   },
   {
@@ -193,6 +179,94 @@ Más del 85% de las vulnerabilidades web explotadas en negocios medianos provien
 - **Distribución Edge global:** Los archivos estáticos pre-renderizados se sirven desde más de 300 centros de datos Cloudflare en menos de 50ms.
 - **Costes de mantenimiento predecibles:** Sin necesidad de parches de emergencia semanales ni plugins pesados de seguridad.
     `
+  },
+  {
+    topic: 'Protocolo Zero-Trust para Clínicas Médicas: Protección de Historias Clínicas ante Ransomware',
+    category: 'ciberseguridad',
+    categoryLabel: 'Ciberseguridad & Compliance',
+    tags: ['Zero-Trust', 'RGPD Clínicas', 'Ciberseguridad Médica', 'Ransomware'],
+    readingTimeMinutes: 8,
+    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80',
+    metaDescription: 'Cómo implementar el modelo de Confianza Cero en entornos de salud privados para blindar el expediente clínico bajo estándares RGPD y ENS.',
+    content: `
+## Los datos médicos son el activo más codiciado en la Dark Web
+
+El historial clínico de un paciente contiene información inalterable: diagnósticos, medicación y datos identificativos. En el mercado negro, un registro de salud cotiza hasta 50 veces más que un número de tarjeta de crédito.
+
+---
+
+### Principios del modelo Zero-Trust aplicado a clínicas
+
+1. **Nunca confiar, siempre verificar:** Autenticación multifactorial (MFA) obligatoria para todo el personal asistencial.
+2. **Mínimo privilegio de acceso (RBAC):** Cada facultativo accede exclusivamente a los expedientes de sus pacientes asignados.
+3. **Microsegmentación de red perimetral:** Los dispositivos médicos de diagnóstico por imagen operan aislados de la red wifi de invitados y administración.
+    `
+  },
+  {
+    topic: 'Optimización de Fichas de Google Business Profile para Restaurantes con Estrella Michelin',
+    category: 'seo-local',
+    categoryLabel: 'SEO Local & Google Maps',
+    tags: ['Google Maps Gastronomía', 'SEO Local', 'Restaurantes Michelin', 'Conversión'],
+    readingTimeMinutes: 7,
+    image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80',
+    metaDescription: 'Estrategias de posicionamiento en Google Maps para establecimientos de alta cocina: cartas dinámicas, fotos verificadas y conversión directa sin intermediarios.',
+    content: `
+## La primera impresión gastronómica ocurre en el mapa antes que en la mesa
+
+Los comensales internacionales y locales descubren restaurantes de alta gama navegando por Google Maps. Una ficha desactualizada o con fotos de baja calidad destruye la percepción de excelencia.
+
+---
+
+### Pilares de optimización de marca gastronómica
+
+- **Enlace oficial de reserva directa:** Desvío de tráfico hacia el motor de reservas propio evitando comisiones de plataformas intermediarias.
+- **Metadatos de atributos gastronómicos:** Especificación exacta de menús degustación, bodega, maridaje y accesibilidad.
+- **Actualización de platos de temporada con geolocalización:** Cada fotografía subida debe contener etiquetas descriptivas alineadas con la carta actual.
+    `
+  },
+  {
+    topic: 'Tiempo de Respuesta TTFB bajo 100ms en Edge Global: La Clave Oculta del SEO Técnico',
+    category: 'arquitectura-web',
+    categoryLabel: 'Arquitectura Web & Rendimiento',
+    tags: ['TTFB', 'Edge Computing', 'Cloudflare Workers', 'SEO Técnico'],
+    readingTimeMinutes: 6,
+    image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&q=80',
+    metaDescription: 'Análisis técnico del Time to First Byte (TTFB) y cómo la computación en el Edge elimina la latencia geográfica para maximizar el rastreo de Googlebot.',
+    content: `
+## Qué es el TTFB y por qué Googlebot abandona las webs lentas
+
+El Time to First Byte mide el tiempo que transcurre desde que el cliente solicita una página hasta que recibe el primer byte de datos del servidor. Un TTFB superior a 600ms frena en seco el presupuesto de rastreo (*crawl budget*).
+
+---
+
+### Soluciones de arquitectura perimetral Dexvoi
+
+- **Caché en Edge Anycast:** Los contenidos se almacenan en más de 300 puntos de presencia globales, respondiendo al usuario desde el centro de datos más próximo.
+- **Compresión Brotli nivel 11:** Reducción de tamaño de carga superior a gzip convencional sin sobrecargar la CPU del servidor.
+- **Cero consultas bloqueantes a bases de datos relacionales:** Precompilación estática de assets y aislamiento de funciones dinámicas en microservicios serverless.
+    `
+  },
+  {
+    topic: 'Auditoría de Ciberseguridad OWASP Top 10 para Negocios con Pasarelas de Pago Online',
+    category: 'ciberseguridad',
+    categoryLabel: 'Ciberseguridad & Compliance',
+    tags: ['OWASP Top 10', 'Pasarelas de Pago', 'Stripe', 'Seguridad PCI-DSS'],
+    readingTimeMinutes: 8,
+    image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80',
+    metaDescription: 'Cómo blindar los procesos de checkout online frente a ataques de skimming digital, inyecciones SQL y robo de credenciales bancarias.',
+    content: `
+## El riesgo de Magecart y el robo de credenciales en el checkout
+
+El secuestro de formularios digitales (*formjacking*) permite a ciberdelincuentes interceptar números de tarjeta de crédito en el momento exacto en que el cliente pulsa "Pagar".
+
+---
+
+### Medidas de blindaje perimetral implementadas en Dexvoi
+
+1. **Tokens de un solo uso:** Jamás procesar datos bancarios directamente en los servidores propios; uso exclusivo de SDKs certificados PCI-DSS Nivel 1.
+2. **Subresource Integrity (SRI):** Firma criptográfica de scripts externos para detectar manipulaciones en librerías de terceros en tiempo real.
+3. **Políticas CSP restrictivas:** Bloqueo absoluto de cualquier conexión saliente no autorizada desde la pantalla de pago.
+    `
   }
 ];
 
@@ -204,15 +278,14 @@ const categoryImages = {
 };
 
 async function generateWithGemini(apiKey, existingTitles) {
-  try {
-    const ai = new GoogleGenAI({ apiKey });
-    const categories = ['ciberseguridad', 'seo-local', 'arquitectura-web', 'ia-reservas'];
-    const chosenCategory = categories[Math.floor(Math.random() * categories.length)];
+  const modelsToTry = ['gemini-3.8-flash', 'gemini-flash-latest', 'gemini-3.1-pro-preview'];
+  const categories = ['ciberseguridad', 'seo-local', 'arquitectura-web', 'ia-reservas'];
+  const chosenCategory = categories[Math.floor(Math.random() * categories.length)];
 
-    const prompt = `Actúa como Director Técnico y Consultor Senior de Ciberseguridad, SEO y Arquitectura Web de Élite en Dexvoi (empresa de tecnología para clínicas privadas, restaurantes gastronómicos y empresas premium).
+  const prompt = `Actúa como Director Técnico y Consultor Senior de Ciberseguridad, SEO y Arquitectura Web de Élite en Dexvoi (empresa de tecnología para clínicas privadas, restaurantes gastronómicos y empresas premium).
 Genera un artículo de blog técnico, original, riguroso y exhaustivo enfocado en la categoría "${chosenCategory}".
 NO repitas ninguno de estos títulos ya existentes:
-${existingTitles.join('\n')}
+${existingTitles.slice(0, 15).join('\n')}
 
 Devuelve ÚNICAMENTE un JSON válido (sin bloques de markdown ni texto adicional fuera del JSON) con los siguientes campos:
 {
@@ -224,61 +297,107 @@ Devuelve ÚNICAMENTE un JSON válido (sin bloques de markdown ni texto adicional
   "metaDescription": "Meta descripción optimizada para Google en español (máximo 155 caracteres)",
   "tags": ["3 a 5 tags técnicos en español"],
   "readingTimeMinutes": 7,
-  "content": "Contenido completo en Markdown en español con introducción, subtítulos H2 (##), subtítulos H3 (###), tabla comparativa de impacto, viñetas de checklist y llamada a la acción hacia la auditoría gratuita de Dexvoi.",
-  "translations": {
-    "fr": {
-      "title": "Titre rigoureux et professionnel en français",
-      "excerpt": "Résumé concis et percutant en français",
-      "categoryLabel": "${chosenCategory === 'ciberseguridad' ? 'Cybersécurité & Conformité' : chosenCategory === 'seo-local' ? 'SEO Local & Google Maps' : chosenCategory === 'arquitectura-web' ? 'Architecture Web & Performance' : 'IA & Automatisation'}",
-      "metaDescription": "Meta description optimisée en français",
-      "tags": ["3 à 5 tags en français"],
-      "keywords": ["mots clés pertinents"],
-      "targetServiceLabel": "Demander un Diagnostic Spécialisé",
-      "content": "Contenu complet rédigé en français impeccable (Markdown)."
-    },
-    "en": {
-      "title": "Rigorous professional title in English",
-      "excerpt": "Concise compelling excerpt in English",
-      "categoryLabel": "${chosenCategory === 'ciberseguridad' ? 'Cybersecurity & Compliance' : chosenCategory === 'seo-local' ? 'Local SEO & Google Maps' : chosenCategory === 'arquitectura-web' ? 'Web Architecture & Performance' : 'AI & Automation'}",
-      "metaDescription": "Optimized meta description in English",
-      "tags": ["3 to 5 tags in English"],
-      "keywords": ["relevant keywords"],
-      "targetServiceLabel": "Request Technical Diagnosis",
-      "content": "Complete comprehensive article written in native English (Markdown)."
-    }
-  }
+  "content": "Contenido completo en Markdown en español con introducción, subtítulos H2 (##), subtítulos H3 (###), tabla comparativa de impacto, viñetas de checklist y llamada a la acción hacia la auditoría gratuita de Dexvoi."
 }`;
 
-    let res;
+  for (const model of modelsToTry) {
     try {
-      res = await ai.models.generateContent({
-        model: 'gemini-3.8-flash',
-        contents: prompt,
-        config: { temperature: 0.7 }
-      });
-    } catch (modelErr) {
-      console.warn('Gemini 3.8-flash unavailable, attempting with gemini-2.5-flash:', modelErr.message);
-      res = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: prompt,
-        config: { temperature: 0.7 }
-      });
-    }
+      console.log(`[Gemini API] Intentando generar post con modelo: ${model}...`);
+      const ai = new GoogleGenAI({ apiKey });
+      const ctrl = new AbortController();
+      const timeout = setTimeout(() => ctrl.abort(), 18000);
 
-    const raw = res.text?.trim() || '';
-    const clean = raw.replace(/^```json\s*/, '').replace(/\s*```$/, '').trim();
-    const parsed = JSON.parse(clean);
+      const res = await ai.models.generateContent({
+        model,
+        contents: prompt,
+        config: {
+          temperature: 0.7,
+          responseMimeType: 'application/json',
+          thinkingConfig: { thinkingBudget: 0 }
+        }
+      });
+      clearTimeout(timeout);
 
-    if (parsed.title && parsed.content) {
-      return {
-        ...parsed,
-        image: categoryImages[chosenCategory] || categoryImages.ciberseguridad
-      };
+      const raw = res.text?.trim() || '';
+      const clean = raw.replace(/^```json\s*/i, '').replace(/\s*```$/, '').trim();
+      const parsed = JSON.parse(clean);
+
+      if (parsed.title && parsed.content) {
+        console.log(`[Gemini API] ✅ Post generado con éxito mediante ${model}: "${parsed.title}"`);
+        return {
+          ...parsed,
+          image: categoryImages[chosenCategory] || categoryImages.ciberseguridad
+        };
+      }
+    } catch (err) {
+      console.warn(`[Gemini API] Modelo ${model} no disponible (${err.message?.slice(0, 120)}), probando siguiente...`);
     }
-  } catch (err) {
-    console.warn('Could not generate via Gemini API, falling back to curated pool:', err.message);
   }
   return null;
+}
+
+function generateProceduralPost(existingContent) {
+  const topicsMatrix = [
+    {
+      sector: 'Clínicas Privadas y Centros Médicos',
+      tech: 'Cifrado de Extremo a Extremo y Protocolos de Acceso RGPD',
+      cat: 'ciberseguridad',
+      label: 'Ciberseguridad & Compliance'
+    },
+    {
+      sector: 'Alta Restauración y Hostelería Gourmet',
+      tech: 'Eliminación de Comisiones y Motor de Reservas Directo con IA',
+      cat: 'ia-reservas',
+      label: 'IA & Automatización'
+    },
+    {
+      sector: 'Empresas de Servicios Profesionales B2B',
+      tech: 'Dominancia en el Local 3-Pack de Google Maps y Fichas Verificadas',
+      cat: 'seo-local',
+      label: 'SEO Local & Google Maps'
+    },
+    {
+      sector: 'Plataformas de Comercio y Servicios Digitales',
+      tech: 'Tiempos de Carga Sub-200ms en Edge Global con Arquitectura Jamstack',
+      cat: 'arquitectura-web',
+      label: 'Arquitectura Web & Rendimiento'
+    }
+  ];
+
+  const salt = Date.now().toString(36).slice(-4).toUpperCase();
+  const choice = topicsMatrix[Math.floor(Math.random() * topicsMatrix.length)];
+  const title = `${choice.tech} para ${choice.sector} [Informe 2026-${salt}]`;
+  const slug = `seguridad-y-rendimiento-${choice.cat}-${salt.toLowerCase()}`;
+
+  return {
+    title,
+    slug,
+    category: choice.cat,
+    categoryLabel: choice.label,
+    tags: [choice.cat, 'Dexvoi', 'Optimización 2026', 'Rendimiento Digital'],
+    readingTimeMinutes: 7,
+    image: categoryImages[choice.cat],
+    metaDescription: `Análisis técnico avanzado de ${choice.tech.toLowerCase()} enfocado en maximizar la seguridad y los márgenes de negocio en ${choice.sector.toLowerCase()}.`,
+    content: `
+## Transformación técnica y blindaje de activos digitales en 2026
+
+En un mercado saturado de soluciones genéricas y CMS monolíticos obsoletos, las empresas punteras de **${choice.sector}** requieren infraestructuras inmunes a caídas, ataques perimetrales y penalizaciones de rendimiento.
+
+---
+
+### Diagnóstico de vectores críticos
+
+- **Seguridad perimetral:** Eliminación de superficies de ataque expuestas y auditoría de cabeceras HTTP en Edge CDN.
+- **Rendimiento extremo:** Carga instantánea sin latencias de bases de datos relacionales en frontend.
+- **Independencia tecnológica:** Propiedad absoluta de la base de datos de usuarios sin dependencia de plataformas intermediarias con comisiones abusivas.
+
+---
+
+### Protocolo de implantación Dexvoi
+
+En **Dexvoi** diseñamos e implantamos arquitecturas desacopladas hechas a medida con auditorías forenses periódicas para garantizar la máxima conversión y seguridad.
+    `
+  };
 }
 
 function updateSitemap(slug) {
@@ -295,10 +414,10 @@ function updateSitemap(slug) {
     if (!sitemap.includes(`/blog/${slug}`)) {
       sitemap = sitemap.replace('</urlset>', `${newUrl}\n</urlset>`);
       fs.writeFileSync(sitemapPath, sitemap, 'utf8');
-      console.log(`Added /blog/${slug} to public/sitemap.xml`);
+      console.log(`[Sitemap] ✅ Añadida ruta /blog/${slug} a public/sitemap.xml`);
     }
   } catch (err) {
-    console.error('Error updating sitemap:', err);
+    console.error('[Sitemap] Error actualizando sitemap.xml:', err.message);
   }
 }
 
@@ -308,40 +427,44 @@ async function generatePost() {
 
   let chosenPost = null;
 
-  // If GEMINI_API_KEY is present, generate a fully unique post dynamically
+  // 1. Intento principal con Gemini API si la clave está disponible
   if (process.env.GEMINI_API_KEY) {
-    console.log('Generating unique article using Gemini API...');
     const existingTitles = [...content.matchAll(/title:\s*['"]([^'"]+)['"]/g)].map(m => m[1]);
     chosenPost = await generateWithGemini(process.env.GEMINI_API_KEY, existingTitles);
   }
 
-  // Fallback to curated pool if no Gemini post
+  // 2. Respaldo secundario: Selección de topics curados no publicados todavía
   if (!chosenPost) {
     const available = topicsPool.find(t => !content.includes(t.topic));
-    if (!available) {
-      console.log('All scheduled topics are already present.');
-      return;
-    }
-    const slug = available.topic
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)+/g, '')
-      .slice(0, 55);
+    if (available) {
+      console.log(`[Curated Pool] ✅ Seleccionado tema pendiente de publicar: "${available.topic}"`);
+      const slug = available.topic
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)+/g, '')
+        .slice(0, 55);
 
-    chosenPost = {
-      title: available.topic,
-      slug,
-      excerpt: available.metaDescription,
-      category: available.category,
-      categoryLabel: available.categoryLabel,
-      tags: available.tags,
-      readingTimeMinutes: available.readingTimeMinutes,
-      image: available.image,
-      metaDescription: available.metaDescription,
-      content: available.content
-    };
+      chosenPost = {
+        title: available.topic,
+        slug,
+        excerpt: available.metaDescription,
+        category: available.category,
+        categoryLabel: available.categoryLabel,
+        tags: available.tags,
+        readingTimeMinutes: available.readingTimeMinutes,
+        image: available.image,
+        metaDescription: available.metaDescription,
+        content: available.content
+      };
+    }
+  }
+
+  // 3. Respaldo definitivo infalible: Generador procedimental garantizado
+  if (!chosenPost) {
+    console.log('[Procedural Fallback] ⚡ Todos los temas estáticos están al día. Generando artículo procedimental...');
+    chosenPost = generateProceduralPost(content);
   }
 
   const cleanSlug = chosenPost.slug
@@ -356,10 +479,10 @@ async function generatePost() {
     id: 'post-auto-${Date.now()}',
     slug: '${cleanSlug}',
     title: ${JSON.stringify(chosenPost.title)},
-    excerpt: ${JSON.stringify(chosenPost.excerpt)},
+    excerpt: ${JSON.stringify(chosenPost.excerpt || chosenPost.metaDescription)},
     category: '${chosenPost.category}',
     categoryLabel: '${chosenPost.categoryLabel}',
-    tags: ${JSON.stringify(chosenPost.tags)},
+    tags: ${JSON.stringify(chosenPost.tags || ['Dexvoi', 'Tecnología', 'Seguridad'])},
     author: {
       name: 'Dexvoi Intelligence Team',
       role: 'Especialistas en Blindaje & Rendimiento Digital',
@@ -369,21 +492,24 @@ async function generatePost() {
     readingTimeMinutes: ${chosenPost.readingTimeMinutes || 6},
     featuredImage: '${chosenPost.image}',
     metaDescription: ${JSON.stringify(chosenPost.metaDescription)},
-    keywords: ${JSON.stringify(chosenPost.tags)},
+    keywords: ${JSON.stringify(chosenPost.tags || ['Dexvoi'])},
     targetServiceUrl: '/auditoria-seguridad',
     targetServiceLabel: 'Solicitar Diagnóstico Especializado',
     content: ${JSON.stringify(chosenPost.content)}${chosenPost.translations ? `,\n    translations: ${JSON.stringify(chosenPost.translations, null, 6)}` : ''}
   },
 `;
 
-  const updatedContent = content.replace(
-    'export const INITIAL_BLOG_POSTS: BlogPost[] = [\n',
-    `export const INITIAL_BLOG_POSTS: BlogPost[] = [\n${newPostCode}`
-  );
+  // Inserción segura independiente de saltos de línea LF o CRLF
+  const targetRegex = /(export\s+const\s+INITIAL_BLOG_POSTS\s*:\s*BlogPost\[\]\s*=\s*\[\r?\n)/;
+  if (!targetRegex.test(content)) {
+    console.error('[Error] No se encontró INITIAL_BLOG_POSTS en src/data/blogPosts.ts');
+    return;
+  }
+
+  const updatedContent = content.replace(targetRegex, `$1${newPostCode}`);
   fs.writeFileSync(blogFilePath, updatedContent, 'utf8');
   updateSitemap(cleanSlug);
-  console.log(`Successfully generated and published post: "${chosenPost.title}" (${cleanSlug})`);
+  console.log(`[Blog Publisher] 🎉 Artículo publicado con éxito en el blog: "${chosenPost.title}" (/blog/${cleanSlug})`);
 }
 
 generatePost();
-

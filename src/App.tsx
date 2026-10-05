@@ -18,6 +18,7 @@ import { OsintPurchaseModal } from './components/OsintPurchaseModal';
 import { VirtualAssistantChat } from './components/VirtualAssistantChat';
 import { LegalModal, LegalTab } from './components/LegalModal';
 import { ConsentBanner } from './components/ConsentBanner';
+import { CheckoutSuccessModal } from './components/CheckoutSuccessModal';
 import { OsintSecurityAuditResult } from './types';
 import { Home, Grid, Shield, Mail, CreditCard } from 'lucide-react';
 import { useAppRoute, navigateTo, updatePageMetadata } from './utils/navigation';
@@ -47,6 +48,25 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<'inicio' | 'servicios' | 'scanner' | 'precios' | 'contacto'>('inicio');
   const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
   const [legalModalTab, setLegalModalTab] = useState<LegalTab>('privacy');
+  const [isCheckoutSuccessOpen, setIsCheckoutSuccessOpen] = useState(false);
+  const [checkoutSuccessInfo, setCheckoutSuccessInfo] = useState<{ target: string; tier: string } | null>(null);
+
+  // Detect Stripe Checkout redirection (?checkout_success=true) and auto-trigger PDF download
+  useEffect(() => {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('checkout_success') === 'true') {
+        const target = urlParams.get('target') || 'dexvoi.com';
+        const tier = urlParams.get('tier') || 'pdf_5usd';
+        setCheckoutSuccessInfo({ target, tier });
+        setIsCheckoutSuccessOpen(true);
+        // Clean URL query parameters smoothly without reloading
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    } catch (err) {
+      console.warn('Error parsing checkout params:', err);
+    }
+  }, []);
 
   // Initialize Google Analytics and track route changes
   useEffect(() => {
@@ -265,6 +285,15 @@ export default function App() {
         onClose={() => setIsLegalModalOpen(false)}
         initialTab={legalModalTab}
       />
+
+      {checkoutSuccessInfo && (
+        <CheckoutSuccessModal
+          isOpen={isCheckoutSuccessOpen}
+          onClose={() => setIsCheckoutSuccessOpen(false)}
+          targetUrl={checkoutSuccessInfo.target}
+          tier={checkoutSuccessInfo.tier}
+        />
+      )}
 
       <ConsentBanner
         onOpenLegalModal={handleOpenLegalModal}

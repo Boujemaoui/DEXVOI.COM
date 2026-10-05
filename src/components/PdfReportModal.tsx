@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { X, FileText, CheckCircle2, Lock, ArrowRight, Download, CreditCard, Sparkles } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { downloadOfficialAuditPdf } from '../services/clientPdfReport';
-import { isStripeTestMode, setStripeTestMode } from '../config/testMode';
+import { isStripeTestMode } from '../config/testMode';
+import { createCheckoutPopup, navigateToStripeUrl } from '../utils/stripeCheckout';
 
 interface PdfReportModalProps {
   isOpen: boolean;
@@ -33,6 +34,12 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
   const [isPaid, setIsPaid] = useState(false);
 
   useEffect(() => {
+    if (defaultTier) {
+      setSelectedTier(defaultTier);
+    }
+  }, [defaultTier, isOpen]);
+
+  useEffect(() => {
     const handleSync = () => setTestMode(isStripeTestMode());
     window.addEventListener('dexvoi_test_mode_changed', handleSync);
     return () => window.removeEventListener('dexvoi_test_mode_changed', handleSync);
@@ -44,15 +51,16 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
     if (language === 'fr') {
       return {
         basic: {
-          name: 'Rapport d’Audit Initial (5 Pages)',
-          pages: '5 pages',
+          name: 'Rapport Starter Forensique (10 Pages)',
+          pages: '10 pages',
           price: '19€',
           stripeUrl: 'https://buy.stripe.com/aFa00kaea4fy0nQ6UFdAk00',
           features: [
             'Analyse de vitesse Core Web Vitals (mobile & desktop)',
             'Contrôle certificat SSL & en-têtes de sécurité HTTP',
             'Audit de présence locale Google Maps',
-            'Checklist d’optimisation technique immédiate'
+            'Checklist technique de mise en œuvre pas à pas',
+            'Feuille de route de remédiation par phases (48h / 15j)'
           ]
         },
         complete: {
@@ -88,15 +96,16 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
     if (language === 'en') {
       return {
         basic: {
-          name: 'Starter Audit Report (5 Pages)',
-          pages: '5 pages',
+          name: 'Starter Forensic Report (10 Pages)',
+          pages: '10 pages',
           price: '19€',
           stripeUrl: 'https://buy.stripe.com/aFa00kaea4fy0nQ6UFdAk00',
           features: [
             'Core Web Vitals load speed breakdown (mobile & desktop)',
             'SSL certificate & HTTP security headers assessment',
             'Google Maps local footprint detection',
-            'Priority technical remediation checklist'
+            'Step-by-step technical implementation checklist',
+            'Phased mitigation roadmap for engineers (48h / 15d)'
           ]
         },
         complete: {
@@ -131,15 +140,16 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
 
     return {
       basic: {
-        name: 'Starter Audit Report (5 Pages)',
-        pages: '5 páginas',
+        name: 'Informe Starter Forense (10 Páginas)',
+        pages: '10 páginas',
         price: '19€',
         stripeUrl: 'https://buy.stripe.com/aFa00kaea4fy0nQ6UFdAk00',
         features: [
           'Análisis de velocidad de carga Core Web Vitals',
           'Verificación de certificado SSL y headers HTTP',
           'Detección de presencia básica en Google Maps',
-          'Checklist de optimización técnica prioritaria'
+          'Checklist técnico de implementación paso a paso',
+          'Hoja de ruta de mitigación básica por fases (48h / 15 días)'
         ]
       },
       complete: {
@@ -208,6 +218,32 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
       return;
     }
 
+    // Pre-open checkout window synchronously on user click to prevent popup blockers
+    const checkoutWindow = createCheckoutPopup();
+
+    // Intento de sesión oficial de Stripe Checkout
+    try {
+      const res = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          planTier: selectedTier,
+          customerEmail: email.trim() || undefined,
+          websiteUrl: website.trim() || 'dexvoi.com',
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json().catch(() => ({}));
+        if (data && data.url) {
+          navigateToStripeUrl(data.url, checkoutWindow);
+          return;
+        }
+      }
+    } catch (checkoutErr) {
+      console.warn('Error iniciando checkout dinámico:', checkoutErr);
+    }
+
     let targetStripeUrl = currentTier.stripeUrl;
     const queryParams: string[] = [];
     if (email) {
@@ -220,10 +256,7 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
       targetStripeUrl += (targetStripeUrl.includes('?') ? '&' : '?') + queryParams.join('&');
     }
 
-    window.open(targetStripeUrl, '_blank', 'noopener,noreferrer');
-
-    setIsProcessing(false);
-    setIsPaid(true);
+    navigateToStripeUrl(targetStripeUrl, checkoutWindow);
   };
 
   const [isDownloadingSample, setIsDownloadingSample] = useState(false);
@@ -333,34 +366,6 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
                   ? 'In-depth cybersecurity, page load speed optimization, and Google Maps local SEO review tailored for high-ticket local businesses.'
                   : 'Análisis profundo de ciberseguridad, optimización de velocidad de carga y posicionamiento en Google Maps para clínicas, restaurantes y empresas locales.'}
               </p>
-            </div>
-
-            {/* Test Mode Switcher in Modal */}
-            <div className="p-3 rounded-xl bg-[#090E1D] border border-gray-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-mono">
-              <div className="flex items-center gap-2">
-                <span className={`w-2.5 h-2.5 rounded-full ${testMode ? 'bg-emerald-400 animate-pulse' : 'bg-blue-400'}`} />
-                <span className="text-gray-200 font-bold">
-                  {testMode ? '🧪 Modo Pruebas Activo' : '🔒 Stripe Conectado'}
-                </span>
-                <span className={`text-[10px] px-2 py-0.5 rounded font-bold ${testMode ? 'bg-emerald-500/20 text-emerald-400' : 'bg-blue-500/20 text-blue-400'}`}>
-                  {testMode ? 'Sin cobro · Descarga Libre' : 'Pasarela Oficial'}
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  const nextState = !testMode;
-                  setTestMode(nextState);
-                  setStripeTestMode(nextState);
-                }}
-                className={`px-3 py-1.5 rounded-lg text-[11px] font-bold tracking-wider transition-all cursor-pointer border ${
-                  testMode
-                    ? 'bg-[#1E293B] hover:bg-[#2A374F] text-gray-200 border-gray-600'
-                    : 'bg-[#F5A623] hover:bg-[#FFAE33] text-[#0A0F1F] border-[#F5A623]'
-                }`}
-              >
-                {testMode ? 'Reconectar Stripe Real' : 'Desconectar Stripe (Pruebas)'}
-              </button>
             </div>
 
             {/* Tiers Selection */}

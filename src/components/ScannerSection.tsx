@@ -4,7 +4,6 @@ import {
   Globe, 
   ArrowRight, 
   RefreshCw, 
-  Terminal, 
   Lock, 
   Gauge, 
   AlertTriangle, 
@@ -19,14 +18,22 @@ import {
   CreditCard,
   Sparkles,
   Check,
-  ShieldCheck
+  ShieldCheck,
+  Link2,
+  Share2,
+  Code2,
+  Hash,
+  Layers,
+  Search
 } from 'lucide-react';
 import { ScanResult, OsintSecurityAuditResult, AuditIssue } from '../types';
 import { runClientSecurityAudit } from '../services/clientSecurityAudit';
 import { downloadOfficialAuditPdf } from '../services/clientPdfReport';
-import { isStripeTestMode, setStripeTestMode } from '../config/testMode';
+import { isStripeTestMode } from '../config/testMode';
 import { useLanguage } from '../i18n/LanguageContext';
 import { navigateTo } from '../utils/navigation';
+import { createCheckoutPopup, navigateToStripeUrl } from '../utils/stripeCheckout';
+import { ScanningScreen } from './ScanningScreen';
 
 interface ScannerSectionProps {
   onSelectAuditWithUrl: (url: string, findings: string[]) => void;
@@ -44,6 +51,7 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
   const [urlInput, setUrlInput] = useState('');
   const [businessType, setBusinessType] = useState<string>('offline_online');
   const [isScanning, setIsScanning] = useState(false);
+  const [scanProgress, setScanProgress] = useState(15);
   const [scanStep, setScanStep] = useState(0);
   const [scanLog, setScanLog] = useState<string[]>([]);
   const [result, setResult] = useState<ScanResult | null>(null);
@@ -52,6 +60,7 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
 
   // Freemium model states
   const [isUnlocked, setIsUnlocked] = useState(false);
+  const [activeTab, setActiveTab] = useState<'all' | 'content' | 'structuredData' | 'advancedSecurity' | 'issues'>('all');
   const [leadEmail, setLeadEmail] = useState('');
   const [leadName, setLeadName] = useState('');
   const [leadPhone, setLeadPhone] = useState('');
@@ -68,29 +77,29 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
     return () => window.removeEventListener('dexvoi_test_mode_changed', handleSync);
   }, []);
 
-  // Direct Stripe Checkout for official certified 5€ PDF report
+  // Direct Stripe Checkout for official certified $5 USD PDF report
   const handleCheckoutPdf5Eur = async (optionalEmail?: string) => {
     if (!result) return;
     setIsCheckingOutPdf(true);
     setCheckoutError(null);
     setCheckoutSuccessMessage(null);
 
-    // MODO DE PRUEBAS / DEMO: Descarga directa del PDF de 5€ sin pasar por Stripe
+    // MODO DE PRUEBAS / DEMO: Descarga directa del PDF de $5 USD sin pasar por Stripe
     if (testMode) {
       try {
         const ok = await downloadOfficialAuditPdf({
           target: result.url,
           auditResult: result.rawAuditResult,
           customerEmail: (optionalEmail || leadEmail).trim() || 'info@dexvoi.com',
-          tier: 'pdf_5eur',
+          tier: 'pdf_5usd',
         });
         if (ok) {
           setCheckoutSuccessMessage(
             language === 'fr'
-              ? '✓ Rapport Officiel PDF (5€) généré et téléchargé avec succès (Mode Test - Sans frais Stripe).'
+              ? '✓ Rapport Officiel PDF ($5 USD) généré et téléchargé avec succès (Mode Test - Sans frais Stripe).'
               : language === 'en'
-              ? '✓ Official PDF Report (€5) generated and downloaded successfully (Test Mode - Zero Stripe charge).'
-              : '✓ Informe Oficial en PDF (5€) generado y descargado con éxito (Modo Pruebas - Sin cobro en Stripe).'
+              ? '✓ Official PDF Report ($5 USD) generated and downloaded successfully (Test Mode - Zero Stripe charge).'
+              : '✓ Informe Oficial en PDF ($5 USD) generado y descargado con éxito (Modo Pruebas - Sin cobro en Stripe).'
           );
         } else {
           setCheckoutError('No se pudo generar el archivo PDF en este momento.');
@@ -103,6 +112,9 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
       return;
     }
 
+    // Pre-open checkout window synchronously on user click to prevent popup blockers
+    const checkoutWindow = createCheckoutPopup();
+
     try {
       const emailToUse = (optionalEmail || leadEmail).trim() || undefined;
       const res = await fetch('/api/create-checkout-session', {
@@ -111,7 +123,7 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
         body: JSON.stringify({
           websiteUrl: result.url,
           customerEmail: emailToUse,
-          planTier: 'pdf_5eur',
+          planTier: 'pdf_5usd',
         }),
       });
 
@@ -122,19 +134,20 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
 
       const data = await res.json().catch(() => ({}));
       if (data && data.url) {
-        window.open(data.url, '_blank', 'noopener,noreferrer');
         setCheckoutSuccessMessage(
           language === 'fr'
-            ? 'Redirection vers Stripe Checkout (5€). Vous recevrez le PDF officiel par email après le paiement.'
+            ? 'Redirection vers Stripe Checkout ($5 USD). Vous recevrez le PDF officiel par email après le paiement.'
             : language === 'en'
-            ? 'Redirecting to Stripe Checkout (€5). You will receive the official PDF via email after payment.'
-            : 'Redirigiendo a Stripe Checkout (5€). Recibirás el PDF oficial por email tras completar el pago.'
+            ? 'Redirecting to Stripe Checkout ($5 USD). You will receive the official PDF via email after payment.'
+            : 'Redirigiendo a Stripe Checkout ($5 USD). Recibirás el PDF oficial tras completar el pago.'
         );
+        // Seamless redirection to Stripe Checkout
+        navigateToStripeUrl(data.url, checkoutWindow);
       } else {
         setCheckoutError('No se pudo generar la sesión de pago de Stripe.');
       }
     } catch (err: any) {
-      console.error('Error initiating 5€ PDF checkout:', err);
+      console.error('Error initiating $5 USD PDF checkout:', err);
       setCheckoutError(err?.message || 'Error al conectar con la pasarela de pago.');
     } finally {
       setIsCheckingOutPdf(false);
@@ -298,6 +311,7 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
     setCheckoutSuccessMessage(null);
     setScanStep(0);
     setScanLog([]);
+    setScanProgress(18);
 
     const startPrefix = language === 'fr' ? '[DÉMARRAGE] Connexion à' : language === 'en' ? '[INIT] Connecting to' : '[INICIO] Conectando a';
     setScanLog([`${startPrefix} ${cleanHostname}...`]);
@@ -309,7 +323,15 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
         setScanStep(stepCounter);
         setScanLog((prev) => [...prev, `[OK] ${scanSteps[stepCounter - 1]}`]);
       }
-    }, 450);
+    }, 520);
+
+    const progressInterval = setInterval(() => {
+      setScanProgress((prev) => {
+        if (prev >= 92) return prev;
+        const inc = Math.floor(Math.random() * 8 + 4);
+        return Math.min(94, prev + inc);
+      });
+    }, 380);
 
     try {
       let finalData: OsintSecurityAuditResult | null = null;
@@ -345,9 +367,11 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
         finalData = await runClientSecurityAudit(cleanHostname);
       }
 
-      // Minimum scan time for visual polish
-      await new Promise((r) => setTimeout(r, 1600));
+      // Minimum scan time for visual polish and rich radar telemetry display
+      await new Promise((r) => setTimeout(r, 2800));
       clearInterval(stepInterval);
+      clearInterval(progressInterval);
+      setScanProgress(100);
       setScanStep(scanSteps.length - 1);
       setScanLog((prev) => [
         ...prev,
@@ -483,16 +507,30 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
         ],
         issues: finalData.issues || [],
         rawAuditResult: finalData,
+        content: finalData.content,
+        structuredData: finalData.structuredData,
+        advancedSecurity: finalData.advancedSecurity,
       });
+
+      // Brief transition pause so 100% completion is visible
+      await new Promise((r) => setTimeout(r, 400));
+      setIsScanning(false);
+
+      setTimeout(() => {
+        const resultsEl = document.getElementById('scanner-results');
+        if (resultsEl) {
+          resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 150);
 
     } catch (err: any) {
       clearInterval(stepInterval);
+      clearInterval(progressInterval);
       console.error('Scan failed:', err);
       setScanLog((prev) => [
         ...prev,
         `[ERROR] ${err?.message || 'Error al conectar con el dominio.'}`
       ]);
-    } finally {
       setIsScanning(false);
     }
   };
@@ -565,46 +603,17 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
             </div>
           </form>
 
-          {/* Scanning Progress Terminal Screen */}
-          {isScanning && (
-            <div className="mt-8 bg-[#070B16] rounded-xl p-5 border border-[#0066FF]/40 font-mono text-xs text-gray-300 space-y-3 animate-in fade-in duration-200">
-              <div className="flex items-center justify-between pb-2 border-b border-gray-800 text-[#0066FF]">
-                <div className="flex items-center gap-2">
-                  <Terminal className="w-4 h-4" />
-                  <span>
-                    {language === 'fr'
-                      ? 'EXÉCUTION DU PROTOCOLE D\'ANALYSE EN TEMPS RÉEL...'
-                      : language === 'en'
-                      ? 'EXECUTING REAL-TIME ARCHITECTURAL DIAGNOSTIC PROTOCOL...'
-                      : 'EJECUTANDO PROTOCOLO DE ANÁLISIS EN TIEMPO REAL...'}
-                  </span>
-                </div>
-                <span className="text-[10px] text-gray-500 font-mono">DEXVOI OSINT ENGINE v5.2</span>
-              </div>
-
-              <div className="w-full bg-gray-800 h-2 rounded-full overflow-hidden">
-                <div
-                  className="bg-gradient-to-r from-[#0066FF] to-[#F5A623] h-full transition-all duration-500"
-                  style={{ width: `${((scanStep + 1) / scanSteps.length) * 100}%` }}
-                ></div>
-              </div>
-
-              <div className="space-y-1.5 pt-2 max-h-36 overflow-y-auto">
-                {scanLog.map((log, lIdx) => (
-                  <div key={lIdx} className="text-gray-300 flex items-center gap-2">
-                    <span className="text-[#0066FF]">›</span> {log}
-                  </div>
-                ))}
-                <div className="text-[#F5A623] animate-pulse flex items-center gap-2">
-                  <span className="text-[#F5A623]">›</span> {scanSteps[scanStep]}
-                </div>
-              </div>
-            </div>
-          )}
+          {/* Scanning Progress Screen (Stitch SOC Dashboard Design) */}
+          <ScanningScreen
+            isScanning={isScanning}
+            targetUrl={urlInput}
+            currentStepText={scanSteps[scanStep]}
+            progressPercent={scanProgress}
+          />
 
           {/* Scan Results Card */}
           {result && !isScanning && (
-            <div className="mt-8 pt-8 border-t border-gray-800 space-y-6 animate-in fade-in duration-300">
+            <div id="scanner-results" className="mt-8 pt-8 border-t border-gray-800 space-y-6 animate-in fade-in duration-300">
               {/* Header with Global Score */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-xl bg-[#131B33] border border-[#0066FF]/40">
                 <div>
@@ -665,7 +674,7 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
                     onClick={() => handleCheckoutPdf5Eur(leadEmail)}
                     disabled={isCheckingOutPdf}
                     className="px-4 py-2.5 rounded-lg bg-[#F5A623] hover:bg-[#FFAE33] active:bg-[#E09015] text-[#0A0F1F] font-sans font-bold text-xs sm:text-sm antialiased flex items-center justify-center gap-2 border border-[#FFD074] shadow-[0_2px_5px_rgba(0,0,0,0.4)] transition-colors duration-150 cursor-pointer disabled:opacity-60 select-none shrink-0"
-                    title="Descargar informe oficial en PDF (5€) con envío directo por email tras Stripe Checkout"
+                    title={language === 'fr' ? 'Télécharger le rapport officiel en PDF ($5 USD) via Stripe' : language === 'en' ? 'Download official PDF report ($5 USD) via Stripe' : 'Descargar informe oficial en PDF ($5 USD) con envío directo tras Stripe Checkout'}
                   >
                     {isCheckingOutPdf ? (
                       <>
@@ -675,7 +684,7 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
                     ) : (
                       <>
                         <Download className="w-4 h-4 text-[#0A0F1F] shrink-0" strokeWidth={2.4} />
-                        <span>Descargar PDF Oficial (5€)</span>
+                        <span>{language === 'fr' ? 'Descargar PDF Oficial ($5 USD)' : language === 'en' ? 'Download Official PDF ($5 USD)' : 'Descargar PDF Oficial ($5 USD)'}</span>
                       </>
                     )}
                   </button>
@@ -951,12 +960,12 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
                           ) : testMode ? (
                             <>
                               <Download className="w-4 h-4 text-[#0A0F1F]" />
-                              <span>🧪 Probar y Descargar PDF (5€) [Modo Demo]</span>
+                              <span>🧪 Probar y Descargar PDF ($5 USD) [Modo Demo]</span>
                             </>
                           ) : (
                             <>
                               <CreditCard className="w-4 h-4 text-[#0A0F1F]" />
-                              <span>Pagar 5€ y Recibir PDF por Email</span>
+                              <span>{language === 'fr' ? 'Payer $5 USD & Télécharger PDF' : language === 'en' ? 'Pay $5 USD & Download PDF' : 'Pagar $5 USD y Recibir PDF Oficial'}</span>
                             </>
                           )}
                         </button>
@@ -996,7 +1005,7 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
                           >
                             <div>
                               <strong className="text-xs text-white block">Plan Básico (19€)</strong>
-                              <span className="text-[10px] text-gray-400">PDF 5 pág. + Hoja de ruta guiada</span>
+                              <span className="text-[10px] text-gray-400">Informe Starter (10 págs.) + Checklist técnico paso a paso</span>
                             </div>
                             <ArrowRight className="w-3.5 h-3.5 text-blue-400" />
                           </div>
@@ -1056,13 +1065,13 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
                       className="px-3 py-1.5 rounded-lg bg-[#F5A623] hover:bg-[#FFAE33] text-[#0A0F1F] font-sans font-bold text-xs flex items-center gap-1.5 shrink-0 cursor-pointer shadow"
                     >
                       <Download className="w-3.5 h-3.5 text-[#0A0F1F]" />
-                      Descargar Informe Oficial en PDF (5€)
+                      {language === 'fr' ? 'Télécharger Rapport PDF ($5 USD)' : language === 'en' ? 'Download PDF Report ($5 USD)' : 'Descargar Informe Oficial en PDF ($5 USD)'}
                     </button>
                   </div>
 
-                  {/* 3 Metrics Breakdowns with REAL measured values */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {/* Speed */}
+                  {/* 6 Category Score Cards */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                    {/* 1. Speed & Performance */}
                     <div className="bg-[#0D1326] p-4 rounded-xl border border-gray-800 space-y-2">
                       <div className="flex items-center justify-between text-xs font-mono">
                         <span className="text-gray-400 flex items-center gap-1.5">
@@ -1087,7 +1096,7 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
                       </p>
                     </div>
 
-                    {/* Security */}
+                    {/* 2. Perimeter Security */}
                     <div className="bg-[#0D1326] p-4 rounded-xl border border-gray-800 space-y-2">
                       <div className="flex items-center justify-between text-xs font-mono">
                         <span className="text-gray-400 flex items-center gap-1.5">
@@ -1112,7 +1121,7 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
                       </p>
                     </div>
 
-                    {/* Local SEO */}
+                    {/* 3. Technical SEO */}
                     <div className="bg-[#0D1326] p-4 rounded-xl border border-gray-800 space-y-2">
                       <div className="flex items-center justify-between text-xs font-mono">
                         <span className="text-gray-400 flex items-center gap-1.5">
@@ -1129,10 +1138,485 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
                         {result.seoLocal.recommendation}
                       </p>
                     </div>
+
+                    {/* 4. Content Audit (NEW BLOCK 1) */}
+                    <div className="bg-[#0D1326] p-4 rounded-xl border border-gray-800 space-y-2">
+                      <div className="flex items-center justify-between text-xs font-mono">
+                        <span className="text-gray-400 flex items-center gap-1.5">
+                          <FileText className="w-4 h-4 text-cyan-400" />
+                          <span>{language === 'fr' ? 'Analyse Contenu' : language === 'en' ? 'Content Audit' : 'Análisis de Contenido'}</span>
+                        </span>
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                          (result.content?.isThinContent ?? result.rawAuditResult?.content?.isThinContent)
+                            ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                            : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                        }`}>
+                          {(result.content?.wordCount ?? result.rawAuditResult?.content?.wordCount ?? 0)} palabras
+                        </span>
+                      </div>
+                      <div className="flex items-baseline justify-between">
+                        <div className="text-lg font-bold text-white font-mono">
+                          {result.content?.score ?? result.rawAuditResult?.content?.score ?? 85} / 100
+                        </div>
+                        <span className="text-[11px] font-mono text-gray-400">
+                          Ratio HTML: {result.content?.textToHtmlRatio ?? result.rawAuditResult?.content?.textToHtmlRatio ?? 14.5}%
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-400 leading-relaxed">
+                        {(result.content?.isThinContent ?? result.rawAuditResult?.content?.isThinContent)
+                          ? 'Aviso: Contenido escaso detectado (<300 palabras). Riesgo de clasificación "thin content".'
+                          : 'Volumen textual saludable y ratio texto-HTML equilibrado para rastreo orgánico.'}
+                      </p>
+                    </div>
+
+                    {/* 5. Structured Data (NEW BLOCK 2) */}
+                    <div className="bg-[#0D1326] p-4 rounded-xl border border-gray-800 space-y-2">
+                      <div className="flex items-center justify-between text-xs font-mono">
+                        <span className="text-gray-400 flex items-center gap-1.5">
+                          <Layers className="w-4 h-4 text-[#F5A623]" />
+                          <span>{language === 'fr' ? 'Données Structurées' : language === 'en' ? 'Structured Data' : 'Datos Estructurados'}</span>
+                        </span>
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                          (result.structuredData?.hasJsonLd ?? result.rawAuditResult?.structuredData?.hasJsonLd)
+                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                            : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                        }`}>
+                          {(result.structuredData?.hasJsonLd ?? result.rawAuditResult?.structuredData?.hasJsonLd) ? 'JSON-LD Activo' : 'Sin JSON-LD'}
+                        </span>
+                      </div>
+                      <div className="flex items-baseline justify-between">
+                        <div className="text-lg font-bold text-white font-mono">
+                          {result.structuredData?.score ?? result.rawAuditResult?.structuredData?.score ?? 75} / 100
+                        </div>
+                        <span className="text-[11px] font-mono text-gray-400">
+                          {(result.structuredData?.schemaTypes?.length ?? result.rawAuditResult?.structuredData?.schemaTypes?.length ?? 0)} esquemas
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-400 leading-relaxed">
+                        {(result.structuredData?.hasJsonLd ?? result.rawAuditResult?.structuredData?.hasJsonLd)
+                          ? `Schema.org detectado (${(result.structuredData?.schemaTypes ?? result.rawAuditResult?.structuredData?.schemaTypes ?? []).slice(0, 2).join(', ') || 'Schema'}).`
+                          : 'Recomendado inyectar JSON-LD para habilitar Rich Snippets en Google y Google Maps.'}
+                      </p>
+                    </div>
+
+                    {/* 6. Advanced Security (NEW BLOCK 3) */}
+                    <div className="bg-[#0D1326] p-4 rounded-xl border border-gray-800 space-y-2">
+                      <div className="flex items-center justify-between text-xs font-mono">
+                        <span className="text-gray-400 flex items-center gap-1.5">
+                          <ShieldCheck className="w-4 h-4 text-purple-400" />
+                          <span>{language === 'fr' ? 'Sécurité Avancée' : language === 'en' ? 'Advanced Security' : 'Seguridad Avanzada'}</span>
+                        </span>
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                          (result.advancedSecurity?.caaRecord.exists ?? result.rawAuditResult?.advancedSecurity?.caaRecord.exists)
+                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                            : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                        }`}>
+                          {(result.advancedSecurity?.caaRecord.exists ?? result.rawAuditResult?.advancedSecurity?.caaRecord.exists) ? 'CAA Verificado' : 'Sin CAA DNS'}
+                        </span>
+                      </div>
+                      <div className="flex items-baseline justify-between">
+                        <div className="text-lg font-bold text-white font-mono">
+                          {result.advancedSecurity?.score ?? result.rawAuditResult?.advancedSecurity?.score ?? 85} / 100
+                        </div>
+                        <span className="text-[11px] font-mono text-gray-400">
+                          Favicon: {result.advancedSecurity?.favicon?.format ?? result.rawAuditResult?.advancedSecurity?.favicon?.format ?? 'ICO'}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-400 leading-relaxed">
+                        {(result.advancedSecurity?.mixedContent.hasMixedContent ?? result.rawAuditResult?.advancedSecurity?.mixedContent.hasMixedContent)
+                          ? 'Alerta: Recursos inseguros HTTP detectados en página HTTPS.'
+                          : 'Caché perimetral, verificación de saltos y blindaje DNS analizados.'}
+                      </p>
+                    </div>
                   </div>
 
+                  {/* Category Filter Tabs */}
+                  <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none text-xs font-mono border-b border-gray-800 pt-2">
+                    {[
+                      { id: 'all', label: language === 'fr' ? 'Tout le Diagnostic' : language === 'en' ? 'Complete Audit' : 'Auditoría Completa (40+ Métricas)', icon: Sparkles },
+                      { id: 'content', label: language === 'fr' ? 'Contenu & Liens' : language === 'en' ? 'Content & Links' : 'Contenido & Enlaces', icon: FileText },
+                      { id: 'structuredData', label: language === 'fr' ? 'Données Structurées' : language === 'en' ? 'Structured Data' : 'Datos Estructurados & Social', icon: Layers },
+                      { id: 'advancedSecurity', label: language === 'fr' ? 'Sécurité Avancée' : language === 'en' ? 'Advanced Security' : 'Seguridad Avanzada & DNS', icon: ShieldCheck },
+                      { id: 'issues', label: `${language === 'fr' ? 'Failles' : language === 'en' ? 'Issues' : 'Brechas y Mitigación'} (${result.issues?.length || 0})`, icon: AlertTriangle },
+                    ].map((tab) => {
+                      const Icon = tab.icon;
+                      const isCur = activeTab === tab.id;
+                      return (
+                        <button
+                          key={tab.id}
+                          type="button"
+                          onClick={() => setActiveTab(tab.id as any)}
+                          className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 shrink-0 transition-colors cursor-pointer border ${
+                            isCur
+                              ? 'bg-[#0066FF] text-white border-[#0066FF] shadow-sm'
+                              : 'bg-[#0D1326] text-gray-400 hover:text-white border-gray-800 hover:border-gray-700'
+                          }`}
+                        >
+                          <Icon className="w-3.5 h-3.5" />
+                          <span>{tab.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* ======================================================== */}
+                  {/* DETAILED PANEL: 1. ANÁLISIS DE CONTENIDO & ENLACES       */}
+                  {/* ======================================================== */}
+                  {(activeTab === 'all' || activeTab === 'content') && (
+                    <div className="p-5 rounded-xl bg-[#0B1020] border border-gray-800 space-y-4 animate-in fade-in duration-200">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <FileText className="w-4 h-4 text-cyan-400" />
+                          <span className="font-mono text-xs font-bold text-white uppercase tracking-wider">
+                            1. Análisis de Contenido, Palabras Clave & Red de Enlaces
+                          </span>
+                        </div>
+                        <span className="text-[11px] font-mono text-cyan-400/90 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20">
+                          {(result.content?.wordCount ?? result.rawAuditResult?.content?.wordCount ?? 0)} palabras detectadas
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Word Count & Text to HTML */}
+                        <div className="p-4 rounded-lg bg-[#131B33]/60 border border-gray-800 space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-mono text-gray-300">Recuento Total de Palabras:</span>
+                            <span className={`px-2 py-0.5 rounded text-[11px] font-mono font-bold ${
+                              (result.content?.isThinContent ?? result.rawAuditResult?.content?.isThinContent)
+                                ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                                : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                            }`}>
+                              {(result.content?.isThinContent ?? result.rawAuditResult?.content?.isThinContent) ? 'Thin Content (<300)' : 'Volumen Óptimo'}
+                            </span>
+                          </div>
+
+                          <div className="space-y-1.5">
+                            <div className="flex items-center justify-between text-xs font-mono">
+                              <span className="text-gray-400">Ratio Texto-HTML:</span>
+                              <span className="text-white font-bold">{result.content?.textToHtmlRatio ?? result.rawAuditResult?.content?.textToHtmlRatio ?? 14.5}%</span>
+                            </div>
+                            <div className="w-full bg-gray-900 rounded-full h-2 overflow-hidden border border-gray-800">
+                              <div
+                                className={`h-full rounded-full ${
+                                  (result.content?.textToHtmlRatio ?? result.rawAuditResult?.content?.textToHtmlRatio ?? 14.5) >= 12
+                                    ? 'bg-emerald-500'
+                                    : (result.content?.textToHtmlRatio ?? result.rawAuditResult?.content?.textToHtmlRatio ?? 14.5) >= 8
+                                    ? 'bg-amber-500'
+                                    : 'bg-red-500'
+                                }`}
+                                style={{ width: `${Math.min(100, Math.max(5, (result.content?.textToHtmlRatio ?? result.rawAuditResult?.content?.textToHtmlRatio ?? 14.5) * 3))}%` }}
+                              />
+                            </div>
+                            <span className="text-[10px] text-gray-400 font-mono block">
+                              Mínimo recomendado por Google: 10-15% de texto visible respecto al peso HTML.
+                            </span>
+                          </div>
+
+                          {/* Broken links badge */}
+                          <div className="pt-2 border-t border-gray-800/80 flex items-center justify-between text-xs">
+                            <span className="text-gray-300 font-mono">Muestra Enlaces Rotos:</span>
+                            <span className={`px-2 py-0.5 rounded font-mono text-[10px] font-bold ${
+                              (result.content?.brokenLinks?.brokenCount ?? result.rawAuditResult?.content?.brokenLinks?.brokenCount ?? 0) === 0
+                                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                                : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                            }`}>
+                              {(result.content?.brokenLinks?.brokenCount ?? result.rawAuditResult?.content?.brokenLinks?.brokenCount ?? 0) === 0
+                                ? '0 rotos (100% OK)'
+                                : `${result.content?.brokenLinks?.brokenCount ?? result.rawAuditResult?.content?.brokenLinks?.brokenCount} rotos`}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Link Count Pills */}
+                        <div className="p-4 rounded-lg bg-[#131B33]/60 border border-gray-800 space-y-2.5">
+                          <span className="text-xs font-mono text-gray-300 block">Arquitectura de Enlaces Internos y Externos:</span>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-center font-mono">
+                            <div className="p-2 rounded bg-[#0A0F1F] border border-gray-800">
+                              <div className="text-[10px] text-gray-400 uppercase">Internos</div>
+                              <div className="text-sm font-bold text-white">
+                                {result.content?.links?.internalCount ?? result.rawAuditResult?.content?.links?.internalCount ?? 0}
+                              </div>
+                            </div>
+                            <div className="p-2 rounded bg-[#0A0F1F] border border-gray-800">
+                              <div className="text-[10px] text-gray-400 uppercase">Externos</div>
+                              <div className="text-sm font-bold text-cyan-400">
+                                {result.content?.links?.externalCount ?? result.rawAuditResult?.content?.links?.externalCount ?? 0}
+                              </div>
+                            </div>
+                            <div className="p-2 rounded bg-[#0A0F1F] border border-gray-800">
+                              <div className="text-[10px] text-gray-400 uppercase">Nofollow</div>
+                              <div className="text-sm font-bold text-amber-400">
+                                {result.content?.links?.nofollowCount ?? result.rawAuditResult?.content?.links?.nofollowCount ?? 0}
+                              </div>
+                            </div>
+                            <div className="p-2 rounded bg-[#0A0F1F] border border-gray-800">
+                              <div className="text-[10px] text-gray-400 uppercase">Sponsored</div>
+                              <div className="text-sm font-bold text-gray-300">
+                                {result.content?.links?.sponsoredCount ?? result.rawAuditResult?.content?.links?.sponsoredCount ?? 0}
+                              </div>
+                            </div>
+                            <div className="p-2 rounded bg-[#0A0F1F] border border-gray-800">
+                              <div className="text-[10px] text-gray-400 uppercase">UGC</div>
+                              <div className="text-sm font-bold text-gray-300">
+                                {result.content?.links?.ugcCount ?? result.rawAuditResult?.content?.links?.ugcCount ?? 0}
+                              </div>
+                            </div>
+                            <div className="p-2 rounded bg-[#0A0F1F] border border-gray-800">
+                              <div className="text-[10px] text-gray-400 uppercase">Total Red</div>
+                              <div className="text-sm font-bold text-emerald-400">
+                                {result.content?.links?.totalCount ?? result.rawAuditResult?.content?.links?.totalCount ?? 0}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Keywords Density & Title / H1 / Meta Check */}
+                      {((result.content?.topKeywords ?? result.rawAuditResult?.content?.topKeywords ?? []).length > 0) && (
+                        <div className="space-y-2 pt-2 border-t border-gray-800/80">
+                          <span className="text-xs font-mono text-gray-300 block">
+                            Palabras Clave Principales y Verificación On-Page:
+                          </span>
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-left font-mono text-xs border border-gray-800 rounded-lg overflow-hidden">
+                              <thead className="bg-[#131B33] text-gray-400 text-[10px] uppercase">
+                                <tr>
+                                  <th className="p-2.5">Palabra Clave</th>
+                                  <th className="p-2.5">Frecuencia</th>
+                                  <th className="p-2.5">Densidad</th>
+                                  <th className="p-2.5 text-center">En &lt;title&gt;</th>
+                                  <th className="p-2.5 text-center">En &lt;h1&gt;</th>
+                                  <th className="p-2.5 text-center">En Meta Desc.</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-gray-800 bg-[#0D1326]">
+                                {(result.content?.topKeywords ?? result.rawAuditResult?.content?.topKeywords ?? []).map((kw, i) => (
+                                  <tr key={i} className="hover:bg-[#131B33]/40">
+                                    <td className="p-2.5 font-bold text-white">{kw.word}</td>
+                                    <td className="p-2.5 text-gray-300">{kw.count} veces</td>
+                                    <td className="p-2.5 text-cyan-400">{kw.density}</td>
+                                    <td className="p-2.5 text-center">
+                                      {kw.inTitle ? (
+                                        <span className="text-emerald-400 font-bold">✓ Sí</span>
+                                      ) : (
+                                        <span className="text-gray-500">✕ No</span>
+                                      )}
+                                    </td>
+                                    <td className="p-2.5 text-center">
+                                      {kw.inH1 ? (
+                                        <span className="text-emerald-400 font-bold">✓ Sí</span>
+                                      ) : (
+                                        <span className="text-gray-500">✕ No</span>
+                                      )}
+                                    </td>
+                                    <td className="p-2.5 text-center">
+                                      {kw.inMetaDescription ? (
+                                        <span className="text-emerald-400 font-bold">✓ Sí</span>
+                                      ) : (
+                                        <span className="text-gray-500">✕ No</span>
+                                      )}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* ======================================================== */}
+                  {/* DETAILED PANEL: 2. DATOS ESTRUCTURADOS (SCHEMA & SOCIAL) */}
+                  {/* ======================================================== */}
+                  {(activeTab === 'all' || activeTab === 'structuredData') && (
+                    <div className="p-5 rounded-xl bg-[#0B1020] border border-gray-800 space-y-4 animate-in fade-in duration-200">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Layers className="w-4 h-4 text-[#F5A623]" />
+                          <span className="font-mono text-xs font-bold text-white uppercase tracking-wider">
+                            2. Datos Estructurados Schema.org, JSON-LD & Social Cards
+                          </span>
+                        </div>
+                        <span className="text-[11px] font-mono text-[#F5A623] bg-[#F5A623]/10 px-2 py-0.5 rounded border border-[#F5A623]/20">
+                          {(result.structuredData?.hasJsonLd ?? result.rawAuditResult?.structuredData?.hasJsonLd) ? 'JSON-LD Detectado' : 'Sin JSON-LD'}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Schema.org Types Found */}
+                        <div className="p-4 rounded-lg bg-[#131B33]/60 border border-gray-800 space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-mono text-gray-300">Tipos Schema.org Detectados:</span>
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
+                              (result.structuredData?.isValidSyntax ?? result.rawAuditResult?.structuredData?.isValidSyntax ?? true)
+                                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                                : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                            }`}>
+                              {(result.structuredData?.isValidSyntax ?? result.rawAuditResult?.structuredData?.isValidSyntax ?? true) ? 'Sintaxis Válida' : 'Error Sintaxis'}
+                            </span>
+                          </div>
+
+                          <div className="flex flex-wrap gap-1.5 pt-1">
+                            {((result.structuredData?.schemaTypes ?? result.rawAuditResult?.structuredData?.schemaTypes ?? []).length > 0) ? (
+                              (result.structuredData?.schemaTypes ?? result.rawAuditResult?.structuredData?.schemaTypes ?? []).map((st, i) => (
+                                <span key={i} className="px-2.5 py-1 rounded bg-[#0A0F1F] border border-[#F5A623]/40 text-[#F5A623] font-mono text-xs font-semibold">
+                                  @{st}
+                                </span>
+                              ))
+                            ) : (
+                              <span className="text-xs text-gray-400 font-mono">
+                                No se encontraron esquemas semánticos @type en el documento HTML.
+                              </span>
+                            )}
+                          </div>
+
+                          <p className="text-xs text-gray-400 leading-relaxed font-sans">
+                            {result.structuredData?.recommendation ?? result.rawAuditResult?.structuredData?.recommendation ?? 'Añadir esquemas Schema.org como Organization o LocalBusiness.'}
+                          </p>
+                        </div>
+
+                        {/* OpenGraph & Twitter Cards Status */}
+                        <div className="p-4 rounded-lg bg-[#131B33]/60 border border-gray-800 space-y-3">
+                          <span className="text-xs font-mono text-gray-300 block">Previsualización en Redes (OpenGraph & Twitter):</span>
+                          
+                          <div className="p-3 rounded bg-[#0A0F1F] border border-gray-800 space-y-2 text-xs font-mono">
+                            <div className="flex items-center justify-between">
+                              <span className="text-gray-400 flex items-center gap-1.5">
+                                <Share2 className="w-3.5 h-3.5 text-[#0066FF]" /> OpenGraph (WhatsApp / Facebook)
+                              </span>
+                              <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                                (result.structuredData?.openGraph?.isComplete ?? result.rawAuditResult?.structuredData?.openGraph?.isComplete)
+                                  ? 'text-emerald-400 bg-emerald-500/10'
+                                  : 'text-amber-400 bg-amber-500/10'
+                              }`}>
+                                {(result.structuredData?.openGraph?.isComplete ?? result.rawAuditResult?.structuredData?.openGraph?.isComplete) ? 'Completo' : 'Incompleto'}
+                              </span>
+                            </div>
+
+                            <div className="text-[11px] text-gray-300 truncate">
+                              <strong>og:title:</strong> {result.structuredData?.openGraph?.title ?? result.rawAuditResult?.structuredData?.openGraph?.title ?? 'No definido'}
+                            </div>
+                            <div className="text-[11px] text-gray-400 truncate">
+                              <strong>og:image:</strong> {result.structuredData?.openGraph?.imageUrl ?? result.rawAuditResult?.structuredData?.openGraph?.imageUrl ?? 'No definida'}
+                            </div>
+
+                            <div className="pt-2 border-t border-gray-800/80 flex items-center justify-between">
+                              <span className="text-gray-400">Twitter Card:</span>
+                              <span className="text-cyan-400 text-[10px]">
+                                {result.structuredData?.twitterCard?.cardType ?? result.rawAuditResult?.structuredData?.twitterCard?.cardType ?? 'summary_large_image'}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ======================================================== */}
+                  {/* DETAILED PANEL: 3. SEGURIDAD AVANZADA & BLINDAJE DNS     */}
+                  {/* ======================================================== */}
+                  {(activeTab === 'all' || activeTab === 'advancedSecurity') && (
+                    <div className="p-5 rounded-xl bg-[#0B1020] border border-gray-800 space-y-4 animate-in fade-in duration-200">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <ShieldCheck className="w-4 h-4 text-purple-400" />
+                          <span className="font-mono text-xs font-bold text-white uppercase tracking-wider">
+                            3. Seguridad Avanzada, Blindaje DNS & Cabeceras de Caché
+                          </span>
+                        </div>
+                        <span className="text-[11px] font-mono text-purple-400/90 bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20">
+                          Puntuación Avanzada: {result.advancedSecurity?.score ?? result.rawAuditResult?.advancedSecurity?.score ?? 85}/100
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                        {/* CAA DNS Record */}
+                        <div className="p-3.5 rounded-lg bg-[#131B33]/60 border border-gray-800 space-y-1.5 text-xs font-mono">
+                          <div className="flex items-center justify-between">
+                            <span className="text-gray-300 font-bold">Registro CAA en DNS</span>
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                              (result.advancedSecurity?.caaRecord?.exists ?? result.rawAuditResult?.advancedSecurity?.caaRecord?.exists)
+                                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                                : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                            }`}>
+                              {(result.advancedSecurity?.caaRecord?.exists ?? result.rawAuditResult?.advancedSecurity?.caaRecord?.exists) ? 'PRESENTE' : 'AUSENTE'}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-gray-400 font-sans leading-relaxed">
+                            {result.advancedSecurity?.caaRecord?.recommendation ?? result.rawAuditResult?.advancedSecurity?.caaRecord?.recommendation ?? 'Control de Autoridades Certificadoras autorizadas a emitir SSL.'}
+                          </p>
+                        </div>
+
+                        {/* Cache Headers */}
+                        <div className="p-3.5 rounded-lg bg-[#131B33]/60 border border-gray-800 space-y-1.5 text-xs font-mono">
+                          <div className="flex items-center justify-between">
+                            <span className="text-gray-300 font-bold">Cabeceras de Caché</span>
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                              (result.advancedSecurity?.cacheHeaders?.hasProperCaching ?? result.rawAuditResult?.advancedSecurity?.cacheHeaders?.hasProperCaching)
+                                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                                : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                            }`}>
+                              {(result.advancedSecurity?.cacheHeaders?.hasProperCaching ?? result.rawAuditResult?.advancedSecurity?.cacheHeaders?.hasProperCaching) ? 'CONFIGURADAS' : 'POR OPTIMIZAR'}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-gray-400 font-sans leading-relaxed truncate">
+                            Cache-Control: {result.advancedSecurity?.cacheHeaders?.cacheControl ?? result.rawAuditResult?.advancedSecurity?.cacheHeaders?.cacheControl ?? 'No configurada'}
+                          </p>
+                        </div>
+
+                        {/* Redirect Chains */}
+                        <div className="p-3.5 rounded-lg bg-[#131B33]/60 border border-gray-800 space-y-1.5 text-xs font-mono">
+                          <div className="flex items-center justify-between">
+                            <span className="text-gray-300 font-bold">Redirecciones Encadenadas</span>
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                              !(result.advancedSecurity?.redirectChains?.detected ?? result.rawAuditResult?.advancedSecurity?.redirectChains?.detected)
+                                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                                : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                            }`}>
+                              {result.advancedSecurity?.redirectChains?.hopCount ?? result.rawAuditResult?.advancedSecurity?.redirectChains?.hopCount ?? 1} salto(s)
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-gray-400 font-sans leading-relaxed">
+                            {result.advancedSecurity?.redirectChains?.recommendation ?? result.rawAuditResult?.advancedSecurity?.redirectChains?.recommendation ?? 'Ruta de resolución directa verificada.'}
+                          </p>
+                        </div>
+
+                        {/* Mixed Content */}
+                        <div className="p-3.5 rounded-lg bg-[#131B33]/60 border border-gray-800 space-y-1.5 text-xs font-mono">
+                          <div className="flex items-center justify-between">
+                            <span className="text-gray-300 font-bold">Contenido Mixto</span>
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                              !(result.advancedSecurity?.mixedContent?.hasMixedContent ?? result.rawAuditResult?.advancedSecurity?.mixedContent?.hasMixedContent)
+                                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                                : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                            }`}>
+                              {!(result.advancedSecurity?.mixedContent?.hasMixedContent ?? result.rawAuditResult?.advancedSecurity?.mixedContent?.hasMixedContent) ? '0 INSEGUROS' : 'DETECTADO'}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-gray-400 font-sans leading-relaxed">
+                            {result.advancedSecurity?.mixedContent?.recommendation ?? result.rawAuditResult?.advancedSecurity?.mixedContent?.recommendation ?? 'Todos los recursos cargan con cifrado HTTPS.'}
+                          </p>
+                        </div>
+
+                        {/* Favicon & Format */}
+                        <div className="p-3.5 rounded-lg bg-[#131B33]/60 border border-gray-800 space-y-1.5 text-xs font-mono col-span-1 md:col-span-2 lg:col-span-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-gray-300 font-bold">Favicon & Formato Moderno</span>
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                              {result.advancedSecurity?.favicon?.format ?? result.rawAuditResult?.advancedSecurity?.favicon?.format ?? 'ICO'}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-gray-400 font-sans leading-relaxed">
+                            {result.advancedSecurity?.favicon?.recommendation ?? result.rawAuditResult?.advancedSecurity?.favicon?.recommendation ?? 'Icono de identidad corporativa verificado.'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Real Specific Issues Detected on this domain (Full list) */}
-                  {result.issues && result.issues.length > 0 && (
+                  {(activeTab === 'all' || activeTab === 'issues') && result.issues && result.issues.length > 0 && (
                     <div className="p-5 rounded-xl bg-[#0B1020] border border-gray-800 space-y-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -1170,11 +1654,22 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
                                   Impacto en el negocio: {iss.businessImpact}
                                 </p>
                               )}
-                              {iss.solution && (
-                                <p className="text-[11px] text-emerald-400/90 font-mono bg-[#0A0F1F] p-2 rounded border border-gray-800">
-                                  Mitigación recomendada: {iss.solution}
-                                </p>
-                              )}
+                              {/* Directiva y código ejecutable protegido para usuarios de pago */}
+                              <div className="mt-2.5 p-2.5 rounded-lg bg-[#0A0F1F] border border-[#F5A623]/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <Lock className="w-3.5 h-3.5 text-[#F5A623] shrink-0" />
+                                  <span className="text-[11px] font-mono text-gray-300">
+                                    Directiva y código de mitigación (Nginx / Apache / DNS) exclusivo del <strong className="text-white">Informe Oficial en PDF ($5 USD)</strong> o Planes de Blindaje.
+                                  </span>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => handleCheckoutPdf5Eur(leadEmail)}
+                                  className="px-2.5 py-1 rounded bg-[#F5A623] hover:bg-[#FFAE33] text-[#0A0F1F] font-mono font-bold text-[10px] uppercase shrink-0 cursor-pointer transition-colors shadow"
+                                >
+                                  Desbloquear Código ($5 USD)
+                                </button>
+                              </div>
                             </div>
                           </div>
                         ))}
@@ -1197,15 +1692,15 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
                     <p className="text-xs text-gray-300 leading-relaxed font-sans">
                       {language === 'fr' ? (
                         <>
-                          Ce diagnostic préliminaire en direct a mesuré les paramètres perimétriques accessibles. <strong>Dans nos Plans Payants (19€ / 49€ / 99€)</strong>, le moteur génère un <strong>Rapport d’Architecture Forensique de 5 à 21 pages en PDF officiel</strong> avec analyse approfondie de toutes les routes, tests de fuites de formulaires, scripts de remédiation Nginx/Apache prêts à copier-coller et consultation avec l’Architecte Digital.
+                          Ce diagnostic préliminaire en direct a mesuré les paramètres perimétriques accessibles. <strong>Dans nos Plans Payants (19€ / 49€ / 99€)</strong>, le moteur génère un <strong>Rapport d’Architecture Forensique de 10 à 22 pages en PDF officiel</strong> (ou rapport exprés de 5 pages à 5$) avec analyse approfondie de toutes les routes, checklist technique pas à pas, tests de fuites de formulaires, scripts de remédiation Nginx/Apache prêts à copier-coller et consultation avec l’Architecte Digital.
                         </>
                       ) : language === 'en' ? (
                         <>
-                          This preliminary live scan checked publicly exposed perimeter endpoints. <strong>In our Paid Plans (€19 / €49 / €99)</strong>, the engine generates an <strong>Official 5-to-21-page Forensic Architecture PDF Report</strong> with exhaustive route probing, form leak audits, copy-paste Nginx/Apache hardening scripts, and direct consulting with our Digital Architect.
+                          This preliminary live scan checked publicly exposed perimeter endpoints. <strong>In our Paid Plans (€19 / €49 / €99)</strong>, the engine generates an <strong>Official 10-to-22-page Forensic Architecture PDF Report</strong> (or 5-page express report at $5) with step-by-step technical implementation checklist, exhaustive route probing, form leak audits, copy-paste Nginx/Apache hardening scripts, and direct consulting with our Digital Architect.
                         </>
                       ) : (
                         <>
-                          Este diagnóstico perimetral analizó los parámetros expuestos en vivo. <strong>En nuestros Planes de Pago (19€ / 49€ / 99€)</strong>, el motor ejecuta una <strong>Auditoría Forense Profunda y genera un Informe Oficial en PDF de 5 a 21 páginas</strong> con análisis exhaustivo de todas las rutas, pruebas de fugas en formularios, scripts de remediación para Nginx/Apache listos para copiar y pegar, y asesoría directa con el Arquitecto Digital.
+                          Este diagnóstico perimetral analizó los parámetros expuestos en vivo. <strong>En nuestros Planes de Pago (19€ / 49€ / 99€)</strong>, el motor ejecuta una <strong>Auditoría Forense y genera un Informe Oficial en PDF de 10 a 22 páginas</strong> (o informe exprés de 5 páginas por 5$) con checklist técnico paso a paso de implementación, hoja de ruta por fases, scripts de remediación para Nginx/Apache listos para copiar y pegar, y asesoría directa con el Arquitecto Digital.
                         </>
                       )}
                     </p>
@@ -1218,10 +1713,10 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
                         {language === 'fr' ? `Voulez-vous sécuriser et accélérer ${result.url} ?` : language === 'en' ? `Ready to secure and accelerate ${result.url}?` : `¿Quieres blindar y acelerar ${result.url}?`}
                       </strong>
                       {language === 'fr'
-                        ? 'Téléchargez le rapport officiel en PDF (5€) avec la marque Dexvoi ou confiez la remédiation à l’Architecte Digital.'
+                        ? 'Téléchargez le rapport officiel en PDF ($5 USD) avec la marque Dexvoi ou confiez la remédiation à l’Architecte Digital.'
                         : language === 'en'
-                        ? 'Download the official PDF report (€5) with Dexvoi brand identity or hire our Digital Architect.'
-                        : 'Descarga el informe oficial en PDF (5€) con el diseño y marca Dexvoi o delega la reparación en el Arquitecto Digital.'}
+                        ? 'Download the official PDF report ($5 USD) with Dexvoi brand identity or hire our Digital Architect.'
+                        : 'Descarga el informe oficial en PDF ($5 USD) con el diseño y marca Dexvoi o delega la reparación en el Arquitecto Digital.'}
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3 shrink-0 w-full lg:w-auto">
@@ -1229,7 +1724,7 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
                         onClick={() => handleCheckoutPdf5Eur(leadEmail)}
                         disabled={isCheckingOutPdf}
                         className="flex-1 sm:flex-initial px-5 py-2.5 rounded-lg bg-[#F5A623] hover:bg-[#FFAE33] active:bg-[#E09015] text-[#0A0F1F] font-sans font-bold text-xs sm:text-sm antialiased flex items-center justify-center gap-2 border border-[#FFD074] shadow-[0_2px_5px_rgba(0,0,0,0.4)] transition-colors duration-150 cursor-pointer disabled:opacity-60 select-none"
-                        title="Descargar informe oficial en PDF (5€)"
+                        title={language === 'fr' ? 'Télécharger rapport officiel en PDF ($5 USD)' : language === 'en' ? 'Download official PDF report ($5 USD)' : 'Descargar informe oficial en PDF ($5 USD)'}
                       >
                         {isCheckingOutPdf ? (
                           <>
@@ -1239,7 +1734,7 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
                         ) : (
                           <>
                             <Download className="w-4 h-4 text-[#0A0F1F] shrink-0" strokeWidth={2.4} />
-                            <span>Descargar Informe PDF (5€)</span>
+                            <span>{language === 'fr' ? 'Descargar Informe PDF ($5 USD)' : language === 'en' ? 'Download PDF Report ($5 USD)' : 'Descargar Informe PDF ($5 USD)'}</span>
                           </>
                         )}
                       </button>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   Shield, 
   ArrowLeft, 
@@ -10,12 +10,13 @@ import {
   Sparkles, 
   ArrowRight,
   HelpCircle,
-  Download
+  RefreshCw,
+  ExternalLink
 } from 'lucide-react';
 import { LanguageSelector } from '../components/LanguageSelector';
 import { useLanguage } from '../i18n/LanguageContext';
 import { navigateTo } from '../utils/navigation';
-import { isStripeTestMode, setStripeTestMode } from '../config/testMode';
+import { createCheckoutPopup, navigateToStripeUrl } from '../utils/stripeCheckout';
 
 interface PricingPageProps {
   onNavigateHome: () => void;
@@ -29,13 +30,48 @@ export const PricingPage: React.FC<PricingPageProps> = ({
   onOpenAuditModal
 }) => {
   const { language } = useLanguage();
-  const [testMode, setTestMode] = useState<boolean>(isStripeTestMode());
+  const [loadingTier, setLoadingTier] = useState<string | null>(null);
+  const [checkoutMessage, setCheckoutMessage] = useState<string | null>(null);
 
-  useEffect(() => {
-    const handleSync = () => setTestMode(isStripeTestMode());
-    window.addEventListener('dexvoi_test_mode_changed', handleSync);
-    return () => window.removeEventListener('dexvoi_test_mode_changed', handleSync);
-  }, []);
+  const handleCheckoutTier = async (tierKey: 'basic' | 'complete' | 'premium', fallbackUrl: string) => {
+    // Pre-open checkout window synchronously on user click to prevent popup blockers
+    const checkoutWindow = createCheckoutPopup();
+
+    setLoadingTier(tierKey);
+    setCheckoutMessage(
+      language === 'fr' 
+        ? 'Connexion sécurisée à Stripe Checkout...' 
+        : language === 'en' 
+        ? 'Connecting securely to Stripe Checkout...' 
+        : 'Conectando con la pasarela segura de Stripe Checkout...'
+    );
+
+    try {
+      const res = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          planTier: tierKey,
+          websiteUrl: 'dexvoi.com',
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json().catch(() => ({}));
+        if (data && data.url) {
+          navigateToStripeUrl(data.url, checkoutWindow);
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('Error initiating Stripe checkout for plan:', err);
+    } finally {
+      setLoadingTier(null);
+    }
+
+    // Fallback: Redirigir al link directo configurado
+    navigateToStripeUrl(fallbackUrl, checkoutWindow);
+  };
 
   return (
     <div className="min-h-screen bg-[#0A0F1F] text-[#e5e2e3] font-sans pb-24 selection:bg-[#0066FF] selection:text-white">
@@ -116,44 +152,6 @@ export const PricingPage: React.FC<PricingPageProps> = ({
 
       {/* Pricing Cards Grid */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Test Mode Switcher Banner */}
-        <div className="mb-10 p-4 rounded-2xl bg-[#0E1528] border border-[#F5A623]/40 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
-          <div className="flex items-center gap-3 text-left">
-            <div className="w-9 h-9 rounded-xl bg-[#F5A623]/20 border border-[#F5A623]/40 flex items-center justify-center shrink-0">
-              <Sparkles className="w-4 h-4 text-[#F5A623]" />
-            </div>
-            <div>
-              <div className="text-xs font-mono font-bold text-white flex items-center gap-2">
-                <span>{testMode ? '🧪 MODO DE PRUEBAS ACTIVO' : '🔒 MODO PRODUCCIÓN (STRIPE CONECTADO)'}</span>
-                <span className={`text-[9px] px-2 py-0.5 rounded font-mono ${testMode ? 'bg-emerald-500/20 text-emerald-400 font-bold' : 'bg-blue-500/20 text-blue-400'}`}>
-                  {testMode ? 'SIN COBROS REALES' : 'PASARELA ACTIVA'}
-                </span>
-              </div>
-              <p className="text-[11px] text-gray-400 font-mono mt-0.5">
-                {testMode 
-                  ? 'Puedes seleccionar y probar cualquiera de los planes (19€, 49€ o 99€) y descargar los informes PDF oficiales sin pagar en Stripe.'
-                  : 'Los botones conectan directamente con las sesiones oficiales de Stripe Checkout.'}
-              </p>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => {
-              const nextState = !testMode;
-              setTestMode(nextState);
-              setStripeTestMode(nextState);
-            }}
-            className={`px-4 py-2 rounded-xl text-xs font-mono font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap border ${
-              testMode
-                ? 'bg-[#1E293B] hover:bg-[#283548] text-gray-200 border-gray-600'
-                : 'bg-[#F5A623] hover:bg-[#FFAE33] text-[#0A0F1F] border-[#F5A623]'
-            }`}
-          >
-            {testMode ? 'Reconectar Stripe (Modo Real)' : 'Desconectar Stripe (Modo Pruebas)'}
-          </button>
-        </div>
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
           
           {/* Tier 1: Starter */}
@@ -163,9 +161,10 @@ export const PricingPage: React.FC<PricingPageProps> = ({
                 {language === 'fr' ? 'RAPPORT STARTER' : language === 'en' ? 'STARTER REPORT' : 'INFORME STARTER'}
               </div>
               <div className="flex items-baseline gap-2 font-mono">
-                <span className="text-4xl font-extrabold text-white">19€</span>
+                <span className="text-4xl font-extrabold text-white">$19</span>
+                <span className="text-sm font-bold text-[#F5A623]">USD</span>
                 <span className="text-xs text-gray-400">
-                  {language === 'fr' ? 'paiement unique' : language === 'en' ? 'one-time payment' : 'pago único'}
+                  (19€ · {language === 'fr' ? 'paiement unique' : language === 'en' ? 'one-time fee' : 'pago único'})
                 </span>
               </div>
               <p className="text-xs text-gray-300 font-sans">
@@ -210,36 +209,89 @@ export const PricingPage: React.FC<PricingPageProps> = ({
                   <Check className="w-4 h-4 text-emerald-400 shrink-0" />
                   <span>
                     {language === 'fr' 
-                      ? 'Rapport exécutif digital au format PDF' 
+                      ? 'Rapport starter forensique au format PDF (10 pages)' 
                       : language === 'en' 
-                      ? 'Digital executive report in PDF' 
-                      : 'Informe ejecutivo digital en PDF'}
+                      ? 'Digital forensic starter report in PDF (10 pages)' 
+                      : 'Informe starter forense en PDF (10 páginas ampliadas)'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>
+                    {language === 'fr' 
+                      ? 'Checklist technique de mise en œuvre étape par étape' 
+                      : language === 'en' 
+                      ? 'Step-by-step technical implementation checklist' 
+                      : 'Checklist técnico paso a paso de implementación'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>
+                    {language === 'fr' 
+                      ? 'Feuille de route de remédiation par phases (48h / 15j)' 
+                      : language === 'en' 
+                      ? 'Phased remediation roadmap (48h / 15d)' 
+                      : 'Hoja de ruta de mitigación por fases (48h / 15 días)'}
                   </span>
                 </div>
               </div>
             </div>
 
-            <button
-              onClick={() => onOpenPdfModal('basic')}
-              className={`mt-8 w-full py-3.5 px-4 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer flex items-center justify-center gap-2 ${
-                testMode
-                  ? 'bg-[#131B33] hover:bg-[#1C2744] text-white border border-[#0066FF]/50 shadow-md'
-                  : 'bg-[#1E293B] hover:bg-[#2A374F] text-white border border-gray-700'
-              }`}
-            >
-              {testMode ? (
-                <>
-                  <Download className="w-3.5 h-3.5 text-[#F5A623]" />
-                  <span>🧪 Probar Plan & Descargar PDF (19€)</span>
-                </>
-              ) : (
-                language === 'fr' 
-                  ? 'Acheter Rapport Starter (19€)' 
-                  : language === 'en' 
-                  ? 'Purchase Starter Report (19€)' 
-                  : 'Comprar Informe Starter (19€)'
-              )}
-            </button>
+            <div className="mt-8 space-y-2.5">
+              <button
+                type="button"
+                onClick={() => handleCheckoutTier('basic', 'https://buy.stripe.com/aFa00kaea4fy0nQ6UFdAk00')}
+                disabled={loadingTier === 'basic'}
+                className="w-full py-3.5 px-4 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-60 bg-[#1E293B] hover:bg-[#2A374F] text-white border border-gray-700 shadow-md"
+              >
+                {loadingTier === 'basic' ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#F5A623]" />
+                    <span>Conectando con Stripe...</span>
+                  </>
+                ) : (
+                  <>
+                    <CreditCard className="w-3.5 h-3.5 text-[#635BFF]" />
+                    <span>
+                      {language === 'fr' 
+                        ? 'Acheter Rapport Starter ($19 USD)' 
+                        : language === 'en' 
+                        ? 'Purchase Starter Report ($19 USD)' 
+                        : 'Comprar Informe Starter ($19 USD)'}
+                    </span>
+                  </>
+                )}
+              </button>
+
+              <div className="text-center space-y-1.5">
+                <a
+                  href="https://buy.stripe.com/aFa00kaea4fy0nQ6UFdAk00"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[10px] font-mono text-gray-500 hover:text-gray-300 inline-flex items-center gap-1 transition-colors"
+                >
+                  <span>Enlace directo Stripe Oficial ($19 USD)</span>
+                  <ExternalLink className="w-2.5 h-2.5" />
+                </a>
+
+                {onOpenPdfModal && (
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() => onOpenPdfModal('basic')}
+                      className="text-[11px] font-mono text-blue-400 hover:text-blue-300 transition-colors cursor-pointer"
+                    >
+                      {language === 'fr' 
+                        ? 'Ou commander pour un domaine spécifique →' 
+                        : language === 'en' 
+                        ? 'Or order for a custom domain →' 
+                        : 'O pedir para un dominio personalizado →'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Tier 2: Comprehensive (Featured) */}
@@ -252,9 +304,10 @@ export const PricingPage: React.FC<PricingPageProps> = ({
                 {language === 'fr' ? 'AUDIT COMPLET FORENSIQUE' : language === 'en' ? 'COMPREHENSIVE AUDIT' : 'COMPREHENSIVE AUDIT'}
               </div>
               <div className="flex items-baseline gap-2 font-mono">
-                <span className="text-4xl font-extrabold text-white">49€</span>
+                <span className="text-4xl font-extrabold text-white">$49</span>
+                <span className="text-sm font-bold text-[#F5A623]">USD</span>
                 <span className="text-xs text-gray-300">
-                  {language === 'fr' ? 'paiement unique' : language === 'en' ? 'one-time payment' : 'pago único'}
+                  (49€ · {language === 'fr' ? 'paiement unique' : language === 'en' ? 'one-time fee' : 'pago único'})
                 </span>
               </div>
               <p className="text-xs text-gray-200 font-sans">
@@ -318,27 +371,60 @@ export const PricingPage: React.FC<PricingPageProps> = ({
               </div>
             </div>
 
-            <button
-              onClick={() => onOpenPdfModal('complete')}
-              className={`mt-8 w-full py-3.5 px-4 rounded-xl text-xs font-mono font-bold transition-all shadow-lg cursor-pointer flex items-center justify-center gap-2 ${
-                testMode
-                  ? 'bg-[#0066FF] hover:bg-[#0052cc] text-white shadow-[#0066FF]/30'
-                  : 'bg-[#0066FF] hover:bg-[#0052cc] text-white shadow-[#0066FF]/30'
-              }`}
-            >
-              {testMode ? (
-                <>
-                  <Download className="w-3.5 h-3.5 text-[#F5A623]" />
-                  <span>🧪 Probar Plan & Descargar PDF (49€)</span>
-                </>
-              ) : (
-                language === 'fr' 
-                  ? 'Acheter Audit Complet (49€)' 
-                  : language === 'en' 
-                  ? 'Purchase Comprehensive (49€)' 
-                  : 'Comprar Comprehensive (49€)'
-              )}
-            </button>
+            <div className="mt-8 space-y-2.5">
+              <button
+                type="button"
+                onClick={() => handleCheckoutTier('complete', 'https://buy.stripe.com/9B66oI862eUc8Um92NdAk01')}
+                disabled={loadingTier === 'complete'}
+                className="w-full py-3.5 px-4 rounded-xl text-xs font-mono font-bold transition-all shadow-lg cursor-pointer flex items-center justify-center gap-2 disabled:opacity-60 bg-[#0066FF] hover:bg-[#0052cc] text-white shadow-[#0066FF]/30"
+              >
+                {loadingTier === 'complete' ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin text-white" />
+                    <span>Conectando con Stripe...</span>
+                  </>
+                ) : (
+                  <>
+                    <CreditCard className="w-3.5 h-3.5 text-white" />
+                    <span>
+                      {language === 'fr' 
+                        ? 'Acheter Audit Complet ($49 USD)' 
+                        : language === 'en' 
+                        ? 'Purchase Comprehensive ($49 USD)' 
+                        : 'Comprar Comprehensive ($49 USD)'}
+                    </span>
+                  </>
+                )}
+              </button>
+
+              <div className="text-center space-y-1.5">
+                <a
+                  href="https://buy.stripe.com/9B66oI862eUc8Um92NdAk01"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[10px] font-mono text-gray-400 hover:text-gray-200 inline-flex items-center gap-1 transition-colors"
+                >
+                  <span>Enlace directo Stripe Oficial ($49 USD)</span>
+                  <ExternalLink className="w-2.5 h-2.5" />
+                </a>
+
+                {onOpenPdfModal && (
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() => onOpenPdfModal('complete')}
+                      className="text-[11px] font-mono text-cyan-400 hover:text-cyan-300 transition-colors cursor-pointer"
+                    >
+                      {language === 'fr' 
+                        ? 'Ou commander pour un domaine spécifique →' 
+                        : language === 'en' 
+                        ? 'Or order for a custom domain →' 
+                        : 'O pedir para un dominio personalizado →'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Tier 3: Premium */}
@@ -348,9 +434,10 @@ export const PricingPage: React.FC<PricingPageProps> = ({
                 {language === 'fr' ? 'PREMIUM FORENSIQUE + APPEL' : language === 'en' ? 'PREMIUM FORENSIC + CALL' : 'PREMIUM FORENSIC + CALL'}
               </div>
               <div className="flex items-baseline gap-2 font-mono">
-                <span className="text-4xl font-extrabold text-white">99€</span>
+                <span className="text-4xl font-extrabold text-white">$99</span>
+                <span className="text-sm font-bold text-[#F5A623]">USD</span>
                 <span className="text-xs text-gray-400">
-                  {language === 'fr' ? 'paiement unique' : language === 'en' ? 'one-time payment' : 'pago único'}
+                  (99€ · {language === 'fr' ? 'paiement unique' : language === 'en' ? 'one-time fee' : 'pago único'})
                 </span>
               </div>
               <p className="text-xs text-gray-300 font-sans">
@@ -404,23 +491,60 @@ export const PricingPage: React.FC<PricingPageProps> = ({
               </div>
             </div>
 
-            <button
-              onClick={() => onOpenPdfModal('premium')}
-              className="mt-8 w-full py-3.5 px-4 rounded-xl bg-[#F5A623] hover:bg-[#e0961f] text-black text-xs font-mono font-bold transition-all cursor-pointer flex items-center justify-center gap-2 shadow-md"
-            >
-              {testMode ? (
-                <>
-                  <Download className="w-3.5 h-3.5 text-black" />
-                  <span>🧪 Probar Plan & Descargar PDF (99€)</span>
-                </>
-              ) : (
-                language === 'fr' 
-                  ? 'Acheter Premium + Appel (99€)' 
-                  : language === 'en' 
-                  ? 'Purchase Premium + Call (99€)' 
-                  : 'Comprar Premium + Call (99€)'
-              )}
-            </button>
+            <div className="mt-8 space-y-2.5">
+              <button
+                type="button"
+                onClick={() => handleCheckoutTier('premium', 'https://buy.stripe.com/14A5kE0DA7rKgmO4MxdAk02')}
+                disabled={loadingTier === 'premium'}
+                className="w-full py-3.5 px-4 rounded-xl bg-[#F5A623] hover:bg-[#e0961f] text-black text-xs font-mono font-bold transition-all cursor-pointer flex items-center justify-center gap-2 shadow-md disabled:opacity-60"
+              >
+                {loadingTier === 'premium' ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin text-black" />
+                    <span>Conectando con Stripe...</span>
+                  </>
+                ) : (
+                  <>
+                    <CreditCard className="w-3.5 h-3.5 text-black" />
+                    <span>
+                      {language === 'fr' 
+                        ? 'Acheter Premium + Appel ($99 USD)' 
+                        : language === 'en' 
+                        ? 'Purchase Premium + Call ($99 USD)' 
+                        : 'Comprar Premium + Call ($99 USD)'}
+                    </span>
+                  </>
+                )}
+              </button>
+
+              <div className="text-center space-y-1.5">
+                <a
+                  href="https://buy.stripe.com/14A5kE0DA7rKgmO4MxdAk02"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[10px] font-mono text-gray-500 hover:text-gray-300 inline-flex items-center gap-1 transition-colors"
+                >
+                  <span>Enlace directo Stripe Oficial ($99 USD)</span>
+                  <ExternalLink className="w-2.5 h-2.5" />
+                </a>
+
+                {onOpenPdfModal && (
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() => onOpenPdfModal('premium')}
+                      className="text-[11px] font-mono text-amber-400 hover:text-amber-300 transition-colors cursor-pointer"
+                    >
+                      {language === 'fr' 
+                        ? 'Ou commander pour un domaine spécifique →' 
+                        : language === 'en' 
+                        ? 'Or order for a custom domain →' 
+                        : 'O pedir para un dominio personalizado →'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
         </div>

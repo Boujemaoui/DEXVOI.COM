@@ -111,7 +111,7 @@ export function determinePlanTier(session: Stripe.Checkout.Session, lineItems?: 
   const amount = session.amount_total;
 
   if (amount === 500) {
-    return { tier: 'pdf_5eur', name: 'Informe Oficial en PDF (5€)' };
+    return { tier: 'pdf_5usd', name: 'Informe Oficial en PDF ($5 USD)' };
   }
   if (amount === 1900) {
     return { tier: 'basic', name: 'Plan Básico (19€)' };
@@ -125,8 +125,8 @@ export function determinePlanTier(session: Stripe.Checkout.Session, lineItems?: 
 
   // Check metadata
   const metaTier = session.metadata?.planTier;
-  if (metaTier === 'pdf_5eur') {
-    return { tier: 'pdf_5eur', name: 'Informe Oficial en PDF (5€)' };
+  if (metaTier === 'pdf_5usd' || metaTier === 'pdf_5eur') {
+    return { tier: 'pdf_5usd', name: 'Informe Oficial en PDF ($5 USD)' };
   }
   if (metaTier === 'basic') {
     return { tier: 'basic', name: 'Plan Básico (19€)' };
@@ -141,7 +141,7 @@ export function determinePlanTier(session: Stripe.Checkout.Session, lineItems?: 
   // Fallback to inspecting line items or description
   const desc = (lineItems?.[0]?.description || lineItems?.[0]?.price?.nickname || '').toLowerCase();
   if (desc.includes('5') || desc.includes('pdf')) {
-    return { tier: 'pdf_5eur', name: 'Informe Oficial en PDF (5€)' };
+    return { tier: 'pdf_5usd', name: 'Informe Oficial en PDF ($5 USD)' };
   }
   if (desc.includes('19') || desc.includes('básico') || desc.includes('starter') || desc.includes('initial')) {
     return { tier: 'basic', name: 'Plan Básico (19€)' };
@@ -348,9 +348,25 @@ export async function executeAndDeliverAudit(
       content: {
         score: 75,
         wordCount: 520,
-        internalLinksCount: 14,
-        externalLinksCount: 3,
-        topKeywords: [{ word: 'servicios', count: 5, density: '0.96%' }],
+        isThinContent: false,
+        thinContentWarning: null,
+        textToHtmlRatio: 14.5,
+        textToHtmlStatus: 'PASS',
+        topKeywords: [{ word: 'servicios', count: 5, density: '0.96%', inTitle: true, inH1: true, inMetaDescription: true }],
+        links: {
+          internalCount: 14,
+          externalCount: 3,
+          nofollowCount: 0,
+          sponsoredCount: 0,
+          ugcCount: 0,
+          totalCount: 17,
+        },
+        brokenLinks: {
+          checkedCount: 5,
+          brokenCount: 0,
+          brokenUrls: [],
+          status: 'PASS',
+        },
       },
       techStack: {
         cms: null,

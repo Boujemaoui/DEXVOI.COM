@@ -80,3 +80,110 @@
 .animate-pulse-subtle {
   animation: pulse-subtle 4s ease-in-out infinite;
 }
+
+/* =========================================================================
+ * Stitch SOC Scanning Dashboard Styles & Keyframes
+ * ========================================================================= */
+.cyber-bg {
+  background-color: #060A14;
+  background-image: 
+    radial-gradient(circle at 50% 45%, rgba(245, 166, 35, 0.08) 0%, rgba(10, 15, 31, 0.95) 70%),
+    linear-gradient(to right, rgba(245, 166, 35, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(245, 166, 35, 0.03) 1px, transparent 1px);
+  background-size: 100% 100%, 36px 36px, 36px 36px;
+}
+
+@keyframes spinClockwise {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spinCounterClockwise {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 25px rgba(245, 166, 35, 0.25), inset 0 0 20px rgba(0, 240, 255, 0.1);
+    border-color: rgba(245, 166, 35, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 45px rgba(245, 166, 35, 0.45), inset 0 0 35px rgba(0, 240, 255, 0.25);
+    border-color: rgba(255, 222, 106, 0.95);
+  }
+}
+
+@keyframes floatBadge1 {
+  0%, 100% { transform: translateY(0px) scale(1); opacity: 0.95; }
+  50% { transform: translateY(-7px) scale(1.03); opacity: 1; }
+}
+
+@keyframes floatBadge2 {
+  0%, 100% { transform: translateY(0px) scale(1); opacity: 0.92; }
+  50% { transform: translateY(6px) scale(1.02); opacity: 1; }
+}
+
+@keyframes blinkText {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+@keyframes laserSweep {
+  0% { transform: translateY(-100%); opacity: 0; }
+  40% { opacity: 0.8; }
+  80% { opacity: 0.8; }
+  100% { transform: translateY(220px); opacity: 0; }
+}
+
+.animate-spin-slow {
+  animation: spinClockwise 22s linear infinite;
+}
+
+.animate-spin-reverse-slow {
+  animation: spinCounterClockwise 16s linear infinite;
+}
+
+.animate-pulse-core {
+  animation: pulseGlow 3.5s ease-in-out infinite;
+}
+
+.float-b1 {
+  animation: floatBadge1 4s ease-in-out infinite;
+}
+
+.float-b2 {
+  animation: floatBadge2 4.5s ease-in-out infinite;
+}
+
+.animate-blink {
+  animation: blinkText 1.6s ease-in-out infinite;
+}
+
+.scan-laser {
+  animation: laserSweep 3s ease-in-out infinite;
+}
+
+.glow-gold-text {
+  text-shadow: 0 0 14px rgba(245, 166, 35, 0.6);
+}
+
+.glow-cyan-text {
+  text-shadow: 0 0 14px rgba(0, 240, 255, 0.6);
+}
+
+.gold-progress-bar {
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-spin-slow,
+  .animate-spin-reverse-slow,
+  .animate-pulse-core,
+  .float-b1,
+  .float-b2,
+  .animate-blink,
+  .scan-laser {
+    animation: none !important;
+  }
+}

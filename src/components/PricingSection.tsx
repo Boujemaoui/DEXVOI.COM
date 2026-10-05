@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Check, Sparkles, Lock, ArrowRight, ExternalLink, CreditCard, Download } from 'lucide-react';
+import React, { useState } from 'react';
+import { Check, Sparkles, Lock, ArrowRight, ExternalLink, CreditCard, RefreshCw } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
-import { isStripeTestMode, setStripeTestMode } from '../config/testMode';
+import { createCheckoutPopup, navigateToStripeUrl } from '../utils/stripeCheckout';
 
 interface PricingSectionProps {
   onOpenPdfModal?: (tier: 'basic' | 'complete' | 'premium') => void;
@@ -13,13 +13,39 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
   onOpenAuditModal,
 }) => {
   const { t, language } = useLanguage();
-  const [testMode, setTestMode] = useState<boolean>(isStripeTestMode());
+  const [loadingTier, setLoadingTier] = useState<string | null>(null);
 
-  useEffect(() => {
-    const handleSync = () => setTestMode(isStripeTestMode());
-    window.addEventListener('dexvoi_test_mode_changed', handleSync);
-    return () => window.removeEventListener('dexvoi_test_mode_changed', handleSync);
-  }, []);
+  const handleCheckoutTier = async (tierKey: 'basic' | 'complete' | 'premium', fallbackUrl: string) => {
+    // Pre-open checkout window synchronously on user click to prevent popup blockers
+    const checkoutWindow = createCheckoutPopup();
+    setLoadingTier(tierKey);
+
+    try {
+      const res = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          planTier: tierKey,
+          websiteUrl: 'dexvoi.com',
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json().catch(() => ({}));
+        if (data && data.url) {
+          navigateToStripeUrl(data.url, checkoutWindow);
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('Error initiating Stripe checkout for plan:', err);
+    } finally {
+      setLoadingTier(null);
+    }
+
+    // Fallback: Redirigir al link directo configurado
+    navigateToStripeUrl(fallbackUrl, checkoutWindow);
+  };
 
   const plans = [
     {
@@ -27,35 +53,36 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
       tierKey: 'basic' as const,
       name: t.pricing.tierBasicTitle,
       subtitle: t.pricing.tierBasicSubtitle,
-      price: '19',
-      currency: '€',
+      price: '$19',
+      currency: 'USD',
+      altPrice: '(19€)',
       period: language === 'fr' ? 'paiement unique' : language === 'en' ? 'one-time fee' : 'pago único',
       pages: t.pricing.tierBasicPages,
       badge: null,
       highlighted: false,
       stripeUrl: 'https://buy.stripe.com/aFa00kaea4fy0nQ6UFdAk00',
-      buttonText: t.pricing.tierBasicBtn,
+      buttonText: language === 'fr' ? 'Acheter Rapport Starter ($19 USD)' : language === 'en' ? 'Order Starter Report ($19 USD)' : 'Adquirir Informe Básico ($19 USD)',
       features: language === 'fr' ? [
         'Analyse de vitesse de chargement Core Web Vitals',
         'Vérification de certificat SSL et en-têtes HTTP',
         'Détection de présence et visibilité Google Maps',
-        'Détection basique de ports de serveur exposés',
-        'Checklist technique des améliorations prioritaires',
-        'Livraison rapide en PDF exécutif par e-mail',
+        'Rapport numérique étendu de 10 pages en PDF',
+        'Checklist technique de mise en œuvre pas à pas',
+        'Feuille de route de remédiation par phases (48h / 15j)',
       ] : language === 'en' ? [
         'Core Web Vitals load speed benchmarking',
         'SSL certificate and HTTP security headers check',
         'Google Maps local presence detection',
-        'Basic exposed server port scanning',
-        'Prioritized technical fix checklist',
-        'Executive PDF report delivered via email',
+        'Expanded 10-page forensic digital PDF report',
+        'Step-by-step technical implementation checklist',
+        'Phased mitigation roadmap for engineers (48h / 15d)',
       ] : [
         'Análisis de velocidad de carga Core Web Vitals',
         'Verificación de certificado SSL y headers HTTP',
         'Detección de presencia y visibilidad en Google Maps',
-        'Detección básica de puertos de servidor expuestos',
-        'Checklist técnico de mejoras prioritarias',
-        'Entrega rápida en PDF ejecutivo por email',
+        'Informe digital forense ampliado de 10 páginas en PDF',
+        'Checklist técnico de implementación paso a paso',
+        'Hoja de ruta de mitigación por fases (48h / 15 días)',
       ],
     },
     {
@@ -63,14 +90,15 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
       tierKey: 'complete' as const,
       name: t.pricing.tierCompleteTitle,
       subtitle: t.pricing.tierCompleteSubtitle,
-      price: '49',
-      currency: '€',
+      price: '$49',
+      currency: 'USD',
+      altPrice: '(49€)',
       period: language === 'fr' ? 'paiement unique' : language === 'en' ? 'one-time fee' : 'pago único',
       pages: t.pricing.tierCompletePages,
       badge: t.pricing.popularBadge,
       highlighted: true,
       stripeUrl: 'https://buy.stripe.com/9B66oI862eUc8Um92NdAk01',
-      buttonText: t.pricing.tierCompleteBtn,
+      buttonText: language === 'fr' ? 'Acheter Audit Complet ($49 USD)' : language === 'en' ? 'Order Complete Audit ($49 USD)' : 'Adquirir Informe Completo ($49 USD)',
       features: language === 'fr' ? [
         'Tout ce qui est inclus dans le rapport Starter',
         'Audit médicolégal approfondi de plus de 20 pages',
@@ -102,14 +130,15 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
       tierKey: 'premium' as const,
       name: t.pricing.tierPremiumTitle,
       subtitle: t.pricing.tierPremiumSubtitle,
-      price: '99',
-      currency: '€',
+      price: '$99',
+      currency: 'USD',
+      altPrice: '(99€)',
       period: language === 'fr' ? 'paiement unique' : language === 'en' ? 'one-time fee' : 'pago único',
       pages: t.pricing.tierPremiumPages,
       badge: language === 'fr' ? 'AUDIT + SESSION 1-À-1' : language === 'en' ? 'AUDIT + 1-ON-1 SESSION' : 'AUDITORÍA + SESIÓN 1-A-1',
       highlighted: false,
       stripeUrl: 'https://buy.stripe.com/14A5kE0DA7rKgmO4MxdAk02',
-      buttonText: t.pricing.tierPremiumBtn,
+      buttonText: language === 'fr' ? 'Acheter Premium VIP ($99 USD)' : language === 'en' ? 'Order Premium VIP ($99 USD)' : 'Adquirir Plan Premium ($99 USD)',
       features: language === 'fr' ? [
         'Tout ce qui est inclus dans l\'Audit Complet de 20+ pages',
         'Session stratégique 1-à-1 privée de 45 min en visioconférence',
@@ -160,44 +189,6 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
           </p>
         </div>
 
-        {/* Test Mode Notification & Quick Switch Banner */}
-        <div className="mb-10 p-4 rounded-2xl bg-[#0E1528] border border-[#F5A623]/40 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
-          <div className="flex items-center gap-3 text-left">
-            <div className="w-9 h-9 rounded-xl bg-[#F5A623]/20 border border-[#F5A623]/40 flex items-center justify-center shrink-0">
-              <Sparkles className="w-4 h-4 text-[#F5A623]" />
-            </div>
-            <div>
-              <div className="text-xs font-mono font-bold text-white flex items-center gap-2">
-                <span>{testMode ? '🧪 MODO DE PRUEBAS ACTIVO' : '🔒 MODO PRODUCCIÓN (STRIPE CONECTADO)'}</span>
-                <span className={`text-[9px] px-2 py-0.5 rounded font-mono ${testMode ? 'bg-emerald-500/20 text-emerald-400 font-bold' : 'bg-blue-500/20 text-blue-400'}`}>
-                  {testMode ? 'SIN COBROS REALES' : 'PASARELA ACTIVA'}
-                </span>
-              </div>
-              <p className="text-[11px] text-gray-400 font-mono mt-0.5">
-                {testMode 
-                  ? 'Puedes seleccionar y probar cualquiera de los planes (19€, 49€, 99€ o 5€) y descargar los informes PDF oficiales sin pagar en Stripe.'
-                  : 'Los botones conectan directamente con las sesiones oficiales de Stripe Checkout.'}
-              </p>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => {
-              const nextState = !testMode;
-              setTestMode(nextState);
-              setStripeTestMode(nextState);
-            }}
-            className={`px-4 py-2 rounded-xl text-xs font-mono font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap border ${
-              testMode
-                ? 'bg-[#1E293B] hover:bg-[#283548] text-gray-200 border-gray-600'
-                : 'bg-[#F5A623] hover:bg-[#FFAE33] text-[#0A0F1F] border-[#F5A623]'
-            }`}
-          >
-            {testMode ? 'Reconectar Stripe (Modo Real)' : 'Desconectar Stripe (Modo Pruebas)'}
-          </button>
-        </div>
-
         {/* Pricing Cards Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
           {plans.map((plan) => (
@@ -233,13 +224,18 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
 
                 {/* Price Display */}
                 <div className="mb-6 p-4 rounded-xl bg-[#080D1A] border border-gray-800/80 flex items-baseline justify-between">
-                  <div className="flex items-baseline gap-1">
+                  <div className="flex items-baseline gap-1.5">
                     <span className="text-4xl sm:text-5xl font-extrabold text-white font-mono tracking-tight">
                       {plan.price}
                     </span>
-                    <span className="text-2xl font-bold text-[#F5A623] font-mono">
+                    <span className="text-xl font-bold text-[#F5A623] font-mono">
                       {plan.currency}
                     </span>
+                    {(plan as any).altPrice && (
+                      <span className="text-xs text-gray-400 font-mono ml-1">
+                        {(plan as any).altPrice}
+                      </span>
+                    )}
                   </div>
                   <div className="text-right">
                     <span className="block text-[11px] font-mono uppercase text-emerald-400 font-bold">
@@ -271,61 +267,51 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
 
               {/* Action Buttons */}
               <div className="space-y-2.5 pt-4 border-t border-gray-800/80">
-                {testMode ? (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => onOpenPdfModal && onOpenPdfModal(plan.tierKey)}
-                      className={`w-full py-3.5 px-4 rounded-xl font-mono text-xs uppercase font-bold tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                        plan.highlighted
-                          ? 'bg-[#0066FF] hover:bg-[#0055DD] text-white shadow-lg shadow-[#0066FF]/30'
-                          : 'bg-[#131B33] hover:bg-[#1C2744] text-white border border-[#0066FF]/50'
-                      }`}
-                    >
-                      <Download className="w-3.5 h-3.5 text-[#F5A623]" />
-                      <span>🧪 Probar Plan & Descargar PDF ({plan.price}€)</span>
-                    </button>
-
-                    <div className="text-center">
-                      <a
-                        href={plan.stripeUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[10px] font-mono text-gray-500 hover:text-gray-300 inline-flex items-center gap-1 transition-colors"
-                      >
-                        <span>Enlace directo Stripe Oficial ({plan.price}€)</span>
-                        <ExternalLink className="w-2.5 h-2.5" />
-                      </a>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    {/* Direct Stripe Checkout Button */}
-                    <a
-                      href={plan.stripeUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`w-full py-3.5 px-4 rounded-xl font-mono text-xs uppercase font-bold tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                        plan.highlighted
-                          ? 'bg-[#635BFF] hover:bg-[#5349e0] text-white shadow-lg shadow-[#635BFF]/30'
-                          : 'bg-[#1E293B] hover:bg-[#283548] text-white border border-gray-700'
-                      }`}
-                    >
-                      <Lock className="w-3.5 h-3.5" />
+                {/* Direct Stripe Checkout Button */}
+                <button
+                  type="button"
+                  onClick={() => handleCheckoutTier(plan.tierKey, plan.stripeUrl)}
+                  disabled={loadingTier === plan.tierKey}
+                  className={`w-full py-3.5 px-4 rounded-xl font-mono text-xs uppercase font-bold tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-60 ${
+                    plan.highlighted
+                      ? 'bg-[#635BFF] hover:bg-[#5349e0] text-white shadow-lg shadow-[#635BFF]/30'
+                      : 'bg-[#1E293B] hover:bg-[#283548] text-white border border-gray-700'
+                  }`}
+                >
+                  {loadingTier === plan.tierKey ? (
+                    <>
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                      <span>Conectando con Stripe...</span>
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="w-3.5 h-3.5" />
                       <span>{plan.buttonText}</span>
-                      <ExternalLink className="w-3.5 h-3.5 ml-0.5" />
-                    </a>
+                      <ArrowRight className="w-3.5 h-3.5 ml-0.5" />
+                    </>
+                  )}
+                </button>
 
-                    {/* Custom Modal trigger button */}
-                    {onOpenPdfModal && (
-                      <button
-                        onClick={() => onOpenPdfModal(plan.tierKey)}
-                        className="w-full py-2 text-center text-[11px] font-mono text-gray-400 hover:text-white transition-colors cursor-pointer"
-                      >
-                        {language === 'fr' ? 'Ou ouvrir l’assistant de commande guidé →' : language === 'en' ? 'Or open guided order assistant →' : 'O abrir asistente de pedido guiado →'}
-                      </button>
-                    )}
-                  </>
+                <div className="text-center">
+                  <a
+                    href={plan.stripeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[10px] font-mono text-gray-500 hover:text-gray-300 inline-flex items-center gap-1 transition-colors"
+                  >
+                    <span>Enlace directo Stripe Oficial ({plan.price} {plan.currency})</span>
+                    <ExternalLink className="w-2.5 h-2.5" />
+                  </a>
+                </div>
+
+                {/* Custom Modal trigger button */}
+                {onOpenPdfModal && (
+                  <button
+                    onClick={() => onOpenPdfModal(plan.tierKey)}
+                    className="w-full py-1.5 text-center text-[11px] font-mono text-gray-400 hover:text-white transition-colors cursor-pointer"
+                  >
+                    {language === 'fr' ? 'Ou ouvrir l’assistant de commande guidé →' : language === 'en' ? 'Or open guided order assistant →' : 'O abrir asistente de pedido guiado →'}
+                  </button>
                 )}
               </div>
             </div>

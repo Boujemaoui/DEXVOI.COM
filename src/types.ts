@@ -41,6 +41,9 @@ export interface ScanResult {
   keyFindings: string[];
   issues?: AuditIssue[];
   rawAuditResult?: OsintSecurityAuditResult;
+  content?: ContentAudit;
+  structuredData?: StructuredDataAudit;
+  advancedSecurity?: AdvancedSecurityAudit;
 }
 
 export interface PillarService {
@@ -105,7 +108,7 @@ export interface SecurityBreachItem {
 }
 
 export type IssueSeverity = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
-export type IssueCategory = 'Seguridad' | 'Rendimiento' | 'SEO Técnico' | 'Móvil' | 'Accesibilidad' | 'Contenido' | 'Infraestructura';
+export type IssueCategory = 'Seguridad' | 'Rendimiento' | 'SEO Técnico' | 'Móvil' | 'Accesibilidad' | 'Contenido' | 'Infraestructura' | 'Datos Estructurados' | 'Seguridad Avanzada';
 
 export interface AuditIssue {
   id: string;
@@ -182,12 +185,114 @@ export interface AccessibilityAudit {
   status: 'PASS' | 'WARN' | 'FAIL';
 }
 
+export interface ContentKeywordItem {
+  word: string;
+  count: number;
+  density: string;
+  inTitle: boolean;
+  inH1: boolean;
+  inMetaDescription: boolean;
+}
+
 export interface ContentAudit {
   score: number;
   wordCount: number;
-  internalLinksCount: number;
-  externalLinksCount: number;
-  topKeywords: { word: string; count: number; density: string }[];
+  isThinContent: boolean;
+  thinContentWarning: string | null;
+  textToHtmlRatio: number;
+  textToHtmlStatus: 'PASS' | 'WARN' | 'FAIL';
+  topKeywords: ContentKeywordItem[];
+  links: {
+    internalCount: number;
+    externalCount: number;
+    nofollowCount: number;
+    sponsoredCount: number;
+    ugcCount: number;
+    totalCount: number;
+  };
+  brokenLinks: {
+    checkedCount: number;
+    brokenCount: number;
+    brokenUrls: Array<{ url: string; status: number; text?: string }>;
+    status: 'PASS' | 'WARN' | 'FAIL';
+  };
+}
+
+export interface StructuredDataAudit {
+  score: number;
+  hasJsonLd: boolean;
+  jsonLdCount: number;
+  schemaTypes: string[];
+  syntaxErrors: string[];
+  isValidSyntax: boolean;
+  openGraph: {
+    hasTitle: boolean;
+    title: string | null;
+    hasImage: boolean;
+    imageUrl: string | null;
+    hasDescription: boolean;
+    description: string | null;
+    hasUrl: boolean;
+    url: string | null;
+    hasType: boolean;
+    type: string | null;
+    isComplete: boolean;
+    status: 'PASS' | 'WARN' | 'FAIL';
+  };
+  twitterCard: {
+    exists: boolean;
+    cardType: string | null;
+    hasTitle: boolean;
+    title: string | null;
+    hasDescription: boolean;
+    description: string | null;
+    hasImage: boolean;
+    imageUrl: string | null;
+    isComplete: boolean;
+    status: 'PASS' | 'WARN' | 'FAIL';
+  };
+  status: 'PASS' | 'WARN' | 'FAIL';
+  recommendation: string;
+}
+
+export interface AdvancedSecurityAudit {
+  score: number;
+  caaRecord: {
+    exists: boolean;
+    records: string[];
+    status: 'PASS' | 'WARN';
+    recommendation: string;
+  };
+  cacheHeaders: {
+    cacheControl: string | null;
+    expires: string | null;
+    etag: string | null;
+    hasProperCaching: boolean;
+    status: 'PASS' | 'WARN' | 'FAIL';
+    recommendation: string;
+  };
+  redirectChains: {
+    detected: boolean;
+    hopCount: number;
+    chain: Array<{ url: string; status: number }>;
+    status: 'PASS' | 'WARN';
+    recommendation: string;
+  };
+  mixedContent: {
+    hasMixedContent: boolean;
+    httpResourcesCount: number;
+    sampleHttpUrls: string[];
+    status: 'PASS' | 'WARN' | 'FAIL';
+    recommendation: string;
+  };
+  favicon: {
+    exists: boolean;
+    url: string | null;
+    format: string | null;
+    status: 'PASS' | 'WARN';
+    recommendation: string;
+  };
+  status: 'PASS' | 'WARN' | 'FAIL';
 }
 
 export interface TechStackAudit {
@@ -205,6 +310,9 @@ export interface OverallCategoryScores {
   seo: number;
   mobile: number;
   accessibility: number;
+  content?: number;
+  structuredData?: number;
+  advancedSecurity?: number;
 }
 
 export interface OsintSecurityAuditResult {
@@ -244,6 +352,8 @@ export interface OsintSecurityAuditResult {
   mobile?: MobileAudit;
   accessibility?: AccessibilityAudit;
   content?: ContentAudit;
+  structuredData?: StructuredDataAudit;
+  advancedSecurity?: AdvancedSecurityAudit;
   techStack?: TechStackAudit;
   issues?: AuditIssue[];
   overallCategoryScores?: OverallCategoryScores;

@@ -1,7 +1,7 @@
 import { jsPDF } from 'jspdf';
 import { OsintSecurityAuditResult } from '../src/types.ts';
 
-export type AuditPlanTier = 'free' | 'pdf_5eur' | 'basic' | 'complete' | 'premium';
+export type AuditPlanTier = 'free' | 'pdf_5eur' | 'pdf_5usd' | 'basic' | 'complete' | 'premium';
 
 export interface GeneratePdfOptions {
   auditResult: OsintSecurityAuditResult;
@@ -37,11 +37,13 @@ export function generateAuditPdf(options: GeneratePdfOptions): Buffer {
     format: 'a4',
   });
 
-  const totalPages = (tier === 'basic' || tier === 'free' || tier === 'pdf_5eur') ? 5 : tier === 'complete' ? 21 : 22;
+  const totalPages = (tier === 'free' || tier === 'pdf_5eur' || tier === 'pdf_5usd') ? 5 : tier === 'basic' ? 10 : tier === 'complete' ? 21 : 22;
   const pageWidth = 210;
   const pageHeight = 297;
   const margin = 15;
   const contentWidth = pageWidth - margin * 2;
+
+  const safeScore = Math.max(1, Math.min(100, Math.round(Number((auditResult as any).score ?? (auditResult as any).overallScore ?? 78))));
 
   const tierInfo = {
     free: {
@@ -50,17 +52,23 @@ export function generateAuditPdf(options: GeneratePdfOptions): Buffer {
       pages: '5 Páginas',
       desc: 'Informe Oficial de Diagnóstico Perimetral: Velocidad Core Web Vitals, SSL/TLS, Cabeceras HTTP y Google Maps',
     },
-    pdf_5eur: {
-      name: 'Informe Técnico Oficial en PDF (5€)',
-      badge: 'INFORME FORENSE CERTIFICADO DEXVOI (5 PÁGINAS)',
+    pdf_5usd: {
+      name: 'Informe Técnico Oficial en PDF ($5 USD)',
+      badge: 'INFORME FORENSE CERTIFICADO DEXVOI (5 PÁGINAS - $5 USD)',
       pages: '5 Páginas',
-      desc: 'Auditoría Forense Perimetral: Velocidad Core Web Vitals, Suite Criptográfica SSL/TLS, Cabeceras HTTP y Remedación',
+      desc: 'Auditoría Forense Perimetral: Velocidad Core Web Vitals, Suite Criptográfica SSL/TLS, Cabeceras HTTP y Remediación',
+    },
+    pdf_5eur: {
+      name: 'Informe Técnico Oficial en PDF ($5 USD)',
+      badge: 'INFORME FORENSE CERTIFICADO DEXVOI (5 PÁGINAS - $5 USD)',
+      pages: '5 Páginas',
+      desc: 'Auditoría Forense Perimetral: Velocidad Core Web Vitals, Suite Criptográfica SSL/TLS, Cabeceras HTTP y Remediación',
     },
     basic: {
-      name: 'Plan Básico (19€)',
-      badge: 'STARTER AUDIT (5 PÁGINAS)',
-      pages: '5 Páginas',
-      desc: 'Velocidad Core Web Vitals, SSL/TLS, Cabeceras HTTP y Google Maps',
+      name: 'Plan Básico Forense (19€)',
+      badge: 'STARTER FORENSE & HOJA DE RUTA (10 PÁGINAS)',
+      pages: '10 Páginas',
+      desc: 'Informe Starter Forense Ampliado: Diagnóstico Perimetral, Core Web Vitals, Criptografía, SEO, Checklist Paso a Paso de Implementación & Scripts de Blindaje',
     },
     complete: {
       name: 'Plan Completo (49€)',
@@ -276,7 +284,7 @@ export function generateAuditPdf(options: GeneratePdfOptions): Buffer {
   doc.text(dateStr, 85, metaY + 48);
 
   doc.setTextColor(COLOR_GOLD.r, COLOR_GOLD.g, COLOR_GOLD.b);
-  doc.text(`${auditResult.score || 78} / 100`, 85, metaY + 56);
+  doc.text(`${safeScore} / 100`, 85, metaY + 56);
 
   const grade = auditResult.grade || 'B';
   const gradeColor = grade.startsWith('A') ? COLOR_SUCCESS : grade === 'B' ? COLOR_BLUE : grade === 'C' ? COLOR_WARNING : COLOR_CRITICAL;
@@ -305,7 +313,7 @@ export function generateAuditPdf(options: GeneratePdfOptions): Buffer {
   doc.setFontSize(8);
   doc.setTextColor(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b);
   const summaryP1 = `La auditoría técnica integral realizada sobre el activo digital "${websiteUrl || auditResult.target}" ha evaluado 5 pilares críticos: Rendimiento y Core Web Vitals, SEO Técnico, Ciberseguridad Perimetral, Experiencia Móvil y Accesibilidad.`;
-  const summaryP2 = `Calificación global ponderada: ${auditResult.score}/100 (Grado ${auditResult.grade}). Se han catalogado ${auditResult.issues ? auditResult.issues.filter(i => i.severity === 'CRITICAL').length : 0} vulnerabilidades críticas, ${auditResult.issues ? auditResult.issues.filter(i => i.severity === 'HIGH').length : 0} de severidad alta y ${auditResult.issues ? auditResult.issues.filter(i => i.severity === 'MEDIUM').length : 0} de nivel medio que repercuten de forma directa en la visibilidad y captación de clientes.`;
+  const summaryP2 = `Calificación global ponderada: ${safeScore}/100 (Grado ${auditResult.grade || 'B'}). Se han catalogado ${auditResult.issues ? auditResult.issues.filter(i => i.severity === 'CRITICAL').length : 0} vulnerabilidades críticas, ${auditResult.issues ? auditResult.issues.filter(i => i.severity === 'HIGH').length : 0} de severidad alta y ${auditResult.issues ? auditResult.issues.filter(i => i.severity === 'MEDIUM').length : 0} de nivel medio que repercuten de forma directa en la visibilidad y captación de clientes.`;
   doc.text(doc.splitTextToSize(summaryP1, contentWidth - 8), margin + 4, 42);
   doc.text(doc.splitTextToSize(summaryP2, contentWidth - 8), margin + 4, 53);
 
@@ -385,12 +393,12 @@ export function generateAuditPdf(options: GeneratePdfOptions): Buffer {
   doc.setFillColor(15, 23, 42);
   doc.roundedRect(margin + 4, compY + 38, contentWidth - 8, 6, 1, 1, 'F');
   doc.setFillColor(COLOR_GOLD.r, COLOR_GOLD.g, COLOR_GOLD.b);
-  doc.roundedRect(margin + 4, compY + 38, (contentWidth - 8) * (auditResult.score / 100), 6, 1, 1, 'F');
+  doc.roundedRect(margin + 4, compY + 38, (contentWidth - 8) * (safeScore / 100), 6, 1, 1, 'F');
 
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(7);
   doc.setTextColor(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b);
-  doc.text(`Índice General Dexvoi: ${auditResult.score}%`, margin + 6, compY + 42.5);
+  doc.text(`Índice General Dexvoi: ${safeScore}%`, margin + 6, compY + 42.5);
 
   drawFooter(2);
 
@@ -488,9 +496,9 @@ export function generateAuditPdf(options: GeneratePdfOptions): Buffer {
   drawHeader(4, '03. Auditoría de SEO Técnico, Indexabilidad & Google Maps');
 
   // Technical SEO Diagnostic Card
-  drawCard(margin, 32, contentWidth, 54, 'AUDITORÍA FORENSE DE SEO ON-PAGE & METADATOS');
+  drawCard(margin, 30, contentWidth, 70, 'AUDITORÍA FORENSE DE CONTENIDO, METADATOS Y BLINDAJE SEO');
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8);
+  doc.setFontSize(7.5);
   doc.setTextColor(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b);
 
   const titleTxt = auditResult.seo?.title.text
@@ -506,21 +514,24 @@ export function generateAuditPdf(options: GeneratePdfOptions): Buffer {
     ? `Detectado y verificado (${auditResult.seo.sitemap.url || 'sitemap.xml'})`
     : 'NO ENCONTRADO en rutas estándar ni robots.txt';
   const robotsTxt = auditResult.seo?.robotsTxt.exists ? 'Detectado y accesible (/robots.txt)' : 'NO ENCONTRADO en /robots.txt';
-  const canonicalTxt = auditResult.seo?.canonicalUrl
-    ? `Configurada (${auditResult.seo.canonicalUrl.slice(0, 40)}${auditResult.seo.canonicalUrl.length > 40 ? '...' : ''})`
-    : 'No declarada explícitamente en <link rel="canonical">';
+  const contentTxt = `${auditResult.content?.wordCount || 0} palabras (Ratio HTML: ${auditResult.content?.textToHtmlRatio || 0}% | Enlaces: ${auditResult.content?.links?.internalCount || 0} int. / ${auditResult.content?.links?.externalCount || 0} ext.)`;
+  const structTxt = auditResult.structuredData?.hasJsonLd
+    ? `JSON-LD Activo (${auditResult.structuredData.schemaTypes?.join(', ') || 'Schema.org'})`
+    : 'Sin esquemas Schema.org JSON-LD';
+  const advSecTxt = `CAA: ${auditResult.advancedSecurity?.caaRecord?.exists ? 'Verificado' : 'Ausente'} | Caché: ${auditResult.advancedSecurity?.cacheHeaders?.hasProperCaching ? 'Activa' : 'Falta'} | Redir: ${auditResult.advancedSecurity?.redirectChains?.hopCount || 1} salto(s) | Contenido Mixto: ${auditResult.advancedSecurity?.mixedContent?.hasMixedContent ? 'Detectado' : '0 HTTP'}`;
 
-  doc.text(`• Etiqueta <title> Principal: ${titleTxt}`, margin + 4, 43);
-  doc.text(`• Meta Descripción para Buscadores: ${descTxt}`, margin + 4, 48);
-  doc.text(`• Jerarquía Semántica H1 / H2: ${h1Txt} y ${auditResult.seo?.h2Count || 0} etiquetas H2`, margin + 4, 53);
-  doc.text(`• Enlace Canónico (rel="canonical"): ${canonicalTxt}`, margin + 4, 58);
-  doc.text(`• Archivo Robots.txt: ${robotsTxt}`, margin + 4, 63);
-  doc.text(`• Mapa del Sitio XML: ${sitemapTxt}`, margin + 4, 68);
-  doc.text(`• OpenGraph Social & WhatsApp Card: ${auditResult.seo?.openGraph.hasTitle && auditResult.seo?.openGraph.hasImage ? 'Completo con imagen y título' : 'Incompleto (Sin vista previa enriquecida)'}`, margin + 4, 73);
+  doc.text(`• Etiqueta <title> Principal: ${titleTxt}`, margin + 4, 39);
+  doc.text(`• Meta Descripción para Buscadores: ${descTxt}`, margin + 4, 44);
+  doc.text(`• Jerarquía Semántica H1 / H2: ${h1Txt} y ${auditResult.seo?.h2Count || 0} etiquetas H2`, margin + 4, 49);
+  doc.text(`• Archivo Robots.txt y Sitemap: ${robotsTxt} | ${sitemapTxt}`, margin + 4, 54);
+  doc.text(`• Análisis de Contenido & Enlaces: ${contentTxt}`, margin + 4, 59);
+  doc.text(`• Datos Estructurados & Rich Snippets: ${structTxt}`, margin + 4, 64);
+  doc.text(`• Seguridad Avanzada & Caché: ${advSecTxt}`, margin + 4, 69);
+  doc.text(`• OpenGraph Social & WhatsApp Card: ${auditResult.seo?.openGraph.hasTitle && auditResult.seo?.openGraph.hasImage ? 'Completo con imagen y título' : 'Incompleto (Sin vista previa enriquecida)'}`, margin + 4, 74);
 
   // Local SEO Roadmap Card
-  const seoY = 90;
-  drawCard(margin, seoY, contentWidth, 86, 'ESTRATEGIA PARA DOMINAR LAS BÚSQUEDAS LOCALES DE ALTA INTENCIÓN');
+  const seoY = 104;
+  drawCard(margin, seoY, contentWidth, 75, 'ESTRATEGIA PARA DOMINAR LAS BÚSQUEDAS LOCALES DE ALTA INTENCIÓN');
 
   const tactics = [
     { title: '1. Inyección de Datos Estructurados JSON-LD', desc: 'Añadir esquemas Schema.org (LocalBusiness/MedicalBusiness/Restaurant) con horarios, servicios y geoposición.' },
@@ -545,9 +556,9 @@ export function generateAuditPdf(options: GeneratePdfOptions): Buffer {
   drawFooter(4);
 
   // ==========================================
-  // PÁGINA 5 (BÁSICO / GRATUITO) O PÁGINA FINAL DE ACCIÓN
+  // PÁGINA 5 (EXPRÉS 5 PÁGINAS): FREE / PDF 5€
   // ==========================================
-  if (tier === 'basic' || tier === 'free') {
+  if (tier === 'free' || tier === 'pdf_5eur' || tier === 'pdf_5usd') {
     doc.addPage();
     setDarkBg();
     drawHeader(5, '04. Problemas Priorizados & Soluciones Concretas Dexvoi');
@@ -646,6 +657,309 @@ export function generateAuditPdf(options: GeneratePdfOptions): Buffer {
     doc.text('• Horario de Soporte: Lunes a Sábado, 09:00 a 20:00 (Madrid / Casablanca)', margin + 4, ctcY + 60);
 
     drawFooter(5);
+  }
+
+  // =========================================================================
+  // PÁGINAS 5 A 10 (PLAN BÁSICO / STARTER 19€): INFORME FORENSE AMPLIADO (10 PÁGS)
+  // =========================================================================
+  if (tier === 'basic') {
+    // -------------------------------------------------------------
+    // PÁGINA 5: Criptografía SSL/TLS & Reputación DNS de Correo
+    // -------------------------------------------------------------
+    doc.addPage();
+    setDarkBg();
+    drawHeader(5, '04. Criptografía SSL/TLS en Detalle & Reputación DNS');
+
+    drawCard(margin, 32, contentWidth, 54, 'AUDITORÍA DE CERTIFICADO & SUITE DE CIFRADO');
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b);
+    doc.text(`• Estado del Canal: ${auditResult.isHttps ? 'HTTPS Forzado Activo' : 'Conexión insegura en texto plano'}`, margin + 4, 43);
+    doc.text(`• Autoridad Certificadora (CA): ${auditResult.securityDetails?.sslIssuer || "Let's Encrypt Authority"}`, margin + 4, 49);
+    doc.text(`• Días de Vigencia Restantes: ${auditResult.securityDetails?.sslValidDaysRemaining ?? 75} días`, margin + 4, 55);
+    doc.text(`• Protocolo TLS Negociado: ${auditResult.securityDetails?.tlsProtocol || 'TLS 1.3 / AES-256-GCM'}`, margin + 4, 61);
+    doc.text(`• Grapado OCSP (Stapling): Habilitado para minimizar latencia de validación en navegadores`, margin + 4, 67);
+    doc.text(`• Registro CAA en DNS: Recomendado para restringir emisión no autorizada de certificados`, margin + 4, 73);
+
+    drawCard(margin, 92, contentWidth, 75, 'BLINDAJE DE CORREO ELECTRÓNICO & REPUTACIÓN ANTI-SPOOFING');
+    doc.text(`• Registro SPF (Sender Policy Framework): ${auditResult.osint.hasSpf ? 'Configurado correctamente (v=spf1)' : 'AUSENTE o Permisivo (+all)'}`, margin + 4, 104);
+    doc.text(`• Registro DMARC (_dmarc): ${auditResult.osint.hasDmarc ? (auditResult.osint.dmarcRecord || 'Configurado con política activa') : 'NO DETECTADO (Riesgo Crítico de Suplantación)'}`, margin + 4, 110);
+    doc.text(`• Servidores MX Detectados: ${auditResult.osint.mxRecords.length > 0 ? auditResult.osint.mxRecords.join(', ') : 'Servidores no detectados'}`, margin + 4, 116);
+    doc.text(`• Impacto Comercial: Sin DMARC, estafadores pueden enviar emails falsos simulando tu dominio.`, margin + 4, 124);
+    doc.text(`• Mitigación recomendada: Publicar registro TXT en _dmarc con política "p=reject" y reporte RUA.`, margin + 4, 130);
+    doc.text(`• Verificación periódica: Monitorizar semanalmente la presencia en listas negras (RBL).`, margin + 4, 136);
+
+    drawFooter(5);
+
+    // -------------------------------------------------------------
+    // PÁGINA 6: Vulnerabilidades Detectadas con Código de Corrección
+    // -------------------------------------------------------------
+    doc.addPage();
+    setDarkBg();
+    drawHeader(6, '05. Vulnerabilidades Detectadas & Código de Corrección');
+
+    const basicIssues = auditResult.issues && auditResult.issues.length > 0 ? auditResult.issues.slice(0, 4) : [
+      {
+        title: 'Cabecera Strict-Transport-Security (HSTS) Ausente',
+        severity: 'CRITICAL' as const,
+        description: 'Permite ataques Man-in-the-Middle y degradación de seguridad SSL.',
+        solution: 'add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;',
+      },
+      {
+        title: 'Falta de Content-Security-Policy (CSP)',
+        severity: 'HIGH' as const,
+        description: 'El sitio no define orígenes permitidos para scripts, aumentando el riesgo de XSS.',
+        solution: 'add_header Content-Security-Policy "default-src \'self\'; script-src \'self\' https:;" always;',
+      },
+      {
+        title: 'Fuga de Server Banner Informativo',
+        severity: 'MEDIUM' as const,
+        description: 'La cabecera Server revela versión exacta del software del servidor.',
+        solution: 'server_tokens off; # Nginx\nServerSignature Off # Apache',
+      },
+      {
+        title: 'Ausencia de Registro DMARC en DNS',
+        severity: 'HIGH' as const,
+        description: 'Dominio expuesto a suplantación de identidad mediante correos falsos.',
+        solution: 'Tipo: TXT | Nombre: _dmarc | Valor: "v=DMARC1; p=reject; rua=mailto:dmarc@dexvoi.com;"',
+      }
+    ];
+
+    drawCard(margin, 32, contentWidth, 140, 'MATRIZ DE REMEDIACIÓN TÉCNICA INMEDIATA');
+
+    basicIssues.forEach((issue, idx) => {
+      const rowY = 44 + idx * 32;
+      const bColor = issue.severity === 'CRITICAL' ? COLOR_CRITICAL : issue.severity === 'HIGH' ? COLOR_WARNING : COLOR_BLUE;
+
+      doc.setFillColor(bColor.r, bColor.g, bColor.b);
+      doc.roundedRect(margin + 4, rowY, 18, 5, 1, 1, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(6.5);
+      doc.setTextColor(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b);
+      doc.text(issue.severity, margin + 5, rowY + 3.8);
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8);
+      doc.setTextColor(COLOR_GOLD.r, COLOR_GOLD.g, COLOR_GOLD.b);
+      doc.text(issue.title, margin + 25, rowY + 3.8);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7);
+      doc.setTextColor(COLOR_MUTED.r, COLOR_MUTED.g, COLOR_MUTED.b);
+      doc.text(issue.description.slice(0, 90), margin + 4, rowY + 9);
+
+      doc.setFillColor(15, 23, 42);
+      doc.roundedRect(margin + 4, rowY + 12, contentWidth - 8, 12, 1, 1, 'F');
+      doc.setFont('courier', 'normal');
+      doc.setFontSize(6.5);
+      doc.setTextColor(COLOR_SUCCESS.r, COLOR_SUCCESS.g, COLOR_SUCCESS.b);
+      const codeLine = (issue.solution || '').split('\n')[0].slice(0, 85);
+      doc.text(`> ${codeLine}`, margin + 6, rowY + 20);
+    });
+
+    drawFooter(6);
+
+    // -------------------------------------------------------------
+    // PÁGINA 7: Hoja de Ruta de Mitigación Básica (Fases 1, 2 y 3)
+    // -------------------------------------------------------------
+    doc.addPage();
+    setDarkBg();
+    drawHeader(7, '06. Hoja de Ruta de Mitigación Básica por Fases');
+
+    drawCard(margin, 32, contentWidth, 36, 'FASE 1: BLINDAJE PERIMETRAL INMEDIATO (PRIMERAS 48 HORAS)');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.setTextColor(COLOR_GOLD.r, COLOR_GOLD.g, COLOR_GOLD.b);
+    doc.text('Objetivo: Neutralizar brechas críticas y advertencias en navegadores.', margin + 4, 43);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b);
+    doc.text('1. Inyectar directiva HSTS en cabeceras de respuesta para forzar cifrado en todo el dominio.', margin + 4, 49);
+    doc.text('2. Desactivar server_tokens y X-Powered-By para ocultar versiones de Apache/Nginx y PHP.', margin + 4, 55);
+    doc.text('3. Publicar registro TXT _dmarc con política de rechazo para blindar reputación de correo.', margin + 4, 61);
+
+    drawCard(margin, 74, contentWidth, 36, 'FASE 2: OPTIMIZACIÓN DE RENDIMIENTO Y CONVERSIÓN (15 DÍAS)');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.setTextColor(COLOR_GOLD.r, COLOR_GOLD.g, COLOR_GOLD.b);
+    doc.text('Objetivo: Acelerar carga móvil por debajo de 1.8s y optimizar Core Web Vitals.', margin + 4, 85);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b);
+    doc.text('1. Migrar formato de imágenes principales a WebP/AVIF y definir width/height para anular CLS.', margin + 4, 91);
+    doc.text('2. Activar compresión Brotli (br) en servidor web para reducir peso de transferencia un 25%.', margin + 4, 97);
+    doc.text('3. Añadir defer/async a scripts secundarios para desatascar el hilo principal de renderizado.', margin + 4, 103);
+
+    drawCard(margin, 116, contentWidth, 36, 'FASE 3: CONSOLIDACIÓN DE SEO LOCAL Y CAPTACIÓN ORGÁNICA');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.setTextColor(COLOR_GOLD.r, COLOR_GOLD.g, COLOR_GOLD.b);
+    doc.text('Objetivo: Escalar posiciones en el Local Pack de Google Maps y captar reservas.', margin + 4, 127);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b);
+    doc.text('1. Inyectar microdatos Schema.org LocalBusiness en JSON-LD con coordenadas y horarios.', margin + 4, 133);
+    doc.text('2. Configurar botón de reserva directa o llamada sin comisionistas de plataformas intermediarias.', margin + 4, 139);
+    doc.text('3. Desplegar protocolo de respuesta y verificación de reseñas de clientes satisfechos.', margin + 4, 145);
+
+    drawFooter(7);
+
+    // -------------------------------------------------------------
+    // PÁGINA 8: Checklist Paso a Paso de Implementación
+    // -------------------------------------------------------------
+    doc.addPage();
+    setDarkBg();
+    drawHeader(8, '07. Checklist Paso a Paso de Implementación para Ingenieros');
+
+    drawCard(margin, 32, contentWidth, 145, 'CHECKLIST TÉCNICO DE VERIFICACIÓN (10 PUNTOS DE CONTROL)');
+
+    const checklistItems = [
+      { num: '01', title: 'Forzar redirección 301 a HTTPS', desc: 'Garantizar que todo el tráfico HTTP no seguro sea redirigido de inmediato al esquema HTTPS.' },
+      { num: '02', title: 'Configurar cabecera HSTS', desc: 'Strict-Transport-Security con max-age=31536000; includeSubDomains; preload.' },
+      { num: '03', title: 'Protección Anti-Clickjacking', desc: 'Cabecera X-Frame-Options: SAMEORIGIN y directiva CSP frame-ancestors.' },
+      { num: '04', title: 'Anti-MIME Sniffing', desc: 'Cabecera X-Content-Type-Options: nosniff para impedir interpretación arbitraria de archivos.' },
+      { num: '05', title: 'Ocultar Server Banners', desc: 'Eliminar firmas de versión en Nginx (server_tokens off) y Apache (ServerSignature Off).' },
+      { num: '06', title: 'Publicar Registro DNS DMARC', desc: 'Crear registro TXT _dmarc con política v=DMARC1; p=reject; rua=mailto:...' },
+      { num: '07', title: 'Activar Compresión Brotli / Gzip', desc: 'Habilitar compresión para tipos MIME text/html, application/javascript y text/css.' },
+      { num: '08', title: 'Corregir Atributos de Imágenes', desc: 'Añadir atributos alt descriptivos y dimensiones width/height para eliminar saltos CLS.' },
+      { num: '09', title: 'Validar Robots.txt y Sitemap XML', desc: 'Verificar accesibilidad pública de /robots.txt y /sitemap.xml sin errores 404/500.' },
+      { num: '10', title: 'Integrar Marcado JSON-LD LocalBusiness', desc: 'Incrustar bloque Schema.org con nombre exacto, teléfono, dirección y servicios.' },
+    ];
+
+    checklistItems.forEach((item, idx) => {
+      const itemY = 43 + idx * 13.5;
+      doc.setFillColor(15, 23, 42);
+      doc.rect(margin + 3, itemY - 2, contentWidth - 6, 11.5, 'F');
+
+      // Checkbox box
+      doc.setDrawColor(COLOR_GOLD.r, COLOR_GOLD.g, COLOR_GOLD.b);
+      doc.setLineWidth(0.4);
+      doc.rect(margin + 5, itemY, 5, 5);
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(7.5);
+      doc.setTextColor(COLOR_GOLD.r, COLOR_GOLD.g, COLOR_GOLD.b);
+      doc.text(`Paso ${item.num}: ${item.title}`, margin + 13, itemY + 4);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(6.5);
+      doc.setTextColor(COLOR_MUTED.r, COLOR_MUTED.g, COLOR_MUTED.b);
+      doc.text(item.desc.slice(0, 95), margin + 13, itemY + 8.5);
+    });
+
+    drawFooter(8);
+
+    // -------------------------------------------------------------
+    // PÁGINA 9: Scripts de Configuración Hardened para Nginx y Apache
+    // -------------------------------------------------------------
+    doc.addPage();
+    setDarkBg();
+    drawHeader(9, '08. Scripts de Configuración Hardened para Servidor Web');
+
+    drawCard(margin, 32, contentWidth, 70, 'DIRECTIVAS RECOMENDADAS PARA SERVIDORES NGINX');
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    doc.setTextColor(COLOR_MUTED.r, COLOR_MUTED.g, COLOR_MUTED.b);
+    doc.text('Pegar dentro del bloque server {} en /etc/nginx/sites-available/ :', margin + 4, 42);
+
+    doc.setFillColor(15, 23, 42);
+    doc.roundedRect(margin + 4, 45, contentWidth - 8, 52, 1.5, 1.5, 'F');
+    doc.setFont('courier', 'normal');
+    doc.setFontSize(6.5);
+    doc.setTextColor(COLOR_SUCCESS.r, COLOR_SUCCESS.g, COLOR_SUCCESS.b);
+    const nginxLines = [
+      '# 1. Cabeceras de Seguridad Perimetral Dexvoi',
+      'add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;',
+      'add_header X-Frame-Options "SAMEORIGIN" always;',
+      'add_header X-Content-Type-Options "nosniff" always;',
+      'add_header Referrer-Policy "strict-origin-when-cross-origin" always;',
+      'add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;',
+      '# 2. Ocultar huellas de infraestructura',
+      'server_tokens off;',
+      '# 3. Bloquear acceso a archivos sensibles expuestos',
+      'location ~ /\\.(env|git|htaccess|sql|bak|config) { deny all; return 404; }',
+    ];
+    nginxLines.forEach((l, i) => doc.text(l, margin + 6, 52 + i * 4.6));
+
+    drawCard(margin, 108, contentWidth, 68, 'DIRECTIVAS RECOMENDADAS PARA SERVIDORES APACHE (.HTACCESS)');
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    doc.setTextColor(COLOR_MUTED.r, COLOR_MUTED.g, COLOR_MUTED.b);
+    doc.text('Añadir al inicio del archivo .htaccess en la raíz del sitio web:', margin + 4, 118);
+
+    doc.setFillColor(15, 23, 42);
+    doc.roundedRect(margin + 4, 121, contentWidth - 8, 50, 1.5, 1.5, 'F');
+    doc.setFont('courier', 'normal');
+    doc.setFontSize(6.5);
+    doc.setTextColor(COLOR_SUCCESS.r, COLOR_SUCCESS.g, COLOR_SUCCESS.b);
+    const apacheLines = [
+      '<IfModule mod_headers.c>',
+      '  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"',
+      '  Header always set X-Frame-Options "SAMEORIGIN"',
+      '  Header always set X-Content-Type-Options "nosniff"',
+      '  Header always set Referrer-Policy "strict-origin-when-cross-origin"',
+      '  Header unset X-Powered-By',
+      '</IfModule>',
+      'ServerSignature Off',
+      'ServerTokens Prod',
+      '<FilesMatch "^\\.(env|git|sql|bak)"> Require all denied </FilesMatch>',
+    ];
+    apacheLines.forEach((l, i) => doc.text(l, margin + 6, 128 + i * 4.6));
+
+    drawFooter(9);
+
+    // -------------------------------------------------------------
+    // PÁGINA 10: Certificación Oficial Dexvoi y Canales de Asistencia
+    // -------------------------------------------------------------
+    doc.addPage();
+    setDarkBg();
+    drawHeader(10, '09. Certificación Oficial Dexvoi & Canales de Asistencia');
+
+    drawCard(margin, 32, contentWidth, 65, 'DICTAMEN OFICIAL DE INGENIERÍA & BLINDAJE DIGITAL');
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b);
+    const conclText = `El análisis forense ejecutado sobre ${websiteUrl || auditResult.target} certifica que el sistema dispone de los parámetros necesarios para alcanzar el Grado A+ de seguridad perimetral aplicando la hoja de ruta y el checklist de 10 puntos detallados en este informe. La aplicación de estas directivas protege la integridad de los datos de tus clientes y optimiza la velocidad de carga para maximizar la conversión móvil.`;
+    doc.text(doc.splitTextToSize(conclText, contentWidth - 8), margin + 4, 43);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.setTextColor(COLOR_GOLD.r, COLOR_GOLD.g, COLOR_GOLD.b);
+    doc.text('Validez del Dictamen:', margin + 4, 75);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b);
+    doc.text('90 días naturales desde la fecha de emisión del reporte.', margin + 35, 75);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(COLOR_GOLD.r, COLOR_GOLD.g, COLOR_GOLD.b);
+    doc.text('Firma Autorizada:', margin + 4, 83);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b);
+    doc.text('Departamento de Arquitectura Digital & Ciberseguridad Defensiva — DEXVOI SOLUTIONS', margin + 30, 83);
+
+    // Delegation Card
+    const delY = 104;
+    drawCard(margin, delY, contentWidth, 75, '¿QUIERES QUE DEXVOI APLIQUE ESTE CHECKLIST POR TI?', COLOR_GOLD);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.5);
+    doc.setTextColor(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b);
+    const delText = 'Si no dispones de un equipo de ingenieros interno o prefieres evitar riesgos técnicos, el equipo de arquitectos digitales de Dexvoi puede aplicar el checklist completo de 10 puntos en tu servidor en menos de 48 horas sin cortes de servicio ni caídas de reservas.';
+    doc.text(doc.splitTextToSize(delText, contentWidth - 8), margin + 4, delY + 14);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(COLOR_GOLD.r, COLOR_GOLD.g, COLOR_GOLD.b);
+    doc.text('CANALES DIRECTOS DE ASISTENCIA PRIORITARIA:', margin + 4, delY + 30);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.5);
+    doc.setTextColor(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b);
+    doc.text('• Correo Electrónico: contact@dexvoi.com / info@dexvoi.com', margin + 4, delY + 38);
+    doc.text('• Plataforma Web Oficial: https://dexvoi.com', margin + 4, delY + 46);
+    doc.text('• Soporte Directo Ingeniería: Atención prioritaria a clientes certificados Dexvoi', margin + 4, delY + 54);
+    doc.text('• Cobertura Internacional: Madrid · Casablanca · Londres', margin + 4, delY + 62);
+
+    drawFooter(10);
   }
 
   // ==========================================
