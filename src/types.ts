@@ -44,6 +44,7 @@ export interface ScanResult {
   content?: ContentAudit;
   structuredData?: StructuredDataAudit;
   advancedSecurity?: AdvancedSecurityAudit;
+  mobile?: MobileAudit;
 }
 
 export interface PillarService {
