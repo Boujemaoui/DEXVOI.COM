@@ -278,7 +278,12 @@ const categoryImages = {
 };
 
 async function generateWithGemini(apiKey, existingTitles) {
-  const modelsToTry = ['gemini-3.8-flash', 'gemini-flash-latest', 'gemini-3.1-pro-preview'];
+  const modelsToTry = [
+    'gemini-3.1-flash-lite',
+    'gemini-3.8-flash',
+    'gemini-flash-latest',
+    'gemini-3.1-pro-preview'
+  ];
   const categories = ['ciberseguridad', 'seo-local', 'arquitectura-web', 'ia-reservas'];
   const chosenCategory = categories[Math.floor(Math.random() * categories.length)];
 
@@ -304,19 +309,21 @@ Devuelve ÚNICAMENTE un JSON válido (sin bloques de markdown ni texto adicional
     try {
       console.log(`[Gemini API] Intentando generar post con modelo: ${model}...`);
       const ai = new GoogleGenAI({ apiKey });
-      const ctrl = new AbortController();
-      const timeout = setTimeout(() => ctrl.abort(), 18000);
-
-      const res = await ai.models.generateContent({
+      
+      const generatePromise = ai.models.generateContent({
         model,
         contents: prompt,
         config: {
           temperature: 0.7,
-          responseMimeType: 'application/json',
-          thinkingConfig: { thinkingBudget: 0 }
+          responseMimeType: 'application/json'
         }
       });
-      clearTimeout(timeout);
+      
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Timeout de 20s agotado en llamada a Gemini API')), 20000)
+      );
+
+      const res = await Promise.race([generatePromise, timeoutPromise]);
 
       const raw = res.text?.trim() || '';
       const clean = raw.replace(/^```json\s*/i, '').replace(/\s*```$/, '').trim();
@@ -330,7 +337,7 @@ Devuelve ÚNICAMENTE un JSON válido (sin bloques de markdown ni texto adicional
         };
       }
     } catch (err) {
-      console.warn(`[Gemini API] Modelo ${model} no disponible (${err.message?.slice(0, 120)}), probando siguiente...`);
+      console.warn(`[Gemini API] Modelo ${model} no disponible (${err.message?.slice(0, 140)}), probando siguiente...`);
     }
   }
   return null;
@@ -503,7 +510,7 @@ async function generatePost() {
   const targetRegex = /(export\s+const\s+INITIAL_BLOG_POSTS\s*:\s*BlogPost\[\]\s*=\s*\[\r?\n)/;
   if (!targetRegex.test(content)) {
     console.error('[Error] No se encontró INITIAL_BLOG_POSTS en src/data/blogPosts.ts');
-    return;
+    process.exit(1);
   }
 
   const updatedContent = content.replace(targetRegex, `$1${newPostCode}`);
@@ -512,4 +519,7 @@ async function generatePost() {
   console.log(`[Blog Publisher] 🎉 Artículo publicado con éxito en el blog: "${chosenPost.title}" (/blog/${cleanSlug})`);
 }
 
-generatePost();
+generatePost().catch(err => {
+  console.error('[Error fatal en generador de artículos]:', err);
+  process.exit(1);
+});

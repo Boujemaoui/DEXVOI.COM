@@ -3,7 +3,51 @@ import { BLOG_POST_SLUGS, BLOG_POST_TRANSLATIONS } from './blogTranslations';
 
 export const INITIAL_BLOG_POSTS: BlogPost[] = [
   {
-    id: 'post-auto-1791297446688',
+    id: 'post-auto-1791304058357',
+    slug: 'zero-trust-infraestructura-critica-clinicas-gastronomia',
+    title: "Zero Trust en el Sector Premium: Blindaje de Infraestructura Crítica",
+    excerpt: "Implementa el modelo Zero Trust para proteger activos digitales en clínicas y restaurantes de lujo. Estrategias de microsegmentación y control de acceso.",
+    category: 'ciberseguridad',
+    categoryLabel: 'Ciberseguridad & Compliance',
+    tags: ["Zero Trust","Ciberseguridad","Microsegmentación","IAM","Compliance"],
+    author: {
+      name: 'Dexvoi Intelligence Team',
+      role: 'Especialistas en Blindaje & Rendimiento Digital',
+      badge: 'Verified Lead'
+    },
+    publishedAt: '2026-10-06T16:27:38.357Z',
+    readingTimeMinutes: 7,
+    featuredImage: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80',
+    metaDescription: "Descubre cómo el modelo Zero Trust protege los datos sensibles de tu clínica o restaurante frente a amenazas avanzadas. Guía técnica de Dexvoi.",
+    keywords: ["Zero Trust","Ciberseguridad","Microsegmentación","IAM","Compliance"],
+    targetServiceUrl: '/auditoria-seguridad',
+    targetServiceLabel: 'Solicitar Diagnóstico Especializado',
+    content: "## La obsolescencia del perímetro tradicional\n\nEn entornos de alta gama, como clínicas privadas y restaurantes gastronómicos, la seguridad ya no puede basarse en la confianza del perímetro. El modelo de 'castillo y foso' es insuficiente frente a vectores de ataque modernos. En Dexvoi, implementamos arquitecturas Zero Trust bajo la premisa: **Nunca confiar, siempre verificar**.\n\n## Pilares de la arquitectura Zero Trust\n\n### 1. Identidad como nuevo perímetro\nLa gestión de accesos (IAM) debe ser el núcleo. Implementar MFA (Autenticación Multifactor) resistente al phishing es innegociable para proteger historiales clínicos y sistemas de reservas.\n\n### 2. Microsegmentación de red\nDividir la red en zonas aisladas impide el movimiento lateral de un atacante si un endpoint es comprometido. Un sistema de TPV en un restaurante no debe tener visibilidad hacia la base de datos de pacientes de una clínica si comparten infraestructura lógica.\n\n### 3. Least Privilege Access (LPA)\nCada usuario y proceso debe tener acceso solo a los recursos estrictamente necesarios para su función. La reducción de la superficie de ataque es la clave de la resiliencia.\n\n## Tabla de Impacto: Seguridad Tradicional vs. Zero Trust\n\n| Característica | Seguridad Perimetral | Zero Trust (Dexvoi) |\n| :--- | :--- | :--- |\n| Modelo de confianza | Basado en red (IP) | Basado en identidad |\n| Acceso | VPN (Todo o nada) | Granular (Microsegmentado) |\n| Visibilidad | Limitada al firewall | Monitorización continua |\n| Respuesta ante brechas | Reactiva (Lenta) | Proactiva (Aislamiento automático) |\n\n## Checklist de Implementación para tu Negocio\n\n- [ ] Auditoría de activos críticos y clasificación de datos sensibles.\n- [ ] Implementación de IAM con MFA basado en hardware o FIDO2.\n- [ ] Configuración de políticas de acceso condicional basadas en contexto (dispositivo, ubicación, hora).\n- [ ] Despliegue de herramientas de monitorización y respuesta (EDR/XDR) en todos los endpoints.\n- [ ] Cifrado de datos tanto en reposo como en tránsito (TLS 1.3).\n\n## El riesgo de la inacción\n\nPara una clínica privada, una brecha de datos no es solo una multa del RGPD; es la pérdida total de la confianza del paciente. Para un restaurante de lujo, la filtración de datos de clientes o la manipulación de sistemas de reservas puede paralizar la operativa y dañar irreversiblemente el prestigio de la marca.\n\n## Protege tu legado con Dexvoi\n\nLa ciberseguridad no es un coste, es un activo estratégico. En Dexvoi, realizamos auditorías de seguridad perimetral y arquitecturas Zero Trust personalizadas para negocios de élite. \n\n[Solicita tu Auditoría de Ciberseguridad Gratuita aquí](https://dexvoi.com/auditoria-seguridad) y asegura la continuidad de tu negocio hoy mismo."
+  },
+  {
+    id: 'post-auto-1791303729829',
+    slug: 'arquitectura-jamstack-vs-monolitos-wordpress-comparativ',
+    title: "Arquitectura Jamstack vs Monolitos WordPress: Comparativa de Rendimiento y Seguridad 2026",
+    excerpt: "Análisis forense de por qué los CMS monolíticos son el principal vector de vulnerabilidades y lentitud, y cómo la arquitectura desacoplada resuelve el problema.",
+    category: 'arquitectura-web',
+    categoryLabel: 'Arquitectura Web & Rendimiento',
+    tags: ["Jamstack","WordPress","Seguridad Web","Core Web Vitals"],
+    author: {
+      name: 'Dexvoi Intelligence Team',
+      role: 'Especialistas en Blindaje & Rendimiento Digital',
+      badge: 'Verified Lead'
+    },
+    publishedAt: '2026-10-06T16:22:09.829Z',
+    readingTimeMinutes: 7,
+    featuredImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80',
+    metaDescription: "Análisis forense de por qué los CMS monolíticos son el principal vector de vulnerabilidades y lentitud, y cómo la arquitectura desacoplada resuelve el problema.",
+    keywords: ["Jamstack","WordPress","Seguridad Web","Core Web Vitals"],
+    targetServiceUrl: '/auditoria-seguridad',
+    targetServiceLabel: 'Solicitar Diagnóstico Especializado',
+    content: "\n## El fin de la era monolítica en proyectos digitales de alto nivel\n\nMás del 85% de las vulnerabilidades web explotadas en negocios medianos provienen de plugins desactualizados y bases de datos SQL expuestas en arquitecturas WordPress tradicionales.\n\n---\n\n### Ventajas tangibles de la arquitectura desacoplada Dexvoi\n\n- **Superficie de ataque reducida a cero:** Sin bases de datos SQL en frontend ni paneles de administración expuestos a ataques de fuerza bruta.\n- **Distribución Edge global:** Los archivos estáticos pre-renderizados se sirven desde más de 300 centros de datos Cloudflare en menos de 50ms.\n- **Costes de mantenimiento predecibles:** Sin necesidad de parches de emergencia semanales ni plugins pesados de seguridad.\n    "
+  },
+  {
+    id: 'post-auto-1791303721145',
     slug: 'dominar-el-local-pack-de-3-en-google-maps-para-clinicas',
     title: "Dominar el Local Pack de 3 en Google Maps para Clínicas Odontológicas y Médicas",
     excerpt: "Estrategias de arquitectura de datos y optimización de señales locales para posicionar tu clínica en los tres primeros resultados de Google Maps.",
@@ -15,7 +59,7 @@ export const INITIAL_BLOG_POSTS: BlogPost[] = [
       role: 'Especialistas en Blindaje & Rendimiento Digital',
       badge: 'Verified Lead'
     },
-    publishedAt: '2026-10-06T14:37:26.688Z',
+    publishedAt: '2026-10-06T16:22:01.145Z',
     readingTimeMinutes: 8,
     featuredImage: 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80',
     metaDescription: "Estrategias de arquitectura de datos y optimización de señales locales para posicionar tu clínica en los tres primeros resultados de Google Maps.",
