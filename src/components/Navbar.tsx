@@ -94,16 +94,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
           </div>
         </div>
 
-        {/* Desktop Navigation Links - Compact, harmonious & organized */}
-        <nav className="hidden lg:flex items-center gap-1.5 xl:gap-2 text-xs font-medium text-gray-300">
-          <button
-            onClick={() => scrollToSection('problema')}
-            className="px-2.5 py-1.5 rounded-md hover:text-white hover:bg-white/5 transition-all flex items-center gap-1.5 cursor-pointer text-gray-300"
-          >
-            <span className="text-[#0066FF] font-mono text-[10px] font-bold">01</span>
-            <span>{t.nav.diagnosis}</span>
-          </button>
-
+        {/* Desktop Navigation Links - Refined, spacious & elegant */}
+        <nav className="hidden md:flex items-center gap-1.5 lg:gap-3 text-xs lg:text-sm font-medium text-gray-300">
           <a
             href={servicesPath}
             onClick={(e) => {
@@ -112,36 +104,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
                 navigateTo(servicesPath);
               }
             }}
-            className="px-2.5 py-1.5 rounded-md hover:text-white hover:bg-white/5 transition-all flex items-center gap-1.5 cursor-pointer text-gray-300"
+            className="px-3 py-1.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
           >
-            <span className="text-[#0066FF] font-mono text-[10px] font-bold">02</span>
-            <span>{t.nav.services}</span>
+            {t.nav.services}
           </a>
-
-          <button
-            onClick={() => scrollToSection('sistemas-reservas')}
-            className="px-2.5 py-1.5 rounded-md hover:text-white hover:bg-white/5 transition-all flex items-center gap-1.5 cursor-pointer text-gray-300"
-          >
-            <span className="text-[#0066FF] font-mono text-[10px] font-bold">03</span>
-            <span>{t.nav.booking}</span>
-          </button>
-
-          <button
-            onClick={() => scrollToSection('agentes-ia')}
-            className="px-2.5 py-1.5 rounded-md hover:text-white hover:bg-white/5 transition-all flex items-center gap-1.5 cursor-pointer text-gray-300"
-          >
-            <span className="text-[#0066FF] font-mono text-[10px] font-bold">04</span>
-            <span>{t.nav.aiAgents}</span>
-          </button>
-
-          <button
-            onClick={() => scrollToSection('about')}
-            className="px-2.5 py-1.5 rounded-md hover:text-white hover:bg-white/5 transition-all flex items-center gap-1.5 cursor-pointer text-gray-300"
-          >
-            <span>{t.nav.about}</span>
-          </button>
-
-          <div className="h-4 w-[1px] bg-white/10 mx-1 hidden xl:block"></div>
 
           <a
             href={securityPath}
@@ -151,13 +117,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
                 navigateTo(securityPath);
               }
             }}
-            className="px-2.5 py-1.5 rounded-md text-[#F5A623] hover:text-[#FFAE33] hover:bg-[#F5A623]/10 transition-all flex items-center gap-1.5 font-medium border border-[#F5A623]/25"
+            className="px-3 py-1.5 rounded-lg text-amber-300/90 hover:text-amber-200 hover:bg-amber-400/10 transition-all flex items-center gap-1.5 font-medium border border-amber-500/25"
           >
-            <Shield className="w-3 h-3 text-[#F5A623]" />
+            <Shield className="w-3.5 h-3.5 text-[#F5A623]" />
             <span>{t.nav.osint}</span>
-            <span className="px-1.5 py-0.2 rounded bg-[#F5A623]/20 text-[#F5A623] text-[9px] font-mono font-bold">
-              {t.nav.osintBadge}
-            </span>
           </a>
 
           <a
@@ -168,10 +131,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
                 navigateTo(pricingPath);
               }
             }}
-            className="px-2.5 py-1.5 rounded-md text-sky-200 hover:text-white hover:bg-[#635BFF]/15 transition-all flex items-center gap-1.5 font-medium border border-[#635BFF]/30"
+            className="px-3 py-1.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
           >
-            <CreditCard className="w-3 h-3 text-[#635BFF]" />
-            <span>{t.nav.pricing}</span>
+            {t.nav.pricing.replace(' de Pago', '').replace(' & Plans', '').replace(' Plans', '')}
           </a>
 
           <a
@@ -182,34 +144,36 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
                 navigateTo(blogPath);
               }
             }}
-            className="px-2.5 py-1.5 rounded-md hover:text-white text-gray-400 hover:bg-white/5 transition-all flex items-center gap-1.5 cursor-pointer"
+            className="px-3 py-1.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
           >
-            <BookOpen className="w-3 h-3 text-gray-400" />
-            <span>Blog</span>
+            Blog
           </a>
+
+          <button
+            onClick={() => scrollToSection('contacto')}
+            className="px-3 py-1.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+          >
+            {t.nav.contact}
+          </button>
+
         </nav>
 
-        {/* CTA & Language Switcher & System Status */}
-        <div className="hidden sm:flex items-center gap-2.5 shrink-0">
+        {/* CTA & Language Switcher */}
+        <div className="hidden md:flex items-center gap-3 shrink-0">
           <LanguageSelector variant="header" />
-
-          <div className="hidden xl:flex items-center gap-1.5 px-2 py-1 rounded bg-[#1E293B]/60 border border-[#1E293B] text-[10px] font-mono text-gray-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#0066FF] shadow-[0_0_6px_#0066FF] animate-pulse"></span>
-            <span className="tracking-tight">{t.nav.nodesOnline}</span>
-          </div>
 
           <button
             id="nav-cta-btn"
             onClick={onOpenAuditModal}
-            className="metallic-btn px-3.5 py-2 rounded-md font-mono text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-md cursor-pointer font-bold whitespace-nowrap"
+            className="metallic-btn px-4 py-2 rounded-lg font-mono text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-md cursor-pointer font-bold whitespace-nowrap"
           >
-            <Lock className="w-3 h-3" />
+            <Lock className="w-3.5 h-3.5" />
             <span>{t.nav.freeAudit}</span>
           </button>
         </div>
 
         {/* Mobile menu trigger + Language selector */}
-        <div className="flex sm:hidden items-center gap-2">
+        <div className="flex md:hidden items-center gap-2">
           <LanguageSelector variant="header" />
           <button
             onClick={onOpenAuditModal}
@@ -219,41 +183,23 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
           </button>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded bg-[#1E293B] border border-gray-800 text-gray-300 hover:text-white cursor-pointer"
+            className="p-2 rounded-lg bg-[#1E293B] border border-gray-800 text-gray-300 hover:text-white cursor-pointer"
             aria-label="Alternar Menú"
           >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-[#0D1326] border-b border-[#1E293B] px-6 py-6 space-y-4 shadow-2xl animate-in slide-in-from-top duration-200 max-h-[85vh] overflow-y-auto">
+        <div className="md:hidden bg-[#0D1326] border-b border-[#1E293B] px-5 py-5 space-y-4 shadow-2xl animate-in slide-in-from-top duration-200 max-h-[85vh] overflow-y-auto">
           {/* Language Selector in Mobile Drawer */}
-          <div className="pb-3 border-b border-gray-800">
+          <div className="pb-3 border-b border-gray-800/80">
             <LanguageSelector variant="mobile" />
           </div>
 
-          <div className="flex items-center justify-between pb-3 border-b border-gray-800">
-            <div className="flex items-center gap-2 text-xs font-mono text-[#0066FF]">
-              <span className="w-2 h-2 rounded-full bg-[#0066FF] animate-ping"></span>
-              <span>{t.nav.mobileTitle}</span>
-            </div>
-            <span className="text-[10px] font-mono text-gray-500">{t.nav.mobileSubtitle}</span>
-          </div>
-
-          <div className="flex flex-col space-y-1.5 font-mono text-xs">
-            <button
-              onClick={() => scrollToSection('problema')}
-              className="text-left py-2 px-2.5 rounded-md text-gray-300 hover:text-white hover:bg-white/5 flex items-center justify-between"
-            >
-              <span className="flex items-center gap-2">
-                <span className="text-[#0066FF] font-bold text-[10px]">01</span>
-                <span>{t.nav.diagnosis}</span>
-              </span>
-              <ArrowRight className="w-3.5 h-3.5 text-gray-600" />
-            </button>
+          <div className="flex flex-col space-y-1 font-mono text-xs">
             <a
               href={servicesPath}
               onClick={(e) => {
@@ -261,44 +207,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
                 setMobileMenuOpen(false);
                 navigateTo(servicesPath);
               }}
-              className="text-left py-2 px-2.5 rounded-md text-gray-300 hover:text-white hover:bg-white/5 flex items-center justify-between"
+              className="text-left py-2.5 px-3 rounded-lg text-gray-200 hover:text-white hover:bg-white/5 flex items-center justify-between transition-colors"
             >
-              <span className="flex items-center gap-2">
-                <span className="text-[#0066FF] font-bold text-[10px]">02</span>
-                <span>{t.nav.services}</span>
-              </span>
-              <ArrowRight className="w-3.5 h-3.5 text-gray-600" />
+              <span>{t.nav.services}</span>
+              <ArrowRight className="w-3.5 h-3.5 text-gray-500" />
             </a>
-            <button
-              onClick={() => scrollToSection('sistemas-reservas')}
-              className="text-left py-2 px-2.5 rounded-md text-gray-300 hover:text-white hover:bg-white/5 flex items-center justify-between"
-            >
-              <span className="flex items-center gap-2">
-                <span className="text-[#0066FF] font-bold text-[10px]">03</span>
-                <span>{t.nav.booking}</span>
-              </span>
-              <ArrowRight className="w-3.5 h-3.5 text-gray-600" />
-            </button>
-            <button
-              onClick={() => scrollToSection('agentes-ia')}
-              className="text-left py-2 px-2.5 rounded-md text-gray-300 hover:text-white hover:bg-white/5 flex items-center justify-between"
-            >
-              <span className="flex items-center gap-2">
-                <span className="text-[#0066FF] font-bold text-[10px]">04</span>
-                <span>{t.nav.aiAgents}</span>
-              </span>
-              <ArrowRight className="w-3.5 h-3.5 text-gray-600" />
-            </button>
-            <button
-              onClick={() => scrollToSection('about')}
-              className="text-left py-2 px-2.5 rounded-md text-gray-300 hover:text-white hover:bg-white/5 flex items-center justify-between"
-            >
-              <span className="flex items-center gap-2">
-                <span className="text-[#0066FF] font-bold text-[10px]">05</span>
-                <span>{t.nav.about}</span>
-              </span>
-              <ArrowRight className="w-3.5 h-3.5 text-gray-600" />
-            </button>
+
             <a
               href={securityPath}
               onClick={(e) => {
@@ -306,16 +220,31 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
                 setMobileMenuOpen(false);
                 navigateTo(securityPath);
               }}
-              className="text-left py-2 px-2.5 rounded-md text-[#F5A623] hover:bg-[#F5A623]/10 font-medium flex items-center justify-between border border-[#F5A623]/25"
+              className="text-left py-2.5 px-3 rounded-lg text-[#F5A623] bg-[#F5A623]/5 hover:bg-[#F5A623]/15 font-medium flex items-center justify-between border border-[#F5A623]/25 transition-colors"
             >
               <span className="flex items-center gap-2">
                 <Shield className="w-3.5 h-3.5 text-[#F5A623]" />
                 <span>{t.nav.osint}</span>
               </span>
-              <span className="px-1.5 py-0.5 rounded bg-[#F5A623]/20 text-[#F5A623] text-[9px] font-bold">
-                {t.nav.osintBadge}
-              </span>
+              <ArrowRight className="w-3.5 h-3.5 text-[#F5A623]/70" />
             </a>
+
+            <button
+              onClick={() => scrollToSection('sistemas-reservas')}
+              className="text-left py-2.5 px-3 rounded-lg text-gray-200 hover:text-white hover:bg-white/5 flex items-center justify-between transition-colors cursor-pointer"
+            >
+              <span>{t.nav.booking}</span>
+              <ArrowRight className="w-3.5 h-3.5 text-gray-500" />
+            </button>
+
+            <button
+              onClick={() => scrollToSection('agentes-ia')}
+              className="text-left py-2.5 px-3 rounded-lg text-gray-200 hover:text-white hover:bg-white/5 flex items-center justify-between transition-colors cursor-pointer"
+            >
+              <span>{t.nav.aiAgents}</span>
+              <ArrowRight className="w-3.5 h-3.5 text-gray-500" />
+            </button>
+
             <a
               href={pricingPath}
               onClick={(e) => {
@@ -323,28 +252,15 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
                 setMobileMenuOpen(false);
                 navigateTo(pricingPath);
               }}
-              className="text-left py-2 px-2.5 rounded-md bg-[#635BFF]/15 border border-[#635BFF]/30 text-sky-200 font-medium flex items-center justify-between"
+              className="text-left py-2.5 px-3 rounded-lg text-gray-200 hover:text-white hover:bg-white/5 flex items-center justify-between transition-colors"
             >
               <div className="flex items-center gap-2">
                 <CreditCard className="w-3.5 h-3.5 text-[#635BFF]" />
                 <span>{t.nav.pricing}</span>
               </div>
-              <span className="px-1.5 py-0.5 rounded bg-[#635BFF]/40 text-white text-[9px]">
-                {t.nav.pricingBadge}
-              </span>
+              <ArrowRight className="w-3.5 h-3.5 text-gray-500" />
             </a>
-            <a
-              href={contactPath}
-              onClick={(e) => {
-                e.preventDefault();
-                setMobileMenuOpen(false);
-                navigateTo(contactPath);
-              }}
-              className="text-left py-2 px-2.5 rounded-md text-gray-300 hover:text-[#38BDF8] hover:bg-white/5 flex items-center justify-between"
-            >
-              <span>{t.nav.contact}</span>
-              <ArrowRight className="w-3.5 h-3.5 text-gray-600" />
-            </a>
+
             <a
               href={blogPath}
               onClick={(e) => {
@@ -352,14 +268,22 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
                 setMobileMenuOpen(false);
                 navigateTo(blogPath);
               }}
-              className="text-left py-2 px-2.5 rounded-md text-gray-300 hover:text-white hover:bg-white/5 flex items-center justify-between"
+              className="text-left py-2.5 px-3 rounded-lg text-gray-200 hover:text-white hover:bg-white/5 flex items-center justify-between transition-colors"
             >
               <div className="flex items-center gap-2">
                 <BookOpen className="w-3.5 h-3.5 text-gray-400" />
                 <span>Blog & Recursos</span>
               </div>
-              <ArrowRight className="w-3.5 h-3.5 text-gray-600" />
+              <ArrowRight className="w-3.5 h-3.5 text-gray-500" />
             </a>
+
+            <button
+              onClick={() => scrollToSection('contacto')}
+              className="text-left py-2.5 px-3 rounded-lg text-gray-200 hover:text-white hover:bg-white/5 flex items-center justify-between transition-colors cursor-pointer"
+            >
+              <span>{t.nav.contact}</span>
+              <ArrowRight className="w-3.5 h-3.5 text-gray-500" />
+            </button>
           </div>
 
           <div className="pt-2">
@@ -368,9 +292,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuditModal }) => {
                 setMobileMenuOpen(false);
                 onOpenAuditModal();
               }}
-              className="w-full metallic-btn py-3 rounded font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full metallic-btn py-3 rounded-lg font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer font-bold"
             >
-              <Shield className="w-4 h-4" />
+              <Lock className="w-4 h-4" />
               <span>{t.nav.freeAudit}</span>
             </button>
           </div>
