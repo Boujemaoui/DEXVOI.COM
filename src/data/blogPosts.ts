@@ -3,6 +3,28 @@ import { BLOG_POST_SLUGS, BLOG_POST_TRANSLATIONS } from './blogTranslations';
 
 export const INITIAL_BLOG_POSTS: BlogPost[] = [
   {
+    id: 'post-auto-1791384657969',
+    slug: 'hiperlocalidad-y-proximidad-arquitectura-datos-seo-maps',
+    title: "Hiperlocalidad y Proximidad: Arquitectura de Datos para SEO en Maps",
+    excerpt: "Optimiza la presencia digital de tu clínica o restaurante de lujo mediante la arquitectura de datos estructurados y la semántica de proximidad geográfica.",
+    category: 'seo-local',
+    categoryLabel: 'SEO Local & Google Maps',
+    tags: ["SEO Local","Arquitectura Web","Google Business Profile","Datos Estructurados","Geosemántica"],
+    author: {
+      name: 'Dexvoi Intelligence Team',
+      role: 'Especialistas en Blindaje & Rendimiento Digital',
+      badge: 'Verified Lead'
+    },
+    publishedAt: '2026-10-07T14:50:57.969Z',
+    readingTimeMinutes: 7,
+    featuredImage: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80',
+    metaDescription: "Domina el SEO local con arquitectura avanzada de datos. Estrategias técnicas para clínicas y alta gastronomía para captar tráfico hiperlocal de alta calidad.",
+    keywords: ["SEO Local","Arquitectura Web","Google Business Profile","Datos Estructurados","Geosemántica"],
+    targetServiceUrl: '/auditoria-seguridad',
+    targetServiceLabel: 'Solicitar Diagnóstico Especializado',
+    content: "## La Nueva Era del SEO Local: Más allá del NAP\n\nEn el ecosistema digital de 2026, el SEO local ha dejado de ser una cuestión de menciones NAP (Nombre, Dirección, Teléfono) para convertirse en un desafío de arquitectura de datos y señales de proximidad. Para clínicas privadas y restaurantes gastronómicos, la visibilidad en el Local Pack ya no depende solo de la cantidad de reseñas, sino de la coherencia semántica entre tu infraestructura web y el grafo de conocimiento de Google.\n\n## Arquitectura de Datos: El Pilar Técnico\n\nEl motor de búsqueda procesa la ubicación a través de entidades. Si tu sitio web no comunica explícitamente su relación con el entorno geográfico mediante `LocalBusiness` Schema, estás perdiendo tracción ante competidores que sí utilizan marcado avanzado.\n\n### Implementación de Schema.org Avanzado\n\nNo basta con el marcado básico. Debemos integrar:\n- **GeoCoordinates:** Precisión milimétrica para evitar la ambigüedad en zonas de alta densidad.\n- **AreaServed:** Definición precisa de tu zona de influencia para evitar penalizaciones por canibalización de términos.\n- **SameAs:** Conexión irrefutable con tus perfiles sociales y registros oficiales (cédulas profesionales o registros sanitarios).\n\n## Tabla Comparativa: Impacto en el Ranking Local\n\n| Estrategia | Esfuerzo Técnico | Impacto en Conversión | Tiempo de Resultados |\n| :--- | :--- | :--- | :--- |\n| Optimización NAP Básica | Bajo | Bajo | 3-6 meses |\n| Schema.org LocalBusiness | Medio | Alto | 2-4 meses |\n| Señales de Proximidad (Edge) | Alto | Muy Alto | 1-2 meses |\n| Autoridad de Dominio Local | Alto | Alto | 4-8 meses |\n\n## La importancia de la Geosemántica en el Contenido\n\nLa optimización de contenidos debe alejarse de la saturación de palabras clave. En Dexvoi, implementamos una estrategia de **nodos de autoridad local**, donde cada landing page de servicio actúa como un centro de datos que responde a la intención de búsqueda 'cerca de mí' mediante la integración de entidades locales y datos de contexto (ej. hitos urbanos, zonas de referencia).\n\n## Checklist de Auditoría para Negocios Premium\n\n- [ ] Validación de la jerarquía de Schema.org (JSON-LD).\n- [ ] Consistencia total de datos entre el sitio web y Google Business Profile.\n- [ ] Implementación de etiquetas hreflang y metadatos geográficos en el sitemap.\n- [ ] Optimización de la carga del mapa embebido (Lazy loading para no penalizar el LCP).\n- [ ] Configuración de GCLID y seguimiento de conversiones offline integradas con CRM.\n\n## Conclusión: El siguiente paso para tu negocio\n\nLa visibilidad local es una ventaja competitiva crítica. Si tu clínica o restaurante no aparece en las primeras posiciones, estás cediendo cuota de mercado a competidores con una arquitectura inferior. En Dexvoi, aplicamos ingeniería de precisión para garantizar que tu marca sea la primera opción de los clientes de alto valor.\n\n### ¿Tu infraestructura actual está frenando tu crecimiento?\n\nNo dejes tu posicionamiento al azar. Solicita hoy una **Auditoría Técnica de SEO Local** con nuestro equipo de expertos en Dexvoi. Analizaremos tu arquitectura web, tus datos estructurados y tu autoridad de dominio para diseñar una estrategia de dominio local imbatible."
+  },
+  {
     id: 'post-auto-1791319092336',
     slug: 'ia-predictiva-reservas-optimizacion-yield-no-shows',
     title: "IA Predictiva en Reservas: Optimización de Yield y Prevención de No-Shows",
