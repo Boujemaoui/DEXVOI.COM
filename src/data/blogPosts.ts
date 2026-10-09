@@ -3,6 +3,28 @@ import { BLOG_POST_SLUGS, BLOG_POST_TRANSLATIONS } from './blogTranslations';
 
 export const INITIAL_BLOG_POSTS: BlogPost[] = [
   {
+    id: 'post-auto-1791557210129',
+    slug: 'protocolo-zero-trust-para-clinicas-medicas-proteccion-d',
+    title: "Protocolo Zero-Trust para Clínicas Médicas: Protección de Historias Clínicas ante Ransomware",
+    excerpt: "Cómo implementar el modelo de Confianza Cero en entornos de salud privados para blindar el expediente clínico bajo estándares RGPD y ENS.",
+    category: 'ciberseguridad',
+    categoryLabel: 'Ciberseguridad & Compliance',
+    tags: ["Zero-Trust","RGPD Clínicas","Ciberseguridad Médica","Ransomware"],
+    author: {
+      name: 'Dexvoi Intelligence Team',
+      role: 'Especialistas en Blindaje & Rendimiento Digital',
+      badge: 'Verified Lead'
+    },
+    publishedAt: '2026-10-09T14:46:50.129Z',
+    readingTimeMinutes: 8,
+    featuredImage: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80',
+    metaDescription: "Cómo implementar el modelo de Confianza Cero en entornos de salud privados para blindar el expediente clínico bajo estándares RGPD y ENS.",
+    keywords: ["Zero-Trust","RGPD Clínicas","Ciberseguridad Médica","Ransomware"],
+    targetServiceUrl: '/auditoria-seguridad',
+    targetServiceLabel: 'Solicitar Diagnóstico Especializado',
+    content: "\n## Los datos médicos son el activo más codiciado en la Dark Web\n\nEl historial clínico de un paciente contiene información inalterable: diagnósticos, medicación y datos identificativos. En el mercado negro, un registro de salud cotiza hasta 50 veces más que un número de tarjeta de crédito.\n\n---\n\n### Principios del modelo Zero-Trust aplicado a clínicas\n\n1. **Nunca confiar, siempre verificar:** Autenticación multifactorial (MFA) obligatoria para todo el personal asistencial.\n2. **Mínimo privilegio de acceso (RBAC):** Cada facultativo accede exclusivamente a los expedientes de sus pacientes asignados.\n3. **Microsegmentación de red perimetral:** Los dispositivos médicos de diagnóstico por imagen operan aislados de la red wifi de invitados y administración.\n    "
+  },
+  {
     id: 'post-auto-1791492863938',
     slug: 'arquitectura-de-datos-descentralizada-negocios-premium',
     title: "Arquitectura de Datos Descentralizada: Escalabilidad para Negocios Premium",
