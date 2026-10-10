@@ -3,6 +3,28 @@ import { BLOG_POST_SLUGS, BLOG_POST_TRANSLATIONS } from './blogTranslations';
 
 export const INITIAL_BLOG_POSTS: BlogPost[] = [
   {
+    id: 'post-auto-1791661028737',
+    slug: 'optimizacion-de-fichas-de-google-business-profile-para',
+    title: "Optimización de Fichas de Google Business Profile para Restaurantes con Estrella Michelin",
+    excerpt: "Estrategias de posicionamiento en Google Maps para establecimientos de alta cocina: cartas dinámicas, fotos verificadas y conversión directa sin intermediarios.",
+    category: 'seo-local',
+    categoryLabel: 'SEO Local & Google Maps',
+    tags: ["Google Maps Gastronomía","SEO Local","Restaurantes Michelin","Conversión"],
+    author: {
+      name: 'Dexvoi Intelligence Team',
+      role: 'Especialistas en Blindaje & Rendimiento Digital',
+      badge: 'Verified Lead'
+    },
+    publishedAt: '2026-10-10T19:37:08.737Z',
+    readingTimeMinutes: 7,
+    featuredImage: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80',
+    metaDescription: "Estrategias de posicionamiento en Google Maps para establecimientos de alta cocina: cartas dinámicas, fotos verificadas y conversión directa sin intermediarios.",
+    keywords: ["Google Maps Gastronomía","SEO Local","Restaurantes Michelin","Conversión"],
+    targetServiceUrl: '/auditoria-seguridad',
+    targetServiceLabel: 'Solicitar Diagnóstico Especializado',
+    content: "\n## La primera impresión gastronómica ocurre en el mapa antes que en la mesa\n\nLos comensales internacionales y locales descubren restaurantes de alta gama navegando por Google Maps. Una ficha desactualizada o con fotos de baja calidad destruye la percepción de excelencia.\n\n---\n\n### Pilares de optimización de marca gastronómica\n\n- **Enlace oficial de reserva directa:** Desvío de tráfico hacia el motor de reservas propio evitando comisiones de plataformas intermediarias.\n- **Metadatos de atributos gastronómicos:** Especificación exacta de menús degustación, bodega, maridaje y accesibilidad.\n- **Actualización de platos de temporada con geolocalización:** Cada fotografía subida debe contener etiquetas descriptivas alineadas con la carta actual.\n    "
+  },
+  {
     id: 'post-auto-1791641043476',
     slug: 'arquitectura-datos-seo-local-google-maps-2026',
     title: "Arquitectura de Datos para SEO Local: Dominio en Google Maps 2026",
