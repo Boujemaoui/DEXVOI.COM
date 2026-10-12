@@ -3,6 +3,28 @@ import { BLOG_POST_SLUGS, BLOG_POST_TRANSLATIONS } from './blogTranslations';
 
 export const INITIAL_BLOG_POSTS: BlogPost[] = [
   {
+    id: 'post-auto-1791824772126',
+    slug: 'hardening-infraestructuras-web-blindaje-inyecciones-sql',
+    title: "Hardening de Infraestructuras Web: Blindaje contra Inyecciones SQL",
+    excerpt: "Aprende a proteger los activos digitales de clínicas y restaurantes premium contra inyecciones SQL con estrategias de hardening avanzado y arquitectura segura.",
+    category: 'ciberseguridad',
+    categoryLabel: 'Ciberseguridad & Compliance',
+    tags: ["ciberseguridad","hardening","sql-injection","proteccion-datos","devsecops"],
+    author: {
+      name: 'Dexvoi Intelligence Team',
+      role: 'Especialistas en Blindaje & Rendimiento Digital',
+      badge: 'Verified Lead'
+    },
+    publishedAt: '2026-10-12T17:06:12.126Z',
+    readingTimeMinutes: 7,
+    featuredImage: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80',
+    metaDescription: "Protege tu clínica o restaurante de inyecciones SQL. Guía técnica de hardening para infraestructuras web de alto nivel y cumplimiento normativo.",
+    keywords: ["ciberseguridad","hardening","sql-injection","proteccion-datos","devsecops"],
+    targetServiceUrl: '/auditoria-seguridad',
+    targetServiceLabel: 'Solicitar Diagnóstico Especializado',
+    content: "## Introducción: La vulnerabilidad silenciosa\n\nEn el sector premium, donde la confianza del paciente o cliente es el activo más valioso, una inyección SQL no es solo un error técnico; es una brecha de reputación irreparable. Las inyecciones SQL (SQLi) siguen siendo el vector de ataque más letal contra bases de datos que gestionan historias clínicas o reservas de alta demanda.\n\n## El vector de ataque: ¿Por qué fallan los sistemas?\n\nLa mayoría de las vulnerabilidades SQLi ocurren por una falta de separación entre el código de la aplicación y la consulta a la base de datos. Cuando un sistema no valida correctamente el input del usuario, los atacantes pueden inyectar comandos maliciosos que comprometen la integridad de toda la infraestructura.\n\n### Niveles de impacto en entornos críticos\n\n| Impacto | Gravedad | Consecuencia en Negocio |\n| :--- | :--- | :--- |\n| Exfiltración de datos | Crítica | Multas RGPD y pérdida de confianza |\n| Alteración de registros | Alta | Errores en historiales médicos |\n| Denegación de servicio | Media | Caída de sistemas de reserva |\n\n## Estrategias de Hardening para Dexvoi\n\nPara garantizar un entorno blindado, implementamos una arquitectura de defensa en profundidad:\n\n### 1. Consultas Parametrizadas (Prepared Statements)\nEs la medida más eficaz. Al separar el código SQL de los datos, el motor de la base de datos trata el input como texto plano, anulando cualquier intento de ejecución de comandos.\n\n### 2. Principio de Menor Privilegio (PoLP)\nLa cuenta de usuario que conecta la aplicación a la base de datos debe tener los permisos mínimos necesarios. Nunca debe utilizarse el usuario 'root' o 'admin' para las operaciones web cotidianas.\n\n### 3. Implementación de WAF de Nueva Generación\nEl uso de un Web Application Firewall (WAF) con reglas de inspección profunda permite filtrar peticiones maliciosas antes de que lleguen al servidor de aplicaciones.\n\n## Checklist de Seguridad para tu Infraestructura\n\n- [ ] Auditoría de código fuente para detectar concatenaciones inseguras.\n- [ ] Implementación de Prepared Statements en el 100% de los endpoints.\n- [ ] Escaneo periódico de vulnerabilidades con herramientas automatizadas.\n- [ ] Encriptación de datos sensibles en reposo mediante AES-256.\n- [ ] Configuración de logs de auditoría para detectar intentos de acceso inusuales.\n\n## Conclusión\n\nLa seguridad en el sector premium no es un destino, sino un proceso continuo de hardening. No esperes a que una brecha exponga tus datos. En Dexvoi, integramos seguridad desde la arquitectura base.\n\n¿Es tu infraestructura lo suficientemente robusta para resistir ataques modernos? **Solicita hoy tu auditoría de ciberseguridad gratuita con nuestros especialistas de Dexvoi y asegura la continuidad de tu negocio.**"
+  },
+  {
     id: 'post-auto-1791748035618',
     slug: 'ciberresiliencia-entornos-premium-blindaje-apis-datos-sensib',
     title: "Ciberresiliencia en Entornos Premium: Blindaje de APIs y Datos Sensibles",
