@@ -531,37 +531,49 @@
   </url>
 
   <url>
-    <loc>https://www.dexvoi.com/blog/blindaje-dns-y-mitigacion-de-spoofing-con-spf-dkim-y-dm</loc>
+    <loc>https://dexvoi.com/es/blog/blindaje-dns-y-mitigacion-de-spoofing-con-spf-dkim-y-dm</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/blindaje-dns-y-mitigacion-de-spoofing-con-spf-dkim-y-dm"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/blindaje-dns-y-mitigacion-de-spoofing-con-spf-dkim-y-dm"/>
     <lastmod>2026-09-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.dexvoi.com/blog/arquitectura-jamstack-edge-computing-negocios-alta-gama</loc>
+    <loc>https://dexvoi.com/es/blog/arquitectura-jamstack-edge-computing-negocios-alta-gama</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/arquitectura-jamstack-edge-computing-negocios-alta-gama"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/arquitectura-jamstack-edge-computing-negocios-alta-gama"/>
     <lastmod>2026-10-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.dexvoi.com/blog/ataques-cadena-suministro-web-magecart-negocios-premium</loc>
+    <loc>https://dexvoi.com/es/blog/ataques-cadena-suministro-web-magecart-negocios-premium</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/ataques-cadena-suministro-web-magecart-negocios-premium"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/ataques-cadena-suministro-web-magecart-negocios-premium"/>
     <lastmod>2026-10-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.dexvoi.com/blog/dominar-el-local-pack-de-3-en-google-maps-para-clinicas</loc>
+    <loc>https://dexvoi.com/es/blog/dominar-el-local-pack-de-3-en-google-maps-para-clinicas</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/dominar-el-local-pack-de-3-en-google-maps-para-clinicas"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/dominar-el-local-pack-de-3-en-google-maps-para-clinicas"/>
     <lastmod>2026-10-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.dexvoi.com/blog/arquitectura-jamstack-vs-monolitos-wordpress-comparativ</loc>
+    <loc>https://dexvoi.com/es/blog/arquitectura-jamstack-vs-monolitos-wordpress-comparativ</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/arquitectura-jamstack-vs-monolitos-wordpress-comparativ"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/arquitectura-jamstack-vs-monolitos-wordpress-comparativ"/>
     <lastmod>2026-10-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.dexvoi.com/blog/zero-trust-infraestructura-critica-clinicas-gastronomia</loc>
+    <loc>https://dexvoi.com/es/blog/zero-trust-infraestructura-critica-clinicas-gastronomia</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/zero-trust-infraestructura-critica-clinicas-gastronomia"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/zero-trust-infraestructura-critica-clinicas-gastronomia"/>
     <lastmod>2026-10-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

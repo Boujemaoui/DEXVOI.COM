@@ -86,9 +86,9 @@ export const LOCALIZED_ROUTES: Record<AppRoute, RouteLocalization> = {
       en: 'Plans & Technical Audit Pricing | DEXVOI',
     },
     descriptions: {
-      es: 'Tarifas transparentes de pago único para informes forenses y blindaje perimetral: Starter 19€, Comprehensive 49€, Premium 99€.',
-      fr: 'Tarifs transparents à paiement unique pour rapports forensiques et blindage : Starter 19€, Comprehensive 49€, Premium 99€.',
-      en: 'Transparent one-off pricing for forensic reports and perimeter security: Starter 19€, Comprehensive 49€, Premium 99€.',
+      es: 'Tarifas transparentes de pago único para informes forenses y blindaje perimetral: Starter $19 USD, Comprehensive $49 USD, Premium $99 USD.',
+      fr: 'Tarifs transparents à paiement unique pour rapports forensiques et blindage : Starter $19 USD, Comprehensive $49 USD, Premium $99 USD.',
+      en: 'Transparent one-off pricing for forensic reports and perimeter security: Starter $19 USD, Comprehensive $49 USD, Premium $99 USD.',
     },
   },
   contact: {

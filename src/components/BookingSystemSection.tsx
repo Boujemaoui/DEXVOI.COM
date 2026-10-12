@@ -121,7 +121,7 @@ export const BookingSystemSection: React.FC<BookingSystemSectionProps> = ({
       serviceName: 'Session Diagnostic Stratégique',
       duration: '45 min',
       provider: 'Consultant Senior Associé',
-      price: '120€ / Session',
+      price: '$120 / Session',
       tagline: 'Paiement d’acompte et intégration automatique avec votre CRM.',
     },
     {
@@ -131,7 +131,7 @@ export const BookingSystemSection: React.FC<BookingSystemSectionProps> = ({
       serviceName: 'Coupe Styliste + Soin Capillaire',
       duration: '45 min',
       provider: 'Styliste Senior Elena',
-      price: '42€',
+      price: '$42',
       tagline: 'Planning complet sans interruptions téléphoniques pendant vos prestations.',
     },
     {
@@ -141,7 +141,7 @@ export const BookingSystemSection: React.FC<BookingSystemSectionProps> = ({
       serviceName: 'Consultation Diagnostic & Bilan Facial',
       duration: '30 min',
       provider: 'Dr. Méndez (Dermatologie)',
-      price: '75€',
+      price: '$75',
       tagline: 'Conformité stricte RGPD données de santé et zéro rendez-vous manqué.',
     },
     {
@@ -161,7 +161,7 @@ export const BookingSystemSection: React.FC<BookingSystemSectionProps> = ({
       serviceName: 'Séance Entraînement Privé HIIT',
       duration: '50 min',
       provider: 'Coach Marcos - Espace Fonctionnel',
-      price: '35€',
+      price: '$35',
       tagline: 'Capacités maîtrisées, abonnements récurrents et contrôle d’accès QR.',
     },
     {
@@ -171,7 +171,7 @@ export const BookingSystemSection: React.FC<BookingSystemSectionProps> = ({
       serviceName: 'Masterclass One-to-One d’Anglais',
       duration: '60 min',
       provider: 'Prof. Davis - Salle Virtuelle / Présentiel',
-      price: '28€',
+      price: '$28',
       tagline: 'Paiement à la réservation et lien de visioconférence instantané.',
     },
     {
@@ -181,7 +181,7 @@ export const BookingSystemSection: React.FC<BookingSystemSectionProps> = ({
       serviceName: 'Suite Panoramique avec Vue',
       duration: 'Check-in 15:00',
       provider: 'Réception Centrale 24/7',
-      price: '160€ / nuit',
+      price: '$160 / nuit',
       tagline: 'Moteur de réservation direct pour éviter les commissions intermédiaires.',
     },
   ] : language === 'en' ? [
@@ -212,7 +212,7 @@ export const BookingSystemSection: React.FC<BookingSystemSectionProps> = ({
       serviceName: 'Strategic Technical Assessment',
       duration: '45 min',
       provider: 'Senior Partner',
-      price: '120€ / Session',
+      price: '$120 / Session',
       tagline: 'Upfront deposit collection and seamless two-way CRM sync.',
     },
     {
@@ -222,7 +222,7 @@ export const BookingSystemSection: React.FC<BookingSystemSectionProps> = ({
       serviceName: 'Signature Cut + Hair Care Protocol',
       duration: '45 min',
       provider: 'Senior Stylist Elena',
-      price: '42€',
+      price: '$42',
       tagline: 'Full calendar without telephone interruptions while serving clients.',
     },
     {
@@ -232,7 +232,7 @@ export const BookingSystemSection: React.FC<BookingSystemSectionProps> = ({
       serviceName: 'Diagnostic Consultation & Skin Assessment',
       duration: '30 min',
       provider: 'Dr. Méndez (Dermatology)',
-      price: '75€',
+      price: '$75',
       tagline: 'Strict HIPAA/GDPR health data compliance and zero no-shows.',
     },
     {
@@ -252,7 +252,7 @@ export const BookingSystemSection: React.FC<BookingSystemSectionProps> = ({
       serviceName: 'Personal HIIT Training Session',
       duration: '50 min',
       provider: 'Coach Marcos - Functional Arena',
-      price: '35€',
+      price: '$35',
       tagline: 'Controlled capacity, recurring class bookings, and QR access.',
     },
     {
@@ -262,7 +262,7 @@ export const BookingSystemSection: React.FC<BookingSystemSectionProps> = ({
       serviceName: 'One-to-One Intensive English Session',
       duration: '60 min',
       provider: 'Prof. Davis - Virtual / On-site Classroom',
-      price: '28€',
+      price: '$28',
       tagline: 'Automated upfront payments with instant meeting link delivery.',
     },
     {
@@ -272,7 +272,7 @@ export const BookingSystemSection: React.FC<BookingSystemSectionProps> = ({
       serviceName: 'Panoramic Rooftop Suite',
       duration: 'Check-in 15:00',
       provider: 'Front Desk 24/7',
-      price: '160€ / night',
+      price: '$160 / night',
       tagline: 'Direct booking engine to bypass unfair 20%+ OTA commissions.',
     },
   ] : [
@@ -303,7 +303,7 @@ export const BookingSystemSection: React.FC<BookingSystemSectionProps> = ({
       serviceName: 'Sesión de Valoración Estratégica',
       duration: '45 min',
       provider: 'Socio Director',
-      price: '120€ / Sesión',
+      price: '$120 / Sesión',
       tagline: 'Cobro de honorarios previo y sincronización directa con tu CRM.',
     },
     {
@@ -313,7 +313,7 @@ export const BookingSystemSection: React.FC<BookingSystemSectionProps> = ({
       serviceName: 'Corte de Autor + Tratamiento Capilar',
       duration: '45 min',
       provider: 'Stylist Senior Elena',
-      price: '42€',
+      price: '$42',
       tagline: 'Agenda llena sin interrupciones telefónicas mientras atiendes a tus clientes.',
     },
     {
@@ -323,7 +323,7 @@ export const BookingSystemSection: React.FC<BookingSystemSectionProps> = ({
       serviceName: 'Consulta de Diagnóstico & Valoración Facial',
       duration: '30 min',
       provider: 'Dra. Méndez (Dermatología)',
-      price: '75€',
+      price: '$75',
       tagline: 'Cumplimiento estricto RGPD de datos sanitarios y cero no-shows.',
     },
     {
@@ -343,7 +343,7 @@ export const BookingSystemSection: React.FC<BookingSystemSectionProps> = ({
       serviceName: 'Sesión Entrenamiento Personalizado HIIT',
       duration: '50 min',
       provider: 'Coach Marcos - Área Funcional',
-      price: '35€',
+      price: '$35',
       tagline: 'Aforos controlados, reservas recurrentes y control de asistencia QR.',
     },
     {
@@ -353,7 +353,7 @@ export const BookingSystemSection: React.FC<BookingSystemSectionProps> = ({
       serviceName: 'Clase Magistral One-to-One de Inglés',
       duration: '60 min',
       provider: 'Prof. Davis - Aula Virtual / Presencial',
-      price: '28€',
+      price: '$28',
       tagline: 'Cobro automatizado en la reserva y enlace de sesión generado al instante.',
     },
     {
@@ -363,7 +363,7 @@ export const BookingSystemSection: React.FC<BookingSystemSectionProps> = ({
       serviceName: 'Suite Panorámica con Vistas',
       duration: 'Check-in 15:00',
       provider: 'Recepción Central 24/7',
-      price: '160€ / noche',
+      price: '$160 / noche',
       tagline: 'Motor de reserva directo para evitar comisiones abusivas de intermediarios.',
     },
   ];
@@ -522,7 +522,7 @@ export const BookingSystemSection: React.FC<BookingSystemSectionProps> = ({
                         }`}
                       >
                         <IndIcon className={`w-3.5 h-3.5 ${isSelected ? 'text-[#F5A623]' : 'text-gray-400'}`} />
-                        <span className="truncate w-full">{ind.label.split(' ')[0]}</span>
+                        <span className="truncate w-full text-[10px] leading-tight" title={ind.label}>{ind.label}</span>
                       </button>
                     );
                   })}

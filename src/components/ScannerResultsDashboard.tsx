@@ -135,9 +135,11 @@ export const ScannerResultsDashboard: React.FC<ScannerResultsDashboardProps> = (
       name: language === 'fr' ? 'Sécurité' : language === 'en' ? 'Security' : 'Seguridad',
       score: result.security.score,
       icon: 'security',
-      tag: result.security.hstsConfigured ? 'HSTS Activo' : 'HSTS Falta',
+      tag: result.security.hstsConfigured 
+        ? (language === 'fr' ? 'HSTS Actif' : language === 'en' ? 'HSTS Active' : 'HSTS Activo')
+        : (language === 'fr' ? 'HSTS Manquant' : language === 'en' ? 'HSTS Missing' : 'HSTS Falta'),
       tagOk: result.security.hstsConfigured,
-      subtext: `SSL ${result.security.sslDaysRemaining ? `${result.security.sslDaysRemaining}d vigencia` : 'Activo'} · Protocolo ${result.security.tlsProtocol || 'TLSv1.3'}`,
+      subtext: `SSL ${result.security.sslDaysRemaining ? `${result.security.sslDaysRemaining}d ${language === 'fr' ? 'validité' : language === 'en' ? 'validity' : 'vigencia'}` : (language === 'fr' ? 'Actif' : language === 'en' ? 'Active' : 'Activo')} · ${language === 'fr' ? 'Protocole' : language === 'en' ? 'Protocol' : 'Protocolo'} ${result.security.tlsProtocol || 'TLSv1.3'}`,
     },
     {
       id: 'performance',
@@ -146,43 +148,57 @@ export const ScannerResultsDashboard: React.FC<ScannerResultsDashboardProps> = (
       icon: 'speed',
       tag: result.speed.responseTimeMs ? `${result.speed.responseTimeMs} ms TTFB` : `${result.speed.loadTimeSeconds}s`,
       tagOk: (result.speed.responseTimeMs || 300) <= 250,
-      subtext: `Carga: ${result.speed.pageSizeFormatted || '42 KB'} · Compresión ${result.speed.compression || 'gzip'}`,
+      subtext: `${language === 'fr' ? 'Taille' : language === 'en' ? 'Page size' : 'Carga'}: ${result.speed.pageSizeFormatted || '42 KB'} · ${language === 'fr' ? 'Compression' : language === 'en' ? 'Compression' : 'Compresión'} ${result.speed.compression || 'gzip'}`,
     },
     {
       id: 'seo',
       name: language === 'fr' ? 'SEO Technique' : language === 'en' ? 'SEO' : 'SEO',
       score: result.seoLocal.score,
       icon: 'travel_explore',
-      tag: result.seoLocal.schemaMarkupDetected ? 'Sitemap ✓' : 'Sin Sitemap',
+      tag: result.seoLocal.schemaMarkupDetected 
+        ? 'Sitemap ✓' 
+        : (language === 'fr' ? 'Sans Sitemap' : language === 'en' ? 'No Sitemap' : 'Sin Sitemap'),
       tagOk: result.seoLocal.schemaMarkupDetected,
-      subtext: result.seoLocal.titleText ? `Title: "${result.seoLocal.titleText.slice(0, 24)}..."` : 'Estructura On-Page & Metas',
+      subtext: result.seoLocal.titleText 
+        ? `Title: "${result.seoLocal.titleText.slice(0, 24)}..."` 
+        : (language === 'fr' ? 'Structure On-Page & Balises' : language === 'en' ? 'On-Page Structure & Meta Tags' : 'Estructura On-Page & Metas'),
     },
     {
       id: 'content',
       name: language === 'fr' ? 'Contenu' : language === 'en' ? 'Content' : 'Contenido',
       score: result.content?.score ?? result.rawAuditResult?.content?.score ?? 85,
       icon: 'article',
-      tag: (result.content?.isThinContent ?? result.rawAuditResult?.content?.isThinContent) ? 'Thin Content' : 'Volumen Óptimo',
+      tag: (result.content?.isThinContent ?? result.rawAuditResult?.content?.isThinContent) 
+        ? 'Thin Content' 
+        : (language === 'fr' ? 'Volume Optimal' : language === 'en' ? 'Optimal Volume' : 'Volumen Óptimo'),
       tagOk: !(result.content?.isThinContent ?? result.rawAuditResult?.content?.isThinContent),
-      subtext: `${result.content?.wordCount ?? result.rawAuditResult?.content?.wordCount ?? 450} palabras · Ratio HTML: ${result.content?.textToHtmlRatio ?? result.rawAuditResult?.content?.textToHtmlRatio ?? 14.5}%`,
+      subtext: `${result.content?.wordCount ?? result.rawAuditResult?.content?.wordCount ?? 450} ${language === 'fr' ? 'mots' : language === 'en' ? 'words' : 'palabras'} · Ratio HTML: ${result.content?.textToHtmlRatio ?? result.rawAuditResult?.content?.textToHtmlRatio ?? 14.5}%`,
     },
     {
       id: 'schema',
       name: language === 'fr' ? 'Données Schema' : language === 'en' ? 'Schema' : 'Schema',
       score: result.structuredData?.score ?? result.rawAuditResult?.structuredData?.score ?? 75,
       icon: 'schema',
-      tag: (result.structuredData?.hasJsonLd ?? result.rawAuditResult?.structuredData?.hasJsonLd) ? 'JSON-LD Detectado' : 'Sin JSON-LD',
+      tag: (result.structuredData?.hasJsonLd ?? result.rawAuditResult?.structuredData?.hasJsonLd) 
+        ? (language === 'fr' ? 'JSON-LD Détecté' : language === 'en' ? 'JSON-LD Detected' : 'JSON-LD Detectado')
+        : (language === 'fr' ? 'Sans JSON-LD' : language === 'en' ? 'No JSON-LD' : 'Sin JSON-LD'),
       tagOk: Boolean(result.structuredData?.hasJsonLd ?? result.rawAuditResult?.structuredData?.hasJsonLd),
-      subtext: `${(result.structuredData?.schemaTypes ?? result.rawAuditResult?.structuredData?.schemaTypes ?? ['Organization']).length} esquemas · OpenGraph verificado`,
+      subtext: `${(result.structuredData?.schemaTypes ?? result.rawAuditResult?.structuredData?.schemaTypes ?? ['Organization']).length} ${language === 'fr' ? 'schémas' : language === 'en' ? 'schemas' : 'esquemas'} · ${language === 'fr' ? 'OpenGraph vérifié' : language === 'en' ? 'OpenGraph verified' : 'OpenGraph verificado'}`,
     },
     {
       id: 'mobile',
       name: language === 'fr' ? 'Mobile' : language === 'en' ? 'Mobile' : 'Móvil',
       score: result.mobile?.score ?? result.rawAuditResult?.mobile?.score ?? (result.speed.mobileOptimized ? 92 : 65),
       icon: 'smartphone',
-      tag: (result.mobile?.hasViewport ?? result.speed.mobileOptimized) ? 'Viewport OK' : 'No Optimizado',
+      tag: (result.mobile?.hasViewport ?? result.speed.mobileOptimized) 
+        ? 'Viewport OK' 
+        : (language === 'fr' ? 'Non Optimisé' : language === 'en' ? 'Not Optimized' : 'No Optimizado'),
       tagOk: result.mobile?.hasViewport ?? result.speed.mobileOptimized,
-      subtext: 'Diseño responsive · Viewport meta configurado para pantallas táctiles',
+      subtext: language === 'fr'
+        ? 'Design réactif · Balise viewport configurée pour écrans mobiles'
+        : language === 'en'
+        ? 'Responsive design · Viewport meta configured for mobile screens'
+        : 'Diseño responsive · Viewport meta configurado para pantallas táctiles',
     },
   ];
 
@@ -193,6 +209,12 @@ export const ScannerResultsDashboard: React.FC<ScannerResultsDashboardProps> = (
     return 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]';
   };
 
+  const getStatusLabel = (status: 'OPTIMAL' | 'NEEDS_IMPROVEMENT' | 'POOR') => {
+    if (status === 'OPTIMAL') return language === 'fr' ? 'OPTIMAL' : language === 'en' ? 'OPTIMAL' : 'ÓPTIMO';
+    if (status === 'NEEDS_IMPROVEMENT') return language === 'fr' ? 'À AMÉLIORER' : language === 'en' ? 'NEEDS IMPROVEMENT' : 'MEJORABLE';
+    return language === 'fr' ? 'CRITIQUE' : language === 'en' ? 'CRITICAL' : 'CRÍTICO';
+  };
+
   // Core Web Vitals Real Values & States
   const ttfbVal = result.speed.responseTimeMs || result.rawAuditResult?.performance?.responseTimeMs || 140;
   const lcpMs = result.rawAuditResult?.performance?.estimatedLcpMs || (result.speed.responseTimeMs ? result.speed.responseTimeMs + 320 : 880);
@@ -200,14 +222,19 @@ export const ScannerResultsDashboard: React.FC<ScannerResultsDashboardProps> = (
   const clsVal = (result.rawAuditResult?.performance?.estimatedCls ?? 0.03).toFixed(2);
   const inpVal = result.rawAuditResult?.performance?.estimatedInpMs ?? 65;
 
+  const ttfbStatus: 'OPTIMAL' | 'NEEDS_IMPROVEMENT' | 'POOR' = ttfbVal <= 200 ? 'OPTIMAL' : ttfbVal <= 500 ? 'NEEDS_IMPROVEMENT' : 'POOR';
+  const lcpStatus: 'OPTIMAL' | 'NEEDS_IMPROVEMENT' | 'POOR' = Number(lcpSec) <= 2.5 ? 'OPTIMAL' : Number(lcpSec) <= 4.0 ? 'NEEDS_IMPROVEMENT' : 'POOR';
+  const clsStatus: 'OPTIMAL' | 'NEEDS_IMPROVEMENT' | 'POOR' = Number(clsVal) <= 0.1 ? 'OPTIMAL' : Number(clsVal) <= 0.25 ? 'NEEDS_IMPROVEMENT' : 'POOR';
+  const inpStatus: 'OPTIMAL' | 'NEEDS_IMPROVEMENT' | 'POOR' = inpVal <= 200 ? 'OPTIMAL' : inpVal <= 500 ? 'NEEDS_IMPROVEMENT' : 'POOR';
+
   const cwvMetrics = [
     {
       acronym: 'TTFB',
       name: 'Time to First Byte',
       value: `${ttfbVal} ms`,
       numValue: ttfbVal,
-      status: ttfbVal <= 200 ? 'OPTIMAL' : ttfbVal <= 500 ? 'NEEDS_IMPROVEMENT' : 'POOR',
-      statusText: ttfbVal <= 200 ? 'ÓPTIMO' : ttfbVal <= 500 ? 'MEJORABLE' : 'CRÍTICO',
+      status: ttfbStatus,
+      statusText: getStatusLabel(ttfbStatus),
       target: '≤ 200 ms',
       percent: Math.min(100, Math.max(10, (ttfbVal / 600) * 100)),
       desc: language === 'fr' 
@@ -221,8 +248,8 @@ export const ScannerResultsDashboard: React.FC<ScannerResultsDashboardProps> = (
       name: 'Largest Contentful Paint',
       value: `${lcpSec} s`,
       numValue: Number(lcpSec),
-      status: Number(lcpSec) <= 2.5 ? 'OPTIMAL' : Number(lcpSec) <= 4.0 ? 'NEEDS_IMPROVEMENT' : 'POOR',
-      statusText: Number(lcpSec) <= 2.5 ? 'ÓPTIMO' : Number(lcpSec) <= 4.0 ? 'MEJORABLE' : 'CRÍTICO',
+      status: lcpStatus,
+      statusText: getStatusLabel(lcpStatus),
       target: '≤ 2.5 s',
       percent: Math.min(100, Math.max(10, (Number(lcpSec) / 5) * 100)),
       desc: language === 'fr'
@@ -236,8 +263,8 @@ export const ScannerResultsDashboard: React.FC<ScannerResultsDashboardProps> = (
       name: 'Cumulative Layout Shift',
       value: clsVal,
       numValue: Number(clsVal),
-      status: Number(clsVal) <= 0.1 ? 'OPTIMAL' : Number(clsVal) <= 0.25 ? 'NEEDS_IMPROVEMENT' : 'POOR',
-      statusText: Number(clsVal) <= 0.1 ? 'ÓPTIMO' : Number(clsVal) <= 0.25 ? 'MEJORABLE' : 'CRÍTICO',
+      status: clsStatus,
+      statusText: getStatusLabel(clsStatus),
       target: '≤ 0.10',
       percent: Math.min(100, Math.max(10, (Number(clsVal) / 0.3) * 100)),
       desc: language === 'fr'
@@ -251,8 +278,8 @@ export const ScannerResultsDashboard: React.FC<ScannerResultsDashboardProps> = (
       name: 'Interaction to Next Paint',
       value: `${inpVal} ms`,
       numValue: inpVal,
-      status: inpVal <= 200 ? 'OPTIMAL' : inpVal <= 500 ? 'NEEDS_IMPROVEMENT' : 'POOR',
-      statusText: inpVal <= 200 ? 'ÓPTIMO' : inpVal <= 500 ? 'MEJORABLE' : 'CRÍTICO',
+      status: inpStatus,
+      statusText: getStatusLabel(inpStatus),
       target: '≤ 200 ms',
       percent: Math.min(100, Math.max(10, (inpVal / 600) * 100)),
       desc: language === 'fr'
@@ -420,13 +447,13 @@ export const ScannerResultsDashboard: React.FC<ScannerResultsDashboardProps> = (
               onClick={() => handleCheckoutPdf5Eur(leadEmail)}
               disabled={isCheckingOutPdf}
               className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-[#F5A623] hover:bg-[#FFAE33] active:bg-[#E09015] text-[#0A0F1F] font-sans font-bold text-xs flex items-center justify-center gap-2 border border-[#FFD074] shadow-[0_4px_15px_rgba(245,166,35,0.3)] transition-all duration-150 cursor-pointer disabled:opacity-60 select-none shrink-0"
-              title="Descargar informe oficial en PDF ($5 USD) con sello y directivas de mitigación"
+              title={language === 'fr' ? 'Télécharger le rapport officiel en PDF (Gratuit)' : language === 'en' ? 'Download official PDF report (Free)' : 'Descargar informe oficial en PDF (Gratis)'}
             >
               <MaterialSymbol name={isCheckingOutPdf ? 'sync' : 'download'} className={`text-base text-[#0A0F1F] ${isCheckingOutPdf ? 'animate-spin' : ''}`} />
               <span>
                 {isCheckingOutPdf 
-                  ? 'Conectando con pasarela...' 
-                  : (language === 'fr' ? 'Télécharger Rapport PDF ($5)' : language === 'en' ? 'Download PDF Report ($5)' : 'Descargar Informe Oficial en PDF ($5)')}
+                  ? (language === 'fr' ? 'Génération du PDF...' : language === 'en' ? 'Generating PDF...' : 'Generando PDF...')
+                  : (language === 'fr' ? 'Télécharger Rapport PDF (Gratuit)' : language === 'en' ? 'Download PDF Report (Free)' : 'Descargar Informe en PDF (Gratis)')}
               </span>
             </button>
           </div>
@@ -736,21 +763,27 @@ export const ScannerResultsDashboard: React.FC<ScannerResultsDashboardProps> = (
                     <div className="w-8 h-8 rounded-lg bg-blue-500/20 border border-blue-500/40 flex items-center justify-center text-blue-400">
                       <MaterialSymbol name="mail" className="text-lg" />
                     </div>
-                    <strong className="text-sm text-white font-sans font-bold">1. En Pantalla Gratis</strong>
+                    <strong className="text-sm text-white font-sans font-bold">
+                      {language === 'fr' ? '1. Déblocage Gratuit à l’Écran' : language === 'en' ? '1. Free On-Screen Unlock' : '1. En Pantalla Gratis'}
+                    </strong>
                   </div>
                   <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
-                    100% GRATIS
+                    {language === 'fr' ? '100% GRATUIT' : language === 'en' ? '100% FREE' : '100% GRATIS'}
                   </span>
                 </div>
 
                 <p className="text-xs text-gray-300 font-sans leading-relaxed">
-                  Introduce tu correo corporativo para desbloquear en esta misma pantalla todas las directivas, análisis de palabras clave y métricas profundas.
+                  {language === 'fr'
+                    ? 'Saisissez votre email professionnel pour débloquer sur cet écran toutes les directives, analyse de mots-clés et métriques approfondies.'
+                    : language === 'en'
+                    ? 'Enter your work email to unlock all remediation directives, keyword insights, and deep metrics directly on this screen.'
+                    : 'Introduce tu correo corporativo para desbloquear en esta misma pantalla todas las directivas, análisis de palabras clave y métricas profundas.'}
                 </p>
 
                 <form onSubmit={handleUnlockWithEmail} className="space-y-3 pt-1">
                   <div>
                     <label htmlFor="conversion-lead-email" className="block text-[11px] font-mono text-gray-400 mb-1">
-                      Email corporativo / profesional *:
+                      {language === 'fr' ? 'Email d’entreprise / professionnel * :' : language === 'en' ? 'Work / Business Email *:' : 'Email corporativo / profesional *:'}
                     </label>
                     <div className="relative">
                       <input
@@ -762,7 +795,7 @@ export const ScannerResultsDashboard: React.FC<ScannerResultsDashboardProps> = (
                           setLeadEmail(e.target.value);
                           if (leadError) setLeadError(null);
                         }}
-                        placeholder="tu@empresa.com"
+                        placeholder={language === 'fr' ? 'vous@entreprise.fr' : language === 'en' ? 'you@company.com' : 'tu@empresa.com'}
                         className="w-full px-3 py-2 pl-9 bg-[#060913] border border-gray-700 focus:border-[#F5A623] rounded-lg text-white text-xs font-mono placeholder:text-gray-600 outline-none transition-colors"
                       />
                       <MaterialSymbol name="mail" className="text-gray-500 text-sm absolute left-2.5 top-2.5 pointer-events-none" />
@@ -775,7 +808,7 @@ export const ScannerResultsDashboard: React.FC<ScannerResultsDashboardProps> = (
                         type="text"
                         value={leadName}
                         onChange={(e) => setLeadName(e.target.value)}
-                        placeholder="Nombre (opc.)"
+                        placeholder={language === 'fr' ? 'Nom (fac.)' : language === 'en' ? 'Name (opt.)' : 'Nombre (opc.)'}
                         className="w-full px-2.5 py-1.5 bg-[#060913] border border-gray-800 focus:border-[#F5A623] rounded-lg text-white text-xs font-mono placeholder:text-gray-600 outline-none"
                       />
                     </div>
@@ -784,7 +817,7 @@ export const ScannerResultsDashboard: React.FC<ScannerResultsDashboardProps> = (
                         type="tel"
                         value={leadPhone}
                         onChange={(e) => setLeadPhone(e.target.value)}
-                        placeholder="Tel / WA (opc.)"
+                        placeholder={language === 'fr' ? 'Tél / WA (fac.)' : language === 'en' ? 'Phone / WA (opt.)' : 'Tel / WA (opc.)'}
                         className="w-full px-2.5 py-1.5 bg-[#060913] border border-gray-800 focus:border-[#F5A623] rounded-lg text-white text-xs font-mono placeholder:text-gray-600 outline-none"
                       />
                     </div>
@@ -805,12 +838,12 @@ export const ScannerResultsDashboard: React.FC<ScannerResultsDashboardProps> = (
                     {isSubmittingLead ? (
                       <>
                         <MaterialSymbol name="sync" className="text-sm animate-spin" />
-                        <span>Verificando servidor MX...</span>
+                        <span>{language === 'fr' ? 'Vérification serveur MX...' : language === 'en' ? 'Verifying MX server...' : 'Verificando servidor MX...'}</span>
                       </>
                     ) : (
                       <>
                         <MaterialSymbol name="key" className="text-sm" />
-                        <span>Desbloquear en Pantalla</span>
+                        <span>{language === 'fr' ? 'Débloquer à l’Écran' : language === 'en' ? 'Unlock On Screen' : 'Desbloquear en Pantalla'}</span>
                       </>
                     )}
                   </button>
@@ -818,7 +851,7 @@ export const ScannerResultsDashboard: React.FC<ScannerResultsDashboardProps> = (
               </div>
             </div>
 
-            {/* OPCIÓN 2: PDF 5€ (Documento PDF oficial de 5 páginas) */}
+            {/* OPCIÓN 2: PDF $5 USD (Documento PDF oficial de 5 páginas) */}
             <div className="p-5 sm:p-6 rounded-xl bg-[#0D1326] border-2 border-[#F5A623] relative flex flex-col justify-between shadow-[0_4px_25px_rgba(245,166,35,0.25)] space-y-4">
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -826,30 +859,41 @@ export const ScannerResultsDashboard: React.FC<ScannerResultsDashboardProps> = (
                     <div className="w-8 h-8 rounded-lg bg-[#F5A623]/20 border border-[#F5A623]/40 flex items-center justify-center text-[#F5A623]">
                       <MaterialSymbol name="picture_as_pdf" className="text-lg" />
                     </div>
-                    <strong className="text-sm text-white font-sans font-bold">2. PDF Oficial (5 Páginas)</strong>
+                    <strong className="text-sm text-white font-sans font-bold">
+                      {language === 'fr' ? '2. Rapport Officiel PDF (5 Pages)' : language === 'en' ? '2. Official PDF Report (5 Pages)' : '2. PDF Oficial (5 Páginas)'}
+                    </strong>
                   </div>
                   <div className="text-right">
-                    <span className="text-2xl font-black text-white font-mono">5€</span>
-                    <span className="text-[10px] text-gray-400 block font-mono -mt-1">Pago único</span>
+                    <div className="flex items-center gap-1.5 justify-end">
+                      <span className="text-xs line-through text-gray-500 font-mono">$5</span>
+                      <span className="text-xl font-black text-emerald-400 font-mono">{language === 'fr' ? 'GRATUIT' : language === 'en' ? 'FREE' : 'GRATIS'}</span>
+                    </div>
+                    <span className="text-[10px] text-emerald-400/90 block font-mono -mt-0.5">
+                      {language === 'fr' ? 'Téléchargement direct' : language === 'en' ? 'Direct download' : 'Descarga directa'}
+                    </span>
                   </div>
                 </div>
 
                 <p className="text-xs text-gray-300 font-sans leading-relaxed">
-                  Recibe el informe formal certificado de 5 páginas con la marca Dexvoi, métricas de laboratorio y scripts de blindaje Nginx/Apache listos para copiar.
+                  {language === 'fr'
+                    ? 'Recevez le rapport forensique certifié de 5 pages avec sceau Dexvoi, métriques de laboratoire et scripts de blindage Nginx/Apache prêts à copier.'
+                    : language === 'en'
+                    ? 'Receive the certified 5-page formal report with Dexvoi seal, lab performance metrics, and copy-paste Nginx/Apache security scripts.'
+                    : 'Recibe el informe formal certificado de 5 páginas con la marca Dexvoi, métricas de laboratorio y scripts de blindaje Nginx/Apache listos para copiar.'}
                 </p>
 
                 <ul className="space-y-1.5 text-xs text-gray-300 font-sans">
                   <li className="flex items-center gap-2">
                     <MaterialSymbol name="check" className="text-emerald-400 text-sm shrink-0" />
-                    <span>Informe PDF oficial con sello Dexvoi</span>
+                    <span>{language === 'fr' ? 'Rapport PDF officiel certifié Dexvoi' : language === 'en' ? 'Official certified Dexvoi PDF report' : 'Informe PDF oficial con sello Dexvoi'}</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <MaterialSymbol name="check" className="text-emerald-400 text-sm shrink-0" />
-                    <span>Scripts de mitigación Nginx & Apache</span>
+                    <span>{language === 'fr' ? 'Scripts de remédiation Nginx & Apache' : language === 'en' ? 'Nginx & Apache mitigation scripts' : 'Scripts de mitigación Nginx & Apache'}</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <MaterialSymbol name="check" className="text-emerald-400 text-sm shrink-0" />
-                    <span>Envío inmediato al correo tras Stripe</span>
+                    <span>{language === 'fr' ? 'Téléchargement direct immédiat en PDF' : language === 'en' ? 'Instant direct PDF download' : 'Descarga directa inmediata en PDF'}</span>
                   </li>
                 </ul>
               </div>
@@ -864,27 +908,22 @@ export const ScannerResultsDashboard: React.FC<ScannerResultsDashboardProps> = (
                   {isCheckingOutPdf ? (
                     <>
                       <MaterialSymbol name="sync" className="text-sm animate-spin text-[#0A0F1F]" />
-                      <span>Conectando con pasarela...</span>
-                    </>
-                  ) : testMode ? (
-                    <>
-                      <MaterialSymbol name="download" className="text-sm text-[#0A0F1F]" />
-                      <span>Descargar PDF ($5 USD) [Modo Demo]</span>
+                      <span>{language === 'fr' ? 'Génération du PDF...' : language === 'en' ? 'Generating PDF...' : 'Generando PDF...'}</span>
                     </>
                   ) : (
                     <>
-                      <MaterialSymbol name="credit_card" className="text-sm text-[#0A0F1F]" />
-                      <span>Pagar 5€ & Descargar PDF</span>
+                      <MaterialSymbol name="download" className="text-sm text-[#0A0F1F]" />
+                      <span>{language === 'fr' ? 'Télécharger Rapport PDF (Gratuit)' : language === 'en' ? 'Download PDF Report (Free)' : 'Descargar Informe en PDF (Gratis)'}</span>
                     </>
                   )}
                 </button>
-                <p className="text-[10px] text-gray-500 font-mono text-center">
-                  Pasarela Stripe segura con cifrado TLS 256 bits.
+                <p className="text-[10px] text-gray-400 font-mono text-center">
+                  {language === 'fr' ? 'Téléchargement direct immédiat sans frais.' : language === 'en' ? 'Immediate direct download with zero fees.' : 'Descarga directa e inmediata sin coste.'}
                 </p>
               </div>
             </div>
 
-            {/* OPCIÓN 3: Planes Superiores (19€ / 49€ / 99€) */}
+            {/* OPCIÓN 3: Planes Superiores ($19 / $49 / $99 USD) */}
             <div className="p-5 sm:p-6 rounded-xl bg-[#0D1326] border border-purple-500/40 relative flex flex-col justify-between shadow-[0_4px_20px_rgba(168,85,247,0.15)] space-y-4">
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -892,15 +931,21 @@ export const ScannerResultsDashboard: React.FC<ScannerResultsDashboardProps> = (
                     <div className="w-8 h-8 rounded-lg bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-400">
                       <MaterialSymbol name="auto_awesome" className="text-lg" />
                     </div>
-                    <strong className="text-sm text-white font-sans font-bold">3. Delegar en el Arquitecto</strong>
+                    <strong className="text-sm text-white font-sans font-bold">
+                      {language === 'fr' ? '3. Déléguer à l’Architecte' : language === 'en' ? '3. Delegate to the Architect' : '3. Delegar en el Arquitecto'}
+                    </strong>
                   </div>
                   <span className="text-xs font-mono font-bold text-[#F5A623]">
-                    19€ / 49€ / 99€
+                    $19 / $49 / $99 USD
                   </span>
                 </div>
 
                 <p className="text-xs text-gray-300 font-sans leading-relaxed">
-                  Blindaje profesional ejecutado por el Arquitecto Digital o auditoría forense profunda de más de 20 páginas:
+                  {language === 'fr'
+                    ? 'Blindage professionnel déployé par l’Architecte Digital ou audit forensique approfondi de plus de 20 pages :'
+                    : language === 'en'
+                    ? 'Professional perimeter hardening executed by the Digital Architect or in-depth 20+ page forensic audit:'
+                    : 'Blindaje profesional ejecutado por el Arquitecto Digital o auditoría forense profunda de más de 20 páginas:'}
                 </p>
 
                 <div className="space-y-2 pt-1 font-mono text-xs">
@@ -909,8 +954,12 @@ export const ScannerResultsDashboard: React.FC<ScannerResultsDashboardProps> = (
                     className="p-2 rounded-lg bg-[#060913] border border-gray-800 hover:border-blue-500/50 cursor-pointer flex items-center justify-between transition-colors"
                   >
                     <div>
-                      <strong className="text-white block">Plan Básico (19€)</strong>
-                      <span className="text-[10px] text-gray-400">10 páginas + Checklist técnico</span>
+                      <strong className="text-white block">
+                        {language === 'fr' ? 'Rapport Starter ($19 USD)' : language === 'en' ? 'Starter Report ($19 USD)' : 'Plan Básico ($19 USD)'}
+                      </strong>
+                      <span className="text-[10px] text-gray-400">
+                        {language === 'fr' ? '10 pages + Checklist technique' : language === 'en' ? '10 pages + Technical checklist' : '10 páginas + Checklist técnico'}
+                      </span>
                     </div>
                     <MaterialSymbol name="arrow_forward" className="text-blue-400 text-sm" />
                   </div>
@@ -920,8 +969,12 @@ export const ScannerResultsDashboard: React.FC<ScannerResultsDashboardProps> = (
                     className="p-2 rounded-lg bg-[#060913] border border-amber-500/30 hover:border-amber-500 cursor-pointer flex items-center justify-between transition-colors"
                   >
                     <div>
-                      <strong className="text-[#F5A623] block">Plan Completo (49€)</strong>
-                      <span className="text-[10px] text-gray-400">Forense profunda 20+ páginas</span>
+                      <strong className="text-[#F5A623] block">
+                        {language === 'fr' ? 'Audit Complet ($49 USD)' : language === 'en' ? 'Complete Report ($49 USD)' : 'Plan Completo ($49 USD)'}
+                      </strong>
+                      <span className="text-[10px] text-gray-400">
+                        {language === 'fr' ? 'Audit forensique approfondi 20+ pages' : language === 'en' ? 'Deep forensic audit 20+ pages' : 'Forense profunda 20+ páginas'}
+                      </span>
                     </div>
                     <MaterialSymbol name="arrow_forward" className="text-[#F5A623] text-sm" />
                   </div>
@@ -931,8 +984,12 @@ export const ScannerResultsDashboard: React.FC<ScannerResultsDashboardProps> = (
                     className="p-2 rounded-lg bg-[#060913] border border-purple-500/30 hover:border-purple-500 cursor-pointer flex items-center justify-between transition-colors"
                   >
                     <div>
-                      <strong className="text-purple-400 block">Plan VIP (99€)</strong>
-                      <span className="text-[10px] text-gray-400">Forense 20+ p. + Consultoría 1-a-1</span>
+                      <strong className="text-purple-400 block">
+                        {language === 'fr' ? 'Plan VIP ($99 USD)' : language === 'en' ? 'VIP Plan ($99 USD)' : 'Plan VIP ($99 USD)'}
+                      </strong>
+                      <span className="text-[10px] text-gray-400">
+                        {language === 'fr' ? 'Audit 20+ p. + Consultation 1-à-1' : language === 'en' ? 'Forensic 20+ p. + 1-on-1 Consultation' : 'Forense 20+ p. + Consultoría 1-a-1'}
+                      </span>
                     </div>
                     <MaterialSymbol name="arrow_forward" className="text-purple-400 text-sm" />
                   </div>
@@ -944,7 +1001,7 @@ export const ScannerResultsDashboard: React.FC<ScannerResultsDashboardProps> = (
                 onClick={() => onOpenPdfModal ? onOpenPdfModal('complete') : onSelectAuditWithUrl(result.url, result.keyFindings)}
                 className="w-full py-2.5 px-4 rounded-lg bg-[#1E293B] hover:bg-[#2A3A52] text-white font-sans font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer border border-gray-700"
               >
-                <span>Ver Planes y Contratar</span>
+                <span>{language === 'fr' ? 'Voir les Plans & Commander' : language === 'en' ? 'View Plans & Order' : 'Ver Planes y Contratar'}</span>
                 <MaterialSymbol name="arrow_outward" className="text-sm" />
               </button>
             </div>
@@ -962,29 +1019,33 @@ export const ScannerResultsDashboard: React.FC<ScannerResultsDashboardProps> = (
             <div className="flex items-center gap-2.5">
               <MaterialSymbol name="verified" className="text-emerald-400 text-xl shrink-0" filled />
               <div>
-                <strong className="font-sans text-white text-sm block">Informe Técnico Completo Desbloqueado</strong>
+                <strong className="font-sans text-white text-sm block">
+                  {language === 'fr' ? 'Rapport Technique Complet Débloqué' : language === 'en' ? 'Full Technical Report Unlocked' : 'Informe Técnico Completo Desbloqueado'}
+                </strong>
                 <span className="text-[11px] text-emerald-300/90 font-mono">
-                  Acceso concedido para: <span className="text-white font-bold">{leadEmail || 'tu email'}</span>. Métricas forenses y scripts de remediación disponibles.
+                  {language === 'fr' ? 'Accès accordé pour : ' : language === 'en' ? 'Access granted for: ' : 'Acceso concedido para: '}
+                  <span className="text-white font-bold">{leadEmail || (language === 'fr' ? 'votre email' : language === 'en' ? 'your email' : 'tu email')}</span>
+                  {language === 'fr' ? '. Métriques forensiques et scripts de remédiation disponibles.' : language === 'en' ? '. Forensic metrics and remediation scripts available.' : '. Métricas forenses y scripts de remediación disponibles.'}
                 </span>
               </div>
             </div>
             <button
               onClick={() => handleCheckoutPdf5Eur(leadEmail)}
-              className="px-3 py-1.5 rounded-lg bg-[#F5A623] hover:bg-[#FFAE33] text-[#0A0F1F] font-sans font-bold text-xs flex items-center gap-1.5 shrink-0 shadow"
+              className="px-3 py-1.5 rounded-lg bg-[#F5A623] hover:bg-[#FFAE33] text-[#0A0F1F] font-sans font-bold text-xs flex items-center gap-1.5 shrink-0 shadow cursor-pointer"
             >
               <MaterialSymbol name="download" className="text-sm" />
-              <span>Descargar PDF Oficial ($5)</span>
+              <span>{language === 'fr' ? 'Télécharger PDF Officiel (Gratuit)' : language === 'en' ? 'Download Official PDF (Free)' : 'Descargar PDF Oficial (Gratis)'}</span>
             </button>
           </div>
 
           {/* Granular Inspection Tabs */}
           <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none text-xs font-mono border-b border-gray-800">
             {[
-              { id: 'all', label: 'Todas las Métricas', icon: 'auto_awesome' },
-              { id: 'content', label: 'Contenido & Enlaces', icon: 'article' },
-              { id: 'structuredData', label: 'Datos Estructurados', icon: 'schema' },
-              { id: 'advancedSecurity', label: 'Seguridad DNS & Caché', icon: 'shield' },
-              { id: 'code', label: 'Scripts de Remediación', icon: 'terminal' },
+              { id: 'all', label: language === 'fr' ? 'Toutes les Métriques' : language === 'en' ? 'All Metrics' : 'Todas las Métricas', icon: 'auto_awesome' },
+              { id: 'content', label: language === 'fr' ? 'Contenu & Liens' : language === 'en' ? 'Content & Links' : 'Contenido & Enlaces', icon: 'article' },
+              { id: 'structuredData', label: language === 'fr' ? 'Données Structurées' : language === 'en' ? 'Structured Data' : 'Datos Estructurados', icon: 'schema' },
+              { id: 'advancedSecurity', label: language === 'fr' ? 'Sécurité DNS & Cache' : language === 'en' ? 'DNS & Cache Security' : 'Seguridad DNS & Caché', icon: 'shield' },
+              { id: 'code', label: language === 'fr' ? 'Scripts de Remédiation' : language === 'en' ? 'Remediation Scripts' : 'Scripts de Remediación', icon: 'terminal' },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -1160,22 +1221,26 @@ server_tokens off;`}
           {/* Final Action Strip */}
           <div className="p-5 rounded-xl bg-gradient-to-r from-[#1E293B] to-[#131B33] border border-[#F5A623]/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <strong className="text-white font-sans text-sm block">¿Deseas la auditoría forense completa o delegar el blindaje?</strong>
-              <span className="text-xs text-gray-300 font-mono">Descarga el informe oficial en PDF ($5 USD) o contrata al Arquitecto Digital.</span>
+              <strong className="text-white font-sans text-sm block">
+                {language === 'fr' ? 'Souhaitez-vous l’audit forensique complet ou déléguer le blindage ?' : language === 'en' ? 'Do you need the complete forensic audit or want to delegate hardening?' : '¿Deseas la auditoría forense completa o delegar el blindaje?'}
+              </strong>
+              <span className="text-xs text-gray-300 font-mono">
+                {language === 'fr' ? 'Téléchargez le rapport officiel en PDF (Gratuit) ou confiez votre projet à l’Architecte Digital.' : language === 'en' ? 'Download the official PDF report (Free) or hire our Digital Architect.' : 'Descarga el informe oficial en PDF (Gratis) o contrata al Arquitecto Digital.'}
+              </span>
             </div>
             <div className="flex items-center gap-3 shrink-0">
               <button
                 onClick={() => handleCheckoutPdf5Eur(leadEmail)}
-                className="px-4 py-2 rounded-lg bg-[#F5A623] hover:bg-[#FFAE33] text-[#0A0F1F] font-sans font-bold text-xs flex items-center gap-1.5 shadow"
+                className="px-4 py-2 rounded-lg bg-[#F5A623] hover:bg-[#FFAE33] text-[#0A0F1F] font-sans font-bold text-xs flex items-center gap-1.5 shadow cursor-pointer"
               >
                 <MaterialSymbol name="download" className="text-sm" />
-                <span>PDF Oficial (5€)</span>
+                <span>{language === 'fr' ? 'PDF Officiel (Gratuit)' : language === 'en' ? 'Official PDF (Free)' : 'PDF Oficial (Gratis)'}</span>
               </button>
               <button
                 onClick={() => onSelectAuditWithUrl(result.url, result.keyFindings)}
                 className="px-4 py-2 rounded-lg bg-white hover:bg-gray-100 text-[#0A0F1F] font-sans font-bold text-xs flex items-center gap-1.5 shadow"
               >
-                <span>Consultar Arquitecto</span>
+                <span>{language === 'fr' ? 'Consulter l’Architecte' : language === 'en' ? 'Consult Architect' : 'Consultar Arquitecto'}</span>
                 <MaterialSymbol name="arrow_forward" className="text-sm" />
               </button>
             </div>

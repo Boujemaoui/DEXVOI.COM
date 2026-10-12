@@ -40,8 +40,8 @@ export const OsintPurchaseModal: React.FC<OsintPurchaseModalProps> = ({
           phone: '',
           businessType: 'Auditoría OSINT & Blindaje',
           websiteUrl: domainInput,
-          primaryConcern: 'Compra de Auditoría Técnica & Seguridad (49€)',
-          type: 'Stripe Checkout (49€)',
+          primaryConcern: 'Compra de Auditoría Técnica & Seguridad ($49 USD)',
+          type: 'Stripe Checkout ($49 USD)',
         }),
       });
     } catch {
@@ -69,7 +69,7 @@ export const OsintPurchaseModal: React.FC<OsintPurchaseModalProps> = ({
   const downloadFullForensicReport = () => {
     const reportText = `================================================================================
 DEXVOI - ${language === 'fr' ? 'RAPPORT FORENSIQUE DE SÉCURITÉ OSINT & EN-TÊTES HTTP' : language === 'en' ? 'FORENSIC OSINT SECURITY & HTTP HEADERS AUDIT REPORT' : 'INFORME FORENSE DE SEGURIDAD OSINT & BLINDAJE DE CABECERAS HTTP'}
-${language === 'fr' ? 'Service de Cybersécurité Défensive Dédié' : language === 'en' ? 'Defensive Cybersecurity Specialized Service' : 'Servicio Especializado de Ciberseguridad Defensiva'} | 49€
+${language === 'fr' ? 'Service de Cybersécurité Défensive Dédié' : language === 'en' ? 'Defensive Cybersecurity Specialized Service' : 'Servicio Especializado de Ciberseguridad Defensiva'} | $49 USD
 ================================================================================
 ${language === 'fr' ? 'Domaine Audité' : language === 'en' ? 'Audited Domain' : 'Dominio Auditado'}: ${domain}
 ${language === 'fr' ? 'Date d’émission' : language === 'en' ? 'Date & Time' : 'Fecha y Hora de Emisión'}: ${new Date().toLocaleString()}
@@ -154,7 +154,7 @@ Email: security@dexvoi.com | WhatsApp: +212 600-000000
                   {language === 'fr' ? 'Audit OSINT & Script de Blindage' : language === 'en' ? 'OSINT Audit & Hardening Script' : 'Auditoría OSINT & Script de Blindaje'}
                 </h3>
                 <span className="px-2 py-0.5 rounded bg-[#F5A623]/20 border border-[#F5A623]/40 text-[#F5A623] font-mono text-[10px] font-bold">
-                  {language === 'fr' ? '49€ PAIEMENT UNIQUE' : language === 'en' ? '49€ ONE-TIME' : '49€ PAGO ÚNICO'}
+                  {language === 'fr' ? '$49 USD PAIEMENT UNIQUE' : language === 'en' ? '$49 USD ONE-TIME' : '$49 USD PAGO ÚNICO'}
                 </span>
               </div>
               <p className="text-xs text-gray-400 font-sans">
@@ -182,7 +182,7 @@ Email: security@dexvoi.com | WhatsApp: +212 600-000000
                   <Sparkles className="w-4 h-4 text-[#F5A623]" />
                   {language === 'fr' ? 'Ce que vous débloquez avec cet audit :' : language === 'en' ? 'Included in this technical deliverable:' : '¿Qué desbloqueas con esta auditoría especializada?'}
                 </span>
-                <span className="text-white font-bold text-base font-mono">49€</span>
+                <span className="text-white font-bold text-base font-mono">$49 USD</span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs text-gray-300">
@@ -282,7 +282,7 @@ Email: security@dexvoi.com | WhatsApp: +212 600-000000
                 ) : (
                   <>
                     <Lock className="w-4 h-4 text-white" />
-                    <span>{language === 'fr' ? 'Régler l’audit sur Stripe Officiel (49€)' : language === 'en' ? 'Pay Audit on Official Stripe (49€)' : 'Pagar Auditoría en Stripe Oficial (49€)'}</span>
+                    <span>{language === 'fr' ? 'Régler l’audit sur Stripe Officiel ($49 USD)' : language === 'en' ? 'Pay Audit on Official Stripe ($49 USD)' : 'Pagar Auditoría en Stripe Oficial ($49 USD)'}</span>
                   </>
                 )}
               </button>

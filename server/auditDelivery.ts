@@ -114,13 +114,13 @@ export function determinePlanTier(session: Stripe.Checkout.Session, lineItems?: 
     return { tier: 'pdf_5usd', name: 'Informe Oficial en PDF ($5 USD)' };
   }
   if (amount === 1900) {
-    return { tier: 'basic', name: 'Plan Básico (19€)' };
+    return { tier: 'basic', name: 'Plan Básico ($19 USD)' };
   }
   if (amount === 4900) {
-    return { tier: 'complete', name: 'Plan Completo (49€)' };
+    return { tier: 'complete', name: 'Plan Completo ($49 USD)' };
   }
   if (amount === 9900) {
-    return { tier: 'premium', name: 'Plan Premium VIP (99€)' };
+    return { tier: 'premium', name: 'Plan Premium VIP ($99 USD)' };
   }
 
   // Check metadata
@@ -129,13 +129,13 @@ export function determinePlanTier(session: Stripe.Checkout.Session, lineItems?: 
     return { tier: 'pdf_5usd', name: 'Informe Oficial en PDF ($5 USD)' };
   }
   if (metaTier === 'basic') {
-    return { tier: 'basic', name: 'Plan Básico (19€)' };
+    return { tier: 'basic', name: 'Plan Básico ($19 USD)' };
   }
   if (metaTier === 'complete') {
-    return { tier: 'complete', name: 'Plan Completo (49€)' };
+    return { tier: 'complete', name: 'Plan Completo ($49 USD)' };
   }
   if (metaTier === 'premium') {
-    return { tier: 'premium', name: 'Plan Premium VIP (99€)' };
+    return { tier: 'premium', name: 'Plan Premium VIP ($99 USD)' };
   }
 
   // Fallback to inspecting line items or description
@@ -144,14 +144,14 @@ export function determinePlanTier(session: Stripe.Checkout.Session, lineItems?: 
     return { tier: 'pdf_5usd', name: 'Informe Oficial en PDF ($5 USD)' };
   }
   if (desc.includes('19') || desc.includes('básico') || desc.includes('starter') || desc.includes('initial')) {
-    return { tier: 'basic', name: 'Plan Básico (19€)' };
+    return { tier: 'basic', name: 'Plan Básico ($19 USD)' };
   }
   if (desc.includes('99') || desc.includes('premium') || desc.includes('vip') || desc.includes('consulting') || desc.includes('1-to-1')) {
-    return { tier: 'premium', name: 'Plan Premium VIP (99€)' };
+    return { tier: 'premium', name: 'Plan Premium VIP ($99 USD)' };
   }
 
-  // Default to Complete plan (49€)
-  return { tier: 'complete', name: 'Plan Completo (49€)' };
+  // Default to Complete plan ($49 USD)
+  return { tier: 'complete', name: 'Plan Completo ($49 USD)' };
 }
 
 /**
@@ -165,7 +165,8 @@ export async function executeAndDeliverAudit(
   const customerEmail = session.customer_details?.email || session.customer_email || 'cliente@dexvoi.com';
   const targetWebsite = extractTargetWebsite(session, customerEmail);
   const { tier, name: planName } = determinePlanTier(session, lineItems);
-  const amountTotal = session.amount_total ? `${session.amount_total / 100}€` : 'No especificado';
+  const amountTotal = session.amount_total ? `$${session.amount_total / 100} USD` : 'No especificado';
+  const customerLanguage: 'es' | 'en' | 'fr' = (session.metadata?.language === 'fr' || session.locale === 'fr') ? 'fr' : (session.metadata?.language === 'en' || session.locale === 'en') ? 'en' : 'es';
 
   console.log(`🚀 [Dexvoi Audit Pipeline] Iniciando escaneo y entrega para:`);
   console.log(`   👤 Cliente: ${customerEmail}`);
@@ -409,12 +410,13 @@ export async function executeAndDeliverAudit(
   }
 
   // 2. Generate PDF Report according to Plan Tier
-  console.log(`📄 [Dexvoi Audit Pipeline] Generando PDF oficial con identidad Dexvoi (${tier})...`);
+  console.log(`📄 [Dexvoi Audit Pipeline] Generando PDF oficial con identidad Dexvoi (${tier}, idioma: ${customerLanguage})...`);
   const pdfBuffer = generateAuditPdf({
     auditResult,
     tier,
     customerEmail,
     websiteUrl: cleanTarget,
+    language: customerLanguage,
   });
 
   console.log(`✅ [Dexvoi Audit Pipeline] PDF generado correctamente. Tamaño: ${(pdfBuffer.length / 1024).toFixed(1)} KB`);

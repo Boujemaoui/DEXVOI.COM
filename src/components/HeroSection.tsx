@@ -46,7 +46,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenAuditModal, onSc
               <h1 className="text-3xl sm:text-4xl md:text-5xl xl:text-5xl font-extrabold text-white tracking-tight leading-[1.15] text-balance">
                 {t.hero.titleLine1}{' '}
                 <span className="text-gray-200">{t.hero.titleLine2}</span>{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F5A623] via-[#ffb955] to-[#ffd78a] drop-shadow-[0_2px_12px_rgba(245,166,35,0.3)]">
+                <span className="text-[#F5A623] drop-shadow-[0_2px_12px_rgba(245,166,35,0.3)] inline-block">
                   {t.hero.titleHighlight}
                 </span>
               </h1>

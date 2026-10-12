@@ -78,78 +78,43 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
     return () => window.removeEventListener('dexvoi_test_mode_changed', handleSync);
   }, []);
 
-  // Direct Stripe Checkout for official certified $5 USD PDF report
+  // Direct official certified PDF report download (Free for current business analysis)
   const handleCheckoutPdf5Eur = async (optionalEmail?: string) => {
     if (!result) return;
     setIsCheckingOutPdf(true);
     setCheckoutError(null);
     setCheckoutSuccessMessage(null);
 
-    // MODO DE PRUEBAS / DEMO: Descarga directa del PDF de $5 USD sin pasar por Stripe
-    if (testMode) {
-      try {
-        const ok = await downloadOfficialAuditPdf({
-          target: result.url,
-          auditResult: result.rawAuditResult,
-          customerEmail: (optionalEmail || leadEmail).trim() || 'info@dexvoi.com',
-          tier: 'pdf_5usd',
-        });
-        if (ok) {
-          setCheckoutSuccessMessage(
-            language === 'fr'
-              ? '✓ Rapport Officiel PDF ($5 USD) généré et téléchargé avec succès (Mode Test - Sans frais Stripe).'
-              : language === 'en'
-              ? '✓ Official PDF Report ($5 USD) generated and downloaded successfully (Test Mode - Zero Stripe charge).'
-              : '✓ Informe Oficial en PDF ($5 USD) generado y descargado con éxito (Modo Pruebas - Sin cobro en Stripe).'
-          );
-        } else {
-          setCheckoutError('No se pudo generar el archivo PDF en este momento.');
-        }
-      } catch (err: any) {
-        setCheckoutError(err?.message || 'Error al descargar PDF.');
-      } finally {
-        setIsCheckingOutPdf(false);
-      }
-      return;
-    }
-
-    // Pre-open checkout window synchronously on user click to prevent popup blockers
-    const checkoutWindow = createCheckoutPopup();
-
     try {
-      const emailToUse = (optionalEmail || leadEmail).trim() || undefined;
-      const res = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          websiteUrl: result.url,
-          customerEmail: emailToUse,
-          planTier: 'pdf_5usd',
-        }),
+      const emailToUse = (optionalEmail || leadEmail).trim() || 'cliente@dexvoi.com';
+      const ok = await downloadOfficialAuditPdf({
+        target: result.url,
+        auditResult: result.rawAuditResult,
+        customerEmail: emailToUse,
+        tier: 'pdf_5usd',
+        language: language || 'es',
       });
-
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => null);
-        throw new Error(errorData?.error || `Error del servidor (${res.status})`);
-      }
-
-      const data = await res.json().catch(() => ({}));
-      if (data && data.url) {
+      if (ok) {
         setCheckoutSuccessMessage(
           language === 'fr'
-            ? 'Redirection vers Stripe Checkout ($5 USD). Vous recevrez le PDF officiel par email après le paiement.'
+            ? '✓ Rapport Officiel PDF généré et téléchargé avec succès.'
             : language === 'en'
-            ? 'Redirecting to Stripe Checkout ($5 USD). You will receive the official PDF via email after payment.'
-            : 'Redirigiendo a Stripe Checkout ($5 USD). Recibirás el PDF oficial tras completar el pago.'
+            ? '✓ Official PDF Report generated and downloaded successfully.'
+            : '✓ Informe Oficial en PDF generado y descargado con éxito.'
         );
-        // Seamless redirection to Stripe Checkout
-        navigateToStripeUrl(data.url, checkoutWindow);
+        setTimeout(() => setCheckoutSuccessMessage(null), 8000);
       } else {
-        setCheckoutError('No se pudo generar la sesión de pago de Stripe.');
+        setCheckoutError(
+          language === 'fr'
+            ? 'Impossible de générer le fichier PDF pour le moment. Veuillez réessayer.'
+            : language === 'en'
+            ? 'Could not generate the PDF file at this time. Please try again.'
+            : 'No se pudo generar el archivo PDF en este momento. Inténtalo de nuevo.'
+        );
       }
     } catch (err: any) {
-      console.error('Error initiating $5 USD PDF checkout:', err);
-      setCheckoutError(err?.message || 'Error al conectar con la pasarela de pago.');
+      console.error('Error generating free PDF report:', err);
+      setCheckoutError(err?.message || (language === 'fr' ? 'Erreur lors du téléchargement du PDF.' : language === 'en' ? 'Error downloading PDF.' : 'Error al descargar PDF.'));
     } finally {
       setIsCheckingOutPdf(false);
     }
@@ -243,6 +208,7 @@ export const ScannerSection: React.FC<ScannerSectionProps> = ({
         auditResult: result.rawAuditResult,
         customerEmail: 'cliente@dexvoi.com',
         tier: 'free',
+        language: language || 'es',
       });
       if (ok) {
         setPdfSuccessMessage(

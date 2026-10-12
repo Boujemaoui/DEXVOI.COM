@@ -145,43 +145,43 @@ export const VirtualAssistantChat: React.FC<VirtualAssistantChatProps> = ({
       }
     }
 
-    // Check if user is asking about OSINT / Security Headers standalone service (29€)
-    const isOsintQuery = /(\b(osint|cabecera|cabeceras|header|headers|brecha|brechas|vulnerab|vulnerabilidad|vulnerabilidades|hsts|csp|clickjacking|29€?|veintinueve)\b)/.test(lower);
+    // Check if user is asking about OSINT / Security Headers standalone service ($29 USD)
+    const isOsintQuery = /(\b(osint|cabecera|cabeceras|header|headers|brecha|brechas|vulnerab|vulnerabilidad|vulnerabilidades|hsts|csp|clickjacking|29\$?|veintinueve)\b)/.test(lower);
     if (isOsintQuery) {
       if (lang === 'fr') {
         return {
-          reply: `🛡️ Chez Dexvoi, nous proposons notre fonction spécialisée : **Audit OSINT & Blindage des En-têtes HTTP en Temps Réel** au tarif unique de **29€ (Paiement Unique, sans abonnement)**.
+          reply: `🛡️ Chez Dexvoi, nous proposons notre fonction spécialisée : **Audit OSINT & Blindage des En-têtes HTTP en Temps Réel** au tarif unique de **$29 USD (Paiement Unique, sans abonnement)**.
           
 Notre moteur inspecte en direct :
 ✓ En-têtes de sécurité (HSTS, CSP, X-Frame-Options anti-clickjacking, X-Content-Type-Options).
 ✓ Reconnaissance passive OSINT (IP, détection de serveur, enregistrements SPF et DMARC anti-spoofing).
 ✓ Scripts de blindage immédiats prêts à coller pour Nginx, Apache et Cloudflare.
 
-👉 Vous pouvez tester l'audit en direct sur notre plateforme dans la section "OSINT & Cabeceras", ou débloquer le rapport forensique complet pour 29€. Quel est votre site web ?`,
+👉 Vous pouvez tester l'audit en direct sur notre plateforme dans la section "OSINT & En-têtes", ou débloquer le rapport forensique complet pour $29 USD. Quel est votre site web ?`,
           lang: 'fr'
         };
       } else if (lang === 'en') {
         return {
-          reply: `🛡️ At Dexvoi, we provide our specialized **Real-Time OSINT & HTTP Security Headers Audit** as a standalone service for a one-time price of **29€ (No subscriptions or recurring plans)**.
+          reply: `🛡️ At Dexvoi, we provide our specialized **Real-Time OSINT & HTTP Security Headers Audit** as a standalone service for a one-time price of **$29 USD (No subscriptions or recurring plans)**.
 
 Our live inspection engine audits:
 ✓ Security headers (HSTS, CSP, X-Frame-Options anti-clickjacking, X-Content-Type-Options).
 ✓ Passive OSINT reconnaissance (resolved IP, web server banner leakage, SPF & anti-phishing DMARC).
 ✓ Immediate copy-paste hardening scripts for Nginx, Apache, and Cloudflare.
 
-👉 You can test our live scanner on the "OSINT & Cabeceras" section or unlock the full forensic audit package for 29€. What is your website domain?`,
+👉 You can test our live scanner on the "OSINT & HTTP Headers" section or unlock the full forensic audit package for $29 USD. What is your website domain?`,
           lang: 'en'
         };
       } else {
         return {
-          reply: `🛡️ En Dexvoi disponemos de nuestra función especializada: **Auditoría OSINT & Blindaje de Cabeceras HTTP en Tiempo Real**, un servicio independiente con **Precio Único de 29€ (sin suscripción ni planes recurrentes)**.
+          reply: `🛡️ En Dexvoi disponemos de nuestra función especializada: **Auditoría OSINT & Blindaje de Cabeceras HTTP en Tiempo Real**, un servicio independiente con **Precio Único de $29 USD (sin suscripción ni planes recurrentes)**.
 
 Nuestro motor analiza en vivo:
 ✓ Cabeceras críticas de seguridad (HSTS, CSP, X-Frame-Options anti-clickjacking, X-Content-Type-Options).
 ✓ Reconocimiento pasivo OSINT (IP pública, fuga de banners de servidor, validación de SPF y DMARC anti-suplantación).
 ✓ Scripts de blindaje perimetral listos para copiar y pegar en Nginx, Apache y Cloudflare.
 
-👉 Puedes probar el escáner en tiempo real en la sección "OSINT & Cabeceras" de nuestra web o adquirir el informe forense completo por 29€. ¿Cuál es la dirección de tu sitio web?`,
+👉 Puedes probar el escáner en tiempo real en la sección "OSINT & Cabeceras" de nuestra web o adquirir el informe forense completo por $29 USD. ¿Cuál es la dirección de tu sitio web?`,
           lang: 'es'
         };
       }
@@ -303,14 +303,14 @@ Desarrollamos soluciones de IA personalizadas para tu negocio.
         return {
           reply: `📄 Pour acquérir le rapport complet en PDF avec analyse approfondie de sécurité, SEO et performance (plus de 20 pages), voici les options disponibles :
 
-1. Cliquez sur le bouton "Rapport PDF (19€ / 49€ / 99€)" ci-dessous.
+1. Cliquez sur le bouton "Rapport PDF ($19 / $49 / $99 USD)" ci-dessous.
 2. Complétez le paiement sécurisé par carte (Stripe).
 3. En moins de 5 minutes, vous recevrez votre rapport détaillé par email.
 
 Tarifs :
-📄 Rapport basique (5 pages) : 19€
-📊 Rapport complet (20+ pages) : 49€ (Recommandé)
-🏆 Audit premium avec consultation 1-à-1 : 99€
+📄 Rapport basique (10 pages) : $19 USD
+📊 Rapport complet (20+ pages) : $49 USD (Recommandé)
+🏆 Audit premium avec consultation 1-à-1 : $99 USD
 
 🎯 Souhaitez-vous plutôt commencer par notre audit gratuit de 5 points sans engagement ? Répondez OUI pour planifier votre diagnostic.`,
           lang: 'fr'
@@ -319,14 +319,14 @@ Tarifs :
         return {
           reply: `📄 To get your full PDF report with comprehensive security, SEO, and performance analysis (20+ pages), follow these steps:
 
-1. Click the "PDF Report (19€ / 49€ / 99€)" button below.
+1. Click the "PDF Report ($19 / $49 / $99 USD)" button below.
 2. Complete the secure card checkout via Stripe.
 3. In under 5 minutes, you will receive your detailed PDF report by email.
 
 Pricing options:
-📄 Basic report (5 pages): 19€
-📊 Complete report (20+ pages): 49€ (Most Popular)
-🏆 Premium audit with 1-on-1 strategic consulting: 99€
+📄 Basic report (10 pages): $19 USD
+📊 Complete report (20+ pages): $49 USD (Most Popular)
+🏆 Premium audit with 1-on-1 strategic consulting: $99 USD
 
 🎯 Would you rather start with our free 5-point audit without commitment? Reply YES to schedule your diagnostic.`,
           lang: 'en'
@@ -335,14 +335,14 @@ Pricing options:
         return {
           reply: `📄 Para adquirir el informe completo en PDF con análisis detallado de seguridad, SEO y rendimiento (más de 20 páginas), sigue estos pasos:
 
-1. Haz clic en el botón "Informe PDF (19€ / 49€ / 99€)" abajo.
+1. Haz clic en el botón "Informe PDF ($19 / $49 / $99 USD)" abajo.
 2. Completa el pago seguro con tarjeta vía Stripe.
 3. En menos de 5 minutos recibirás tu informe detallado por email.
 
 Precios:
-📄 Informe básico (5 páginas): 19€
-📊 Informe completo (20+ páginas): 49€ (Más Popular)
-🏆 Auditoría premium con consultoría estratégica 1-a-1: 99€
+📄 Informe básico (10 páginas): $19 USD
+📊 Informe completo (20+ páginas): $49 USD (Más Popular)
+🏆 Auditoría premium con consultoría estratégica 1-a-1: $99 USD
 
 🎯 ¿Prefieres comenzar por nuestra auditoría gratuita de 5 puntos sin costo ni compromiso? Responde SÍ para agendar tu diagnóstico.`,
           lang: 'es'
@@ -491,7 +491,7 @@ Nuestro equipo de Arquitectos Digitales analizará a fondo tu velocidad, arquite
 2. Déployer un système de réservation automatisé 24/7 pour capter des ${info.metricTypeFr} à tout moment.
 3. Optimiser la fiche Google Maps et la sécurité contre les intrusions malveillantes.
 
-📄 Si vous souhaitez un rapport complet en PDF avec analyse détaillée de sécurité, SEO et performance (plus de 20 pages), vous pouvez l'acquérir pour seulement 49€.
+📄 Si vous souhaitez un rapport complet en PDF avec analyse détaillée de sécurité, SEO et performance (plus de 20 pages), vous pouvez l'acquérir pour seulement $49 USD.
 
 🎯 Souhaitez-vous que notre équipe d'Architectes Digitaux réalise pour vous un audit gratuit et détaillé de 5 points ? Nous vous aidons à doubler vos ${info.metricTypeFr} en 30 jours.
 
@@ -542,7 +542,7 @@ Répondez OUI pour planifier votre diagnostic gratuit.`,
 2. Implement a 24/7 automated booking system to capture appointments while you sleep.
 3. Boost Google Maps optimization and web security defense against vulnerabilities.
 
-📄 If you want a full PDF report with in-depth security, SEO, and performance analysis (20+ pages), you can purchase it for only 49€.
+📄 If you want a full PDF report with in-depth security, SEO, and performance analysis (20+ pages), you can purchase it for only $49 USD.
 
 🎯 Would you like our Digital Architects team to perform a free, detailed 5-point audit for you? We help you double your ${info.metricTypeEn} in 30 days.
 
@@ -593,7 +593,7 @@ Reply YES to schedule your free diagnostic.`,
 2. Implementar un sistema de reservas online 24/7 (captura citas automáticamente mientras duermes).
 3. Mejorar tu ficha de Google Maps con optimización local y blindaje contra bots.
 
-📄 Si quieres un informe completo en PDF con análisis detallado de seguridad, SEO y rendimiento (más de 20 páginas), puedes adquirirlo por solo 49€.
+📄 Si quieres un informe completo en PDF con análisis detallado de seguridad, SEO y rendimiento (más de 20 páginas), puedes adquirirlo por solo $49 USD.
 
 🎯 ¿Te gustaría que nuestro equipo de Arquitectos Digitales te haga una auditoría gratuita y detallada de 5 puntos? Te ayudamos a duplicar tus ${info.metricTypeEs} en 30 días.
 
@@ -831,7 +831,7 @@ Is this correct? Reply YES for my system to launch the automated analysis.`,
                   const isUser = m.role === 'user';
                   const text = m.content;
                   const hasDiagnosticReport = text.includes('DIAGNÓSTICO') || text.includes('DIAGNOSTIC') || text.includes('DIAGNOSIS');
-                  const hasPdfOffer = text.includes('PDF') || text.includes('49€') || text.includes('19€') || text.includes('Stripe');
+                  const hasPdfOffer = text.includes('PDF') || text.includes('49') || text.includes('19') || text.includes('Stripe');
                   const asksConfirmation = !isUser && (
                     (text.includes('OUI') || text.includes('SÍ') || text.includes('YES')) &&
                     (text.includes('analyse') || text.includes('análisis') || text.includes('analysis') || text.includes('Est-ce correct') || text.includes('¿Es correcto?') || text.includes('Is this correct?'))
@@ -882,11 +882,11 @@ Is this correct? Reply YES for my system to launch the automated analysis.`,
                                 className="px-2.5 py-1 rounded bg-[#635BFF]/20 border border-[#635BFF]/50 text-[#A5B4FC] hover:bg-[#635BFF] hover:text-white font-mono text-[10px] font-bold uppercase transition-all inline-flex items-center gap-1.5"
                               >
                                 <CreditCard className="w-3 h-3" />
-                                <span>Stripe Checkout (19€ / 49€ / 99€)</span>
+                                <span>Stripe Checkout ($19 / $49 / $99 USD)</span>
                               </button>
                             )}
 
-                            {/* Direct Fast Stripe Checkout Link for 49€ Most Popular */}
+                            {/* Direct Fast Stripe Checkout Link for $49 USD Most Popular */}
                             {hasPdfOffer && (
                               <a
                                 href="https://buy.stripe.com/9B66oI862eUc8Um92NdAk01"
@@ -894,7 +894,7 @@ Is this correct? Reply YES for my system to launch the automated analysis.`,
                                 rel="noreferrer"
                                 className="px-2.5 py-1 rounded bg-[#635BFF] text-white hover:bg-[#5349e0] font-mono text-[10px] font-bold uppercase transition-all inline-flex items-center gap-1 shadow-sm"
                               >
-                                <span>Pagar 49€ (Stripe)</span>
+                                <span>{language === 'fr' ? 'Payer $49 USD (Stripe)' : language === 'en' ? 'Pay $49 USD (Stripe)' : 'Pagar $49 USD (Stripe)'}</span>
                                 <ExternalLink className="w-2.5 h-2.5" />
                               </a>
                             )}
@@ -947,8 +947,8 @@ Is this correct? Reply YES for my system to launch the automated analysis.`,
                   }}
                   className="text-[10px] font-mono px-2 py-1 rounded bg-[#0066FF]/25 hover:bg-[#0066FF] hover:text-white text-white border border-[#0066FF]/60 transition-colors whitespace-nowrap font-bold flex items-center gap-1"
                 >
-                  <span>🛡️ OSINT & Cabeceras</span>
-                  <span className="text-[#F5A623]">(29€)</span>
+                  <span>🛡️ {language === 'fr' ? 'OSINT & En-têtes' : language === 'en' ? 'OSINT & Headers' : 'OSINT & Cabeceras'}</span>
+                  <span className="text-[#F5A623]">($29 USD)</span>
                 </button>
                 <button
                   onClick={onOpenAuditModal}
@@ -960,7 +960,7 @@ Is this correct? Reply YES for my system to launch the automated analysis.`,
                   onClick={() => onOpenPdfModal ? onOpenPdfModal('complete') : handleSendMessage("Quiero el informe completo en PDF")}
                   className="text-[10px] font-mono px-2 py-1 rounded bg-[#1E293B] hover:bg-[#0066FF] hover:text-white text-gray-300 border border-gray-700 transition-colors whitespace-nowrap"
                 >
-                  📄 {language === 'en' ? 'PDF Report (49€)' : language === 'fr' ? 'Rapport PDF (49€)' : 'Informe PDF (49€)'}
+                  📄 {language === 'en' ? 'PDF Report ($49 USD)' : language === 'fr' ? 'Rapport PDF ($49 USD)' : 'Informe PDF ($49 USD)'}
                 </button>
               </div>
 

@@ -138,7 +138,7 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
               {language === 'fr' ? 'Service Indépendant :' : language === 'en' ? 'Standalone Service:' : 'Servicio Independiente:'}
             </span>
             <span className="text-[#F5A623] font-bold">
-              {language === 'fr' ? '29 € Paiement Unique' : language === 'en' ? '29€ One-time Payment' : '29€ Pago Único'}
+              {language === 'fr' ? '$29 USD Paiement Unique' : language === 'en' ? '$29 USD One-time Payment' : '$29 USD Pago Único'}
             </span>
             <span className="text-gray-400">
               {language === 'fr'
@@ -670,17 +670,17 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
               </div>
             )}
 
-            {/* Standalone Action Banner (Precio Único: 29€) */}
+            {/* Standalone Action Banner (Precio Único: $29 USD) */}
             <div className="p-6 sm:p-8 rounded-2xl bg-gradient-to-r from-[#0C1630] via-[#101F42] to-[#0C1630] border border-[#0066FF]/50 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6">
               <div className="space-y-2 text-center md:text-left">
                 <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-[#F5A623]/20 border border-[#F5A623]/40 text-[#F5A623] font-mono text-xs font-bold">
                   <Sparkles className="w-3.5 h-3.5" />
                   <span>
                     {language === 'fr'
-                      ? 'SERVICE INDÉPENDANT · 29 € PAIEMENT UNIQUE'
+                      ? 'SERVICE INDÉPENDANT · $29 USD PAIEMENT UNIQUE'
                       : language === 'en'
-                      ? 'STANDALONE SERVICE · 29€ ONE-TIME PAYMENT'
-                      : 'SERVICIO INDEPENDIENTE · 29€ PAGO ÚNICO'}
+                      ? 'STANDALONE SERVICE · $29 USD ONE-TIME PAYMENT'
+                      : 'SERVICIO INDEPENDIENTE · $29 USD PAGO ÚNICO'}
                   </span>
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-white font-mono">
@@ -707,10 +707,10 @@ export const OsintSecurityAuditor: React.FC<OsintSecurityAuditorProps> = ({
                 <Lock className="w-4 h-4 text-[#F5A623]" />
                 <span>
                   {language === 'fr'
-                    ? 'Débloquer le Blindage Complet (29 €)'
+                    ? 'Débloquer le Blindage Complet ($29 USD)'
                     : language === 'en'
-                    ? 'Unlock Complete Hardening (29€)'
-                    : 'Desbloquear Blindaje Completo (29€)'}
+                    ? 'Unlock Complete Hardening ($29 USD)'
+                    : 'Desbloquear Blindaje Completo ($29 USD)'}
                 </span>
               </button>
             </div>

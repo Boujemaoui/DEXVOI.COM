@@ -440,7 +440,7 @@ export const INITIAL_BLOG_POSTS: BlogPost[] = [
     keywords: ["Reputación Digital","Google Maps","Reseñas Falsas","SEO Restaurantes"],
     targetServiceUrl: '/auditoria-seguridad',
     targetServiceLabel: 'Solicitar Diagnóstico Especializado',
-    content: "\n## El impacto destructivo de una reseña falsa de 1 estrella\n\nPara un restaurante gastronómico donde el ticket medio supera los 60€, **una sola reseña negativa falsa puede costar miles de euros al mes en comensales perdidos**.\n\nMuchos competidores desleales o bots automáticos publican valoraciones sin haber pisado jamás el establecimiento.\n\n---\n\n### Protocolo de respuesta e impugnación ante Google\n\n- **Monitoreo de huella IP y patrones temporales:** Las campañas de desprestigio suelen concentrar varias valoraciones sin texto en intervalos de menos de 48 horas.\n- **Respuesta institucional asertiva:** Nunca entres en conflicto público. Responde con un mensaje profesional indicando que no consta reserva a ese nombre y ofreciendo canal directo con gerencia.\n- **Impugnación formal por vulneración de políticas:** Solicita la retirada alegando conflicto de interés y contenido falso con pruebas del registro interno de reservas.\n\n---\n\n### Solución Dexvoi: Ficha blindada y reputación proactiva\n\nDiseñamos sistemas que canalizan las valoraciones positivas de comensales reales directamente a Google Maps mientras resuelven incidencias de forma privada.\n    "
+    content: "\n## El impacto destructivo de una reseña falsa de 1 estrella\n\nPara un restaurante gastronómico donde el ticket medio supera los $60 USD, **una sola reseña negativa falsa puede costar miles de dólares al mes en comensales perdidos**.\n\nMuchos competidores desleales o bots automáticos publican valoraciones sin haber pisado jamás el establecimiento.\n\n---\n\n### Protocolo de respuesta e impugnación ante Google\n\n- **Monitoreo de huella IP y patrones temporales:** Las campañas de desprestigio suelen concentrar varias valoraciones sin texto en intervalos de menos de 48 horas.\n- **Respuesta institucional asertiva:** Nunca entres en conflicto público. Responde con un mensaje profesional indicando que no consta reserva a ese nombre y ofreciendo canal directo con gerencia.\n- **Impugnación formal por vulneración de políticas:** Solicita la retirada alegando conflicto de interés y contenido falso con pruebas del registro interno de reservas.\n\n---\n\n### Solución Dexvoi: Ficha blindada y reputación proactiva\n\nDiseñamos sistemas que canalizan las valoraciones positivas de comensales reales directamente a Google Maps mientras resuelven incidencias de forma privada.\n    "
   },
   {
     id: 'post-auto-1789158685430',
@@ -732,7 +732,7 @@ Proteger tu negocio comienza por ver tu fachada exactamente como la contemplan q
 
 Para un negocio que arranca, las plataformas de reservas proporcionan visibilidad inicial. Sin embargo, una vez el negocio se consolida, el modelo se convierte en una fuga de rentabilidad:
 
-- **Comisiones por cubierto o cita:** Pagar entre 2€ y 5€ por cada reserva gestionada.
+- **Comisiones por cubierto o cita:** Pagar entre $2 y $5 USD por cada reserva gestionada.
 - **Apropiación de la base de datos del cliente:** Los datos del cliente pertenecen al portal, no a tu clínica o restaurante. La plataforma suele recomendar a tus competidores cuando el usuario vuelve a abrir la app.
 - **Falta de personalización de marca:** La experiencia de compra está encajonada en los colores y plantillas de un intermediario.
 

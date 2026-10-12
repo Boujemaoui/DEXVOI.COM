@@ -458,7 +458,7 @@ export const LegalPage: React.FC<LegalPageProps> = ({
             legalLang === 'es' ? (
               <article className="space-y-6 animate-fadeIn">
                 <div className="p-4 rounded-xl bg-[#131B33] border border-[#0066FF]/30 text-xs font-mono text-gray-300">
-                  <span className="text-[#F5A623] font-bold">CONDICIONES DE CONTRATACIÓN Y SERVICIO:</span> Al solicitar auditorías gratuitas, adquirir informes en PDF (19€, 49€, 99€) o contratar desarrollos de blindaje con DEXVOI, usted acepta las presentes condiciones.
+                  <span className="text-[#F5A623] font-bold">CONDICIONES DE CONTRATACIÓN Y SERVICIO:</span> Al solicitar auditorías gratuitas, adquirir informes en PDF ($5, $19, $49, $99 USD) o contratar desarrollos de blindaje con DEXVOI, usted acepta las presentes condiciones.
                 </div>
 
                 <section className="space-y-3">
@@ -477,7 +477,7 @@ export const LegalPage: React.FC<LegalPageProps> = ({
                     2. Planes de Auditoría Técnica y Pagos
                   </h2>
                   <ul className="list-disc pl-5 space-y-2 text-gray-300">
-                    <li><strong>Modalidad de pago:</strong> Los informes de auditoría (Starter 19€, Comprehensive 49€ y Premium 99€) son servicios profesionales de <strong>pago único</strong>. No conllevan suscripción ni cuotas recurrentes inadvertidas.</li>
+                    <li><strong>Modalidad de pago:</strong> Los informes de auditoría (Technical $5 USD, Starter $19 USD, Comprehensive $49 USD y Premium $99 USD) son servicios profesionales de <strong>pago único</strong>. No conllevan suscripción ni cuotas recurrentes inadvertidas.</li>
                     <li><strong>Plataforma de cobro:</strong> Los pagos se procesan directamente en la infraestructura oficial de Stripe Checkout con cifrado TLS 1.3 de 256 bits.</li>
                     <li><strong>Entrega del producto digital:</strong> Los informes ejecutivos en PDF se generan y entregan de forma digital al correo electrónico facilitado en un plazo habitual de 1 a 24 horas hábiles.</li>
                   </ul>
@@ -509,7 +509,7 @@ export const LegalPage: React.FC<LegalPageProps> = ({
             ) : (
               <article className="space-y-6 animate-fadeIn">
                 <div className="p-4 rounded-xl bg-[#131B33] border border-[#0066FF]/30 text-xs font-mono text-gray-300">
-                  <span className="text-[#F5A623] font-bold">TERMS OF SERVICE & ENGAGEMENT:</span> By requesting technical audits, ordering digital forensic PDF reports (€19, €49, €99), or commissioning digital architecture from DEXVOI, you agree to these terms.
+                  <span className="text-[#F5A623] font-bold">TERMS OF SERVICE & ENGAGEMENT:</span> By requesting technical audits, ordering digital forensic PDF reports ($5, $19, $49, $99 USD), or commissioning digital architecture from DEXVOI, you agree to these terms.
                 </div>
 
                 <section className="space-y-3">
@@ -528,7 +528,7 @@ export const LegalPage: React.FC<LegalPageProps> = ({
                     2. Forensic Audit Packages & One-Time Payment Model
                   </h2>
                   <ul className="list-disc pl-5 space-y-2 text-gray-300">
-                    <li><strong>One-Time Pricing:</strong> Audit reports (Starter €19, Comprehensive €49, and Premium €99) are professional standalone services with <strong>one-time payment</strong>. There are no hidden fees, recurring subscriptions, or surprise recurring charges.</li>
+                    <li><strong>One-Time Pricing:</strong> Audit reports (Technical $5 USD, Starter $19 USD, Comprehensive $49 USD, and Premium $99 USD) are professional standalone services with <strong>one-time payment</strong>. There are no hidden fees, recurring subscriptions, or surprise recurring charges.</li>
                     <li><strong>Payment Gateway:</strong> All financial transactions are securely routed through Stripe Checkout with industry-standard 256-bit TLS 1.3 encryption.</li>
                     <li><strong>Digital Delivery:</strong> Executive PDF reports are compiled and delivered directly to the provided email address typically within 1 to 24 business hours.</li>
                   </ul>

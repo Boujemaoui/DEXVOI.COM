@@ -53,7 +53,7 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
         basic: {
           name: 'Rapport Starter Forensique (10 Pages)',
           pages: '10 pages',
-          price: '19€',
+          price: '$19',
           stripeUrl: 'https://buy.stripe.com/aFa00kaea4fy0nQ6UFdAk00',
           features: [
             'Analyse de vitesse Core Web Vitals (mobile & desktop)',
@@ -66,7 +66,7 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
         complete: {
           name: 'Audit Technique Exhaustif (20+ Pages)',
           pages: '20+ pages',
-          price: '49€',
+          price: '$49',
           badge: 'RECOMMANDÉ',
           stripeUrl: 'https://buy.stripe.com/9B66oI862eUc8Um92NdAk01',
           features: [
@@ -80,7 +80,7 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
         premium: {
           name: 'Audit Premium + Consulting Stratégique 1-to-1',
           pages: '25+ pages + Session 1-to-1',
-          price: '99€',
+          price: '$99',
           badge: 'AUDIT + SESSION 1-À-1',
           stripeUrl: 'https://buy.stripe.com/14A5kE0DA7rKgmO4MxdAk02',
           features: [
@@ -98,7 +98,7 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
         basic: {
           name: 'Starter Forensic Report (10 Pages)',
           pages: '10 pages',
-          price: '19€',
+          price: '$19',
           stripeUrl: 'https://buy.stripe.com/aFa00kaea4fy0nQ6UFdAk00',
           features: [
             'Core Web Vitals load speed breakdown (mobile & desktop)',
@@ -111,7 +111,7 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
         complete: {
           name: 'Comprehensive Technical Audit (20+ Pages)',
           pages: '20+ pages',
-          price: '49€',
+          price: '$49',
           badge: 'RECOMMENDED',
           stripeUrl: 'https://buy.stripe.com/9B66oI862eUc8Um92NdAk01',
           features: [
@@ -125,7 +125,7 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
         premium: {
           name: 'Premium Audit + 1-on-1 Strategic Consulting',
           pages: '25+ pages + 1-on-1 Call',
-          price: '99€',
+          price: '$99',
           badge: 'AUDIT + 1-ON-1 SESSION',
           stripeUrl: 'https://buy.stripe.com/14A5kE0DA7rKgmO4MxdAk02',
           features: [
@@ -142,7 +142,7 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
       basic: {
         name: 'Informe Starter Forense (10 Páginas)',
         pages: '10 páginas',
-        price: '19€',
+        price: '$19',
         stripeUrl: 'https://buy.stripe.com/aFa00kaea4fy0nQ6UFdAk00',
         features: [
           'Análisis de velocidad de carga Core Web Vitals',
@@ -153,10 +153,10 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
         ]
       },
       complete: {
-        name: 'Comprehensive Technical Audit (20+ Pages)',
+        name: 'Auditoría Técnica Forense Exhaustiva (20+ Páginas)',
         pages: '20+ páginas',
-        price: '49€',
-        badge: 'MÁS POPULAR / RECOMMANDÉ',
+        price: '$49',
+        badge: 'RECOMENDADO / MÁS POPULAR',
         stripeUrl: 'https://buy.stripe.com/9B66oI862eUc8Um92NdAk01',
         features: [
           'Auditoría técnica exhaustiva de más de 20 páginas',
@@ -167,9 +167,9 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
         ]
       },
       premium: {
-        name: 'Premium Audit + 1-on-1 Strategic Consulting',
+        name: 'Auditoría Premium + Consultoría Estratégica 1-a-1',
         pages: '25+ páginas + Llamada 1-a-1',
-        price: '99€',
+        price: '$99',
         badge: 'AUDITORÍA + SESIÓN 1-A-1',
         stripeUrl: 'https://buy.stripe.com/14A5kE0DA7rKgmO4MxdAk02',
         features: [
@@ -268,6 +268,7 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
         target: website || 'dexvoi.com',
         customerEmail: email || 'cliente@dexvoi.com',
         tier: selectedTier,
+        language: language || 'es',
       });
     } catch (err) {
       console.error('Error downloading PDF in modal:', err);
@@ -490,8 +491,13 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
 
               {testMode && (
                 <div className="p-3 rounded-lg bg-[#131B33] border border-[#F5A623]/40 text-xs font-mono text-[#F5A623] flex items-center justify-between gap-2">
-                  <span>🧪 <strong>MODO DE PRUEBA:</strong> Descarga directa habilitada sin cobro en Stripe.</span>
-                  <span className="text-[10px] text-gray-400">Sin tarjeta</span>
+                  <span>
+                    🧪 <strong>{language === 'fr' ? 'MODE TEST :' : language === 'en' ? 'TEST MODE:' : 'MODO DE PRUEBA:'}</strong>{' '}
+                    {language === 'fr' ? 'Téléchargement direct activé sans frais Stripe.' : language === 'en' ? 'Direct download enabled without Stripe charge.' : 'Descarga directa habilitada sin cobro en Stripe.'}
+                  </span>
+                  <span className="text-[10px] text-gray-400">
+                    {language === 'fr' ? 'Sans carte' : language === 'en' ? 'No card required' : 'Sin tarjeta'}
+                  </span>
                 </div>
               )}
 
@@ -509,7 +515,13 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
                 ) : testMode ? (
                   <>
                     <Download className="w-4 h-4 text-white" />
-                    <span>🧪 Probar Plan & Descargar PDF ({tiers[selectedTier].price})</span>
+                    <span>
+                      {language === 'fr'
+                        ? `🧪 Tester le Plan & Télécharger le PDF (${tiers[selectedTier].price})`
+                        : language === 'en'
+                        ? `🧪 Test Plan & Download PDF (${tiers[selectedTier].price})`
+                        : `🧪 Probar Plan & Descargar PDF (${tiers[selectedTier].price})`}
+                    </span>
                     <ArrowRight className="w-4 h-4 text-white" />
                   </>
                 ) : (
@@ -531,8 +543,8 @@ export const PdfReportModal: React.FC<PdfReportModalProps> = ({
                   <Download className="w-4 h-4 text-[#0A0F1F]" />
                   <span>
                     {isDownloadingSample
-                      ? 'Compilando PDF...'
-                      : `Descarga Instantánea: ${tiers[selectedTier].name} (${tiers[selectedTier].pages})`}
+                      ? (language === 'fr' ? 'Compilation du PDF...' : language === 'en' ? 'Compiling PDF...' : 'Compilando PDF...')
+                      : (language === 'fr' ? `Téléchargement Immédiat : ${tiers[selectedTier].name} (${tiers[selectedTier].pages})` : language === 'en' ? `Instant Download: ${tiers[selectedTier].name} (${tiers[selectedTier].pages})` : `Descarga Instantánea: ${tiers[selectedTier].name} (${tiers[selectedTier].pages})`)}
                   </span>
                 </button>
               )}

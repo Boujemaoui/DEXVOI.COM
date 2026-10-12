@@ -164,7 +164,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({
                 <span className="text-4xl font-extrabold text-white">$19</span>
                 <span className="text-sm font-bold text-[#F5A623]">USD</span>
                 <span className="text-xs text-gray-400">
-                  (19€ · {language === 'fr' ? 'paiement unique' : language === 'en' ? 'one-time fee' : 'pago único'})
+                  ({language === 'fr' ? 'paiement unique' : language === 'en' ? 'one-time fee' : 'pago único'})
                 </span>
               </div>
               <p className="text-xs text-gray-300 font-sans">
@@ -248,7 +248,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({
                 {loadingTier === 'basic' ? (
                   <>
                     <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#F5A623]" />
-                    <span>Conectando con Stripe...</span>
+                    <span>{language === 'fr' ? 'Connexion à Stripe...' : language === 'en' ? 'Connecting to Stripe...' : 'Conectando con Stripe...'}</span>
                   </>
                 ) : (
                   <>
@@ -271,7 +271,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({
                   rel="noopener noreferrer"
                   className="text-[10px] font-mono text-gray-500 hover:text-gray-300 inline-flex items-center gap-1 transition-colors"
                 >
-                  <span>Enlace directo Stripe Oficial ($19 USD)</span>
+                  <span>{language === 'fr' ? 'Lien direct Stripe Officiel ($19 USD)' : language === 'en' ? 'Direct link Official Stripe ($19 USD)' : 'Enlace directo Stripe Oficial ($19 USD)'}</span>
                   <ExternalLink className="w-2.5 h-2.5" />
                 </a>
 
@@ -307,7 +307,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({
                 <span className="text-4xl font-extrabold text-white">$49</span>
                 <span className="text-sm font-bold text-[#F5A623]">USD</span>
                 <span className="text-xs text-gray-300">
-                  (49€ · {language === 'fr' ? 'paiement unique' : language === 'en' ? 'one-time fee' : 'pago único'})
+                  ({language === 'fr' ? 'paiement unique' : language === 'en' ? 'one-time fee' : 'pago único'})
                 </span>
               </div>
               <p className="text-xs text-gray-200 font-sans">
@@ -404,7 +404,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({
                   rel="noopener noreferrer"
                   className="text-[10px] font-mono text-gray-400 hover:text-gray-200 inline-flex items-center gap-1 transition-colors"
                 >
-                  <span>Enlace directo Stripe Oficial ($49 USD)</span>
+                  <span>{language === 'fr' ? 'Lien direct Stripe Officiel ($49 USD)' : language === 'en' ? 'Direct link Official Stripe ($49 USD)' : 'Enlace directo Stripe Oficial ($49 USD)'}</span>
                   <ExternalLink className="w-2.5 h-2.5" />
                 </a>
 
@@ -437,7 +437,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({
                 <span className="text-4xl font-extrabold text-white">$99</span>
                 <span className="text-sm font-bold text-[#F5A623]">USD</span>
                 <span className="text-xs text-gray-400">
-                  (99€ · {language === 'fr' ? 'paiement unique' : language === 'en' ? 'one-time fee' : 'pago único'})
+                  ({language === 'fr' ? 'paiement unique' : language === 'en' ? 'one-time fee' : 'pago único'})
                 </span>
               </div>
               <p className="text-xs text-gray-300 font-sans">
@@ -524,7 +524,7 @@ export const PricingPage: React.FC<PricingPageProps> = ({
                   rel="noopener noreferrer"
                   className="text-[10px] font-mono text-gray-500 hover:text-gray-300 inline-flex items-center gap-1 transition-colors"
                 >
-                  <span>Enlace directo Stripe Oficial ($99 USD)</span>
+                  <span>{language === 'fr' ? 'Lien direct Stripe Officiel ($99 USD)' : language === 'en' ? 'Direct link Official Stripe ($99 USD)' : 'Enlace directo Stripe Oficial ($99 USD)'}</span>
                   <ExternalLink className="w-2.5 h-2.5" />
                 </a>
 
@@ -566,10 +566,10 @@ export const PricingPage: React.FC<PricingPageProps> = ({
             </h3>
             <p className="text-xs sm:text-sm text-gray-400">
               {language === 'fr'
-                ? 'Nous développons des projets intégraux : web ultra-rapide, référencement local dominant, système de réservation et agents IA dès 890€.'
+                ? 'Nous développons des projets intégraux : web ultra-rapide, référencement local dominant, système de réservation et agents IA dès $890 USD.'
                 : language === 'en'
-                ? 'We develop comprehensive projects: ultra-fast web, dominating local SEO, booking systems, and AI agents starting from 890€.'
-                : 'Desarrollamos proyectos integrales de web ultrarrápida, posicionamiento local dominante, sistema de reservas y agentes de IA desde 890€.'}
+                ? 'We develop comprehensive projects: ultra-fast web, dominating local SEO, booking systems, and AI agents starting from $890 USD.'
+                : 'Desarrollamos proyectos integrales de web ultrarrápida, posicionamiento local dominante, sistema de reservas y agentes de IA desde $890 USD.'}
             </p>
           </div>
           <button

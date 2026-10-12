@@ -237,7 +237,7 @@ Chez **Dexvoi**, nous déployons des systèmes qui dirigent en continu les retou
       content: `
 ## The Financial Toll of a Malicious 1-Star Review
 
-For a fine dining restaurant where average spend exceeds €80 or a private aesthetic clinic, **a single fraudulent review can cost thousands of euros in forfeited bookings each month**.
+For a fine dining restaurant where average spend exceeds $80 USD or a private aesthetic clinic, **a single fraudulent review can cost thousands of dollars in forfeited bookings each month**.
 
 Unscrupulous competitors or automated review bots frequently target top-ranked profiles with baseless ratings.
 
@@ -640,7 +640,7 @@ A **Dexvoi** perimeter audit applies offensive Red Team methodologies: inspectin
 
 Au lancement d'un établissement, les plateformes de réservation offrent un premier vivier de visibilité. Toutefois, une fois l'établissement reconnu, ce modèle se transforme en une ponction continue sur la rentabilité :
 
-- **Commissions récurrentes par couvert ou rendez-vous :** Versement de 2 € à 5 € pour chaque réservation effectuée.
+- **Commissions récurrentes par couvert ou rendez-vous :** Versement de 2 $ à 5 $ USD pour chaque réservation effectuée.
 - **Appropriation du fichier client :** Les coordonnées appartiennent au portail tiers, qui n'hésite pas à promouvoir des concurrents directs dès la prochaine consultation de l'application.
 - **Expérience client générique :** Votre image de marque est confinée aux gabarits d'un intermédiaire.
 
@@ -669,7 +669,7 @@ Grâce aux architectures développées par **Dexvoi**, votre établissement disp
 
 When an establishment launches, booking aggregators provide initial visibility. But once established, the model becomes a continuous drain on net margins:
 
-- **Recurring Fees per Guest or Appointment:** Paying €2 to €5 on every single managed reservation.
+- **Recurring Fees per Guest or Appointment:** Paying $2 to $5 USD on every single managed reservation.
 - **Loss of Customer Relationship:** Aggregators own client records and routinely recommend direct competitors.
 - **Diluted Brand Identity:** The customer journey is constrained within generic third-party templates.
 

@@ -1,4 +1,15 @@
 User-agent: *
 Allow: /
+Allow: /blog/
+Allow: /sitemap.xml
 
-Sitemap: https://www.dexvoi.com/sitemap.xml
+# Explicitly ensure Googlebot and other major web crawlers can index all articles
+User-agent: Googlebot
+Allow: /
+Allow: /blog/
+
+User-agent: Googlebot-Image
+Allow: /
+
+Sitemap: https://dexvoi.com/sitemap.xml
+

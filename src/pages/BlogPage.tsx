@@ -241,7 +241,7 @@ Muchos negocios cometen el error de confiar en soluciones genéricas o plantilla
 
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
             {ui.titlePart1} <br className="hidden sm:inline" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0066FF] via-[#38BDF8] to-[#F5A623]">
+            <span className="text-[#38BDF8] inline-block">
               {ui.titleHighlight}
             </span>
           </h1>

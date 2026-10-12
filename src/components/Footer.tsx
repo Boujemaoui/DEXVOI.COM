@@ -104,7 +104,7 @@ export const Footer: React.FC<FooterProps> = () => {
                   onClick={(e) => handleLinkClick(e, securityPath)}
                   className="text-[#F5A623] hover:underline"
                 >
-                  04. OSINT Security Audit (29€)
+                  04. {language === 'fr' ? 'Audit de Sécurité OSINT ($29 USD)' : language === 'en' ? 'OSINT Security Audit ($29 USD)' : 'Auditoría de Seguridad OSINT ($29 USD)'}
                 </a>
               </li>
               <li>
@@ -122,7 +122,7 @@ export const Footer: React.FC<FooterProps> = () => {
                   onClick={(e) => handleLinkClick(e, blogPath)}
                   className="text-[#38BDF8] hover:underline flex items-center gap-1"
                 >
-                  06. Blog & Guías Técnicas
+                  06. {language === 'fr' ? 'Blog & Guides Techniques' : language === 'en' ? 'Blog & Technical Guides' : 'Blog & Guías Técnicas'}
                 </a>
               </li>
               <li>

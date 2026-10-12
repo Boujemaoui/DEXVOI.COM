@@ -7,7 +7,7 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
 
   try {
     const body: any = await request.json().catch(() => ({}));
-    const { websiteUrl = 'dexvoi.com', customerEmail, planTier = 'pdf_5usd' } = body || {};
+    const { websiteUrl = 'dexvoi.com', customerEmail, planTier = 'pdf_5usd', language = 'es' } = body || {};
     const cleanUrl = String(websiteUrl).replace(/^https?:\/\//i, '').replace(/\/.*$/, '').trim() || 'dexvoi.com';
 
     const tierConfigs: Record<string, { amount: number; currency: string; name: string; description: string; fallbackUrl: string }> = {
@@ -66,6 +66,8 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
         params.append('client_reference_id', cleanUrl);
         params.append('metadata[websiteUrl]', cleanUrl);
         params.append('metadata[planTier]', planTier);
+        params.append('metadata[language]', language);
+        params.append('locale', language === 'fr' ? 'fr' : language === 'en' ? 'en' : 'es');
         if (customerEmail) {
           params.append('customer_email', customerEmail);
           params.append('metadata[customerEmail]', customerEmail);

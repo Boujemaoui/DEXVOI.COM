@@ -100,17 +100,19 @@ export async function onRequestPost(context: EventContext<CloudflareEnv, any, an
         }
       }
 
-      // Identificar el producto / importe (19€, 49€ o 99€)
-      const amountTotal = session.amount_total ? `${session.amount_total / 100}€` : 'No especificado';
+      // Identificar el producto / importe ($5, $19, $49 o $99 USD)
+      const amountTotal = session.amount_total ? `$${session.amount_total / 100} USD` : 'No especificado';
       const purchasedProduct =
         lineItems?.[0]?.description ||
         lineItems?.[0]?.price?.nickname ||
-        (session.amount_total === 1900
-          ? 'Informe Básico (19€)'
+        (session.amount_total === 500
+          ? 'Informe Oficial en PDF ($5 USD)'
+          : session.amount_total === 1900
+          ? 'Informe Básico ($19 USD)'
           : session.amount_total === 4900
-          ? 'Informe Completo (49€)'
+          ? 'Informe Completo ($49 USD)'
           : session.amount_total === 9900
-          ? 'Auditoría Premium con Consultoría (99€)'
+          ? 'Auditoría Premium con Consultoría ($99 USD)'
           : `Plan Dexvoi (${amountTotal})`);
 
       // Registrar en consola de Cloudflare los datos recibidos

@@ -6,6 +6,7 @@ interface DownloadPdfOptions {
   auditResult?: OsintSecurityAuditResult;
   customerEmail?: string;
   tier?: 'free' | 'basic' | 'complete' | 'premium' | 'pdf_5eur' | 'pdf_5usd';
+  language?: 'es' | 'en' | 'fr';
 }
 
 // Brand Colors
@@ -25,10 +26,14 @@ const COLOR_SUCCESS = { r: 16, g: 185, b: 129 };
  * First tries server-side compilation; falls back to client-side jsPDF generation.
  */
 export async function downloadOfficialAuditPdf(options: DownloadPdfOptions): Promise<boolean> {
-  const { target, auditResult, customerEmail = 'info@dexvoi.com', tier = 'free' } = options;
+  const { target, auditResult, customerEmail = 'info@dexvoi.com', tier = 'free', language = 'es' } = options;
   const cleanTarget = target.replace(/^https?:\/\//i, '').replace(/\/.*$/, '').trim() || 'dexvoi.com';
-  const tierName = tier ? tier.toUpperCase() : 'OFICIAL';
-  const filename = `DEXVOI-Informe-${tierName}-${cleanTarget}.pdf`;
+  const tierName = tier ? tier.toUpperCase() : 'OFFICIAL';
+  const filename = language === 'fr'
+    ? `DEXVOI-Rapport-${tierName}-${cleanTarget}.pdf`
+    : language === 'en'
+    ? `DEXVOI-Official-Audit-${tierName}-${cleanTarget}.pdf`
+    : `DEXVOI-Informe-${tierName}-${cleanTarget}.pdf`;
 
   // 1. Try server API
   try {
@@ -40,6 +45,7 @@ export async function downloadOfficialAuditPdf(options: DownloadPdfOptions): Pro
         tier,
         email: customerEmail,
         auditResult,
+        language,
       }),
     });
 
@@ -61,7 +67,7 @@ export async function downloadOfficialAuditPdf(options: DownloadPdfOptions): Pro
 
   // 2. Client-side fallback using jsPDF
   try {
-    generateClientSidePdf(cleanTarget, auditResult, customerEmail, tier, filename);
+    generateClientSidePdf(cleanTarget, auditResult, customerEmail, tier, filename, language);
     return true;
   } catch (fallbackErr) {
     console.error('[PDF] Client fallback failed:', fallbackErr);
@@ -74,7 +80,8 @@ function generateClientSidePdf(
   auditResult: OsintSecurityAuditResult | undefined,
   customerEmail: string,
   tier: string,
-  filename: string
+  filename: string,
+  language: 'es' | 'en' | 'fr' = 'es'
 ) {
   const doc = new jsPDF({
     orientation: 'portrait',
@@ -89,7 +96,8 @@ function generateClientSidePdf(
   const contentWidth = pageWidth - margin * 2;
 
   const reportId = `DXV-${Math.floor(100000 + Math.random() * 900000)}`;
-  const dateStr = new Date().toLocaleDateString('es-ES', {
+  const localeMap = { fr: 'fr-FR', en: 'en-US', es: 'es-ES' };
+  const dateStr = new Date().toLocaleDateString(localeMap[language] || 'es-ES', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -123,7 +131,8 @@ function generateClientSidePdf(
 
     doc.setFontSize(7);
     doc.setTextColor(COLOR_MUTED.r, COLOR_MUTED.g, COLOR_MUTED.b);
-    doc.text(`CONFIDENCIAL | REF: ${reportId}`, pageWidth - margin, 9, { align: 'right' });
+    const confLabel = language === 'fr' ? 'CONFIDENTIEL' : language === 'en' ? 'CONFIDENTIAL' : 'CONFIDENCIAL';
+    doc.text(`${confLabel} | REF: ${reportId}`, pageWidth - margin, 9, { align: 'right' });
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(13);
@@ -146,11 +155,16 @@ function generateClientSidePdf(
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(7);
     doc.setTextColor(COLOR_MUTED.r, COLOR_MUTED.g, COLOR_MUTED.b);
-    doc.text('DEXVOI · contact@dexvoi.com · www.dexvoi.com · Madrid · Casablanca · Londres', margin, pageHeight - 5);
+    doc.text('DEXVOI · contact@dexvoi.com · www.dexvoi.com · Madrid · Casablanca · London', margin, pageHeight - 5);
 
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(COLOR_GOLD.r, COLOR_GOLD.g, COLOR_GOLD.b);
-    doc.text(`Página ${pageNum} de ${totalPages}`, pageWidth - margin, pageHeight - 5, { align: 'right' });
+    const pageText = language === 'fr'
+      ? `Page ${pageNum} sur ${totalPages}`
+      : language === 'en'
+      ? `Page ${pageNum} of ${totalPages}`
+      : `Página ${pageNum} de ${totalPages}`;
+    doc.text(pageText, pageWidth - margin, pageHeight - 5, { align: 'right' });
   }
 
   function drawCard(x: number, y: number, w: number, h: number, title?: string, borderColor?: { r: number; g: number; b: number }) {

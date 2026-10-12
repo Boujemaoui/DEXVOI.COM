@@ -55,7 +55,7 @@ export const ProblemSection: React.FC<ProblemSectionProps> = ({ onOpenAuditModal
           
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight">
             {t.problem.title}{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-amber-400 to-[#F5A623]">
+            <span className="text-[#F5A623] inline-block">
               {t.problem.titleHighlight}
             </span>
           </h2>

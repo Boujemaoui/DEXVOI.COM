@@ -15,8 +15,23 @@
     <title>Dexvoi - Arquitectura Web, SEO y Blindaje Digital</title>
     <meta name="description" content="Dexvoi - Arquitectura digital, desarrollo web de alto rendimiento, SEO y ciberseguridad para negocios offline y online." />
     
+    <!-- Search Engine Indexation Directives -->
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+
     <!-- Multilingual SEO hreflang tags -->
-    <link rel="canonical" href="https://dexvoi.com/es" />
+    <link rel="canonical" href="https://dexvoi.com/es" id="dynamic-canonical-link" />
+    <script>
+      (function() {
+        try {
+          var p = window.location.pathname;
+          var c = document.getElementById('dynamic-canonical-link');
+          if (c && p && p !== '/' && p !== '/es') {
+            c.setAttribute('href', 'https://dexvoi.com' + p);
+          }
+        } catch (e) {}
+      })();
+    </script>
     <link rel="alternate" hreflang="es" href="https://dexvoi.com/es" />
     <link rel="alternate" hreflang="fr" href="https://dexvoi.com/fr" />
     <link rel="alternate" hreflang="en" href="https://dexvoi.com/en" />

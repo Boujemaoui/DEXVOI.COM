@@ -50,6 +50,8 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug, onOpenAuditMod
       descMeta.setAttribute('content', post.metaDescription);
     }
 
+    const localizedUrl = `https://dexvoi.com${getLocalizedPath('blog-post', language, post.slug)}`;
+
     const ogTitle = document.querySelector('meta[property="og:title"]');
     if (ogTitle) ogTitle.setAttribute('content', post.title);
 
@@ -58,6 +60,30 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug, onOpenAuditMod
 
     const ogImage = document.querySelector('meta[property="og:image"]');
     if (ogImage) ogImage.setAttribute('content', post.featuredImage);
+
+    // Sync OpenGraph URL
+    let ogUrl = document.querySelector('meta[property="og:url"]');
+    if (ogUrl) {
+      ogUrl.setAttribute('content', localizedUrl);
+    }
+
+    // Explicitly sync Canonical link tag for Googlebot
+    let canonicalLink = document.querySelector('link[rel="canonical"]');
+    if (!canonicalLink) {
+      canonicalLink = document.createElement('link');
+      canonicalLink.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonicalLink);
+    }
+    canonicalLink.setAttribute('href', localizedUrl);
+
+    // Explicitly guarantee indexation directives in robots meta
+    let robotsMeta = document.querySelector('meta[name="robots"]');
+    if (!robotsMeta) {
+      robotsMeta = document.createElement('meta');
+      robotsMeta.setAttribute('name', 'robots');
+      document.head.appendChild(robotsMeta);
+    }
+    robotsMeta.setAttribute('content', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
 
     // Schema script
     const schemaId = 'blog-post-json-ld';
@@ -68,8 +94,6 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ slug, onOpenAuditMod
       script.type = 'application/ld+json';
       document.head.appendChild(script);
     }
-
-    const localizedUrl = `https://dexvoi.com${getLocalizedPath('blog-post', language, post.slug)}`;
 
     const schemaData = {
       '@context': 'https://schema.org',

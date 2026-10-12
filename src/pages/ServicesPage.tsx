@@ -410,10 +410,10 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({
               </div>
               <p className="text-sm text-gray-300 leading-relaxed font-sans">
                 {language === 'fr'
-                  ? 'Cessez de céder jusqu\'à 15% ou 3€ par patient ou client à des plateformes intermédiaires. Nous intégrons votre propre système synchronisé avec Google Calendar, confirmation automatique par SMS/WhatsApp et gestion des no-shows avec empreinte bancaire.'
+                  ? 'Cessez de céder jusqu\'à 15% ou 3 $ USD par patient ou client à des plateformes intermédiaires. Nous intégrons votre propre système synchronisé avec Google Calendar, confirmation automatique par SMS/WhatsApp et gestion des no-shows avec empreinte bancaire.'
                   : language === 'en'
-                  ? 'Stop giving away up to 15% or €3 per patient or guest to intermediary platforms. We integrate proprietary booking systems synced with Google Calendar, automatic SMS/WhatsApp confirmation, and guaranteed no-show protection.'
-                  : 'Deje de regalar hasta el 15% o 3€ por comensal o paciente a plataformas intermediarias como TheFork o Doctoralia. Integramos sistemas propios sincronizados con Google Calendar, confirmación automática por SMS/WhatsApp y política de no-shows con fianza o tarjeta en garantía.'}
+                  ? 'Stop giving away up to 15% or $3 USD per patient or guest to intermediary platforms. We integrate proprietary booking systems synced with Google Calendar, automatic SMS/WhatsApp confirmation, and guaranteed no-show protection.'
+                  : 'Deje de regalar hasta el 15% o $3 USD por comensal o paciente a plataformas intermediarias como TheFork o Doctoralia. Integramos sistemas propios sincronizados con Google Calendar, confirmación automática por SMS/WhatsApp y política de no-shows con fianza o tarjeta en garantía.'}
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-xs font-mono">
                 <div className="flex items-center gap-2 text-gray-300">

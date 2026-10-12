@@ -76,7 +76,7 @@ export const ROUTE_MAP: Record<AppRoute, { path: string; aliases: string[]; titl
     path: '/precios',
     aliases: ['/planes', '/pricing', '/tarifas', '/tarifs', '/es/precios', '/fr/tarifs', '/en/pricing'],
     title: 'Planes y Precios de Auditoría Técnica | DEXVOI',
-    description: 'Tarifas transparentes de pago único para informes forenses y blindaje perimetral: Starter 19€, Comprehensive 49€, Premium 99€.'
+    description: 'Tarifas transparentes de pago único para informes forenses y blindaje perimetral: Starter $19 USD, Comprehensive $49 USD, Premium $99 USD.'
   },
   contact: {
     path: '/contacto',

@@ -28,33 +28,33 @@ export const CheckoutSuccessModal: React.FC<CheckoutSuccessModalProps> = ({
   const tierMeta = {
     pdf_5usd: {
       price: '$5 USD',
-      pages: '5 páginas',
+      pages: language === 'fr' ? '5 pages' : language === 'en' ? '5 pages' : '5 páginas',
       name: language === 'fr' ? 'Rapport Technique ($5 USD)' : language === 'en' ? 'Technical Report ($5 USD)' : 'Informe Técnico ($5 USD)',
-      desc: '5 páginas completas con diagnóstico perimetral y Core Web Vitals.',
+      desc: language === 'fr' ? '5 pages complètes avec diagnostic périmétrique et Core Web Vitals.' : language === 'en' ? '5 complete pages with perimeter diagnostic and Core Web Vitals.' : '5 páginas completas con diagnóstico perimetral y Core Web Vitals.',
     },
     pdf_5eur: {
       price: '$5 USD',
-      pages: '5 páginas',
+      pages: language === 'fr' ? '5 pages' : language === 'en' ? '5 pages' : '5 páginas',
       name: language === 'fr' ? 'Rapport Technique ($5 USD)' : language === 'en' ? 'Technical Report ($5 USD)' : 'Informe Técnico ($5 USD)',
-      desc: '5 páginas completas con diagnóstico perimetral y Core Web Vitals.',
+      desc: language === 'fr' ? '5 pages complètes avec diagnostic périmétrique et Core Web Vitals.' : language === 'en' ? '5 complete pages with perimeter diagnostic and Core Web Vitals.' : '5 páginas completas con diagnóstico perimetral y Core Web Vitals.',
     },
     basic: {
-      price: '$19 USD (19€)',
-      pages: '5 páginas',
+      price: '$19 USD',
+      pages: language === 'fr' ? '10 pages' : language === 'en' ? '10 pages' : '10 páginas',
       name: language === 'fr' ? 'Plan Starter ($19 USD)' : language === 'en' ? 'Starter Plan ($19 USD)' : 'Plan Básico ($19 USD)',
-      desc: '5 páginas completas: Core Web Vitals, SSL/TLS, cabeceras HTTP y hoja de ruta guiada.',
+      desc: language === 'fr' ? '10 pages complètes : Core Web Vitals, SSL/TLS, en-têtes HTTP et feuille de route guidée.' : language === 'en' ? '10 complete pages: Core Web Vitals, SSL/TLS, HTTP headers, and guided roadmap.' : '10 páginas completas: Core Web Vitals, SSL/TLS, cabeceras HTTP y hoja de ruta guiada.',
     },
     complete: {
-      price: '$49 USD (49€)',
-      pages: '20+ páginas',
+      price: '$49 USD',
+      pages: language === 'fr' ? '20+ pages' : language === 'en' ? '20+ pages' : '20+ páginas',
       name: language === 'fr' ? 'Audit Complet Forensique ($49 USD)' : language === 'en' ? 'Comprehensive Forensic Audit ($49 USD)' : 'Auditoría Forense Completa ($49 USD)',
-      desc: 'Más de 20 páginas forenses: OWASP Top 10, OSINT, latencia TTFB y scripts de blindaje Nginx/Apache.',
+      desc: language === 'fr' ? 'Plus de 20 pages forensiques : OWASP Top 10, OSINT, latence TTFB et scripts de blindage Nginx/Apache.' : language === 'en' ? 'Over 20 forensic pages: OWASP Top 10, OSINT, TTFB latency, and Nginx/Apache hardening scripts.' : 'Más de 20 páginas forenses: OWASP Top 10, OSINT, latencia TTFB y scripts de blindaje Nginx/Apache.',
     },
     premium: {
-      price: '$99 USD (99€)',
-      pages: '25+ páginas + Sesión 1-a-1',
+      price: '$99 USD',
+      pages: language === 'fr' ? '25+ pages + Session 1-à-1' : language === 'en' ? '25+ pages + 1-on-1 Call' : '25+ páginas + Sesión 1-a-1',
       name: language === 'fr' ? 'Audit Premium VIP ($99 USD)' : language === 'en' ? 'Premium VIP Audit ($99 USD)' : 'Plan Premium VIP ($99 USD)',
-      desc: 'Informe forense completo de más de 20 páginas más sesión estratégica 1-a-1 de 45 min con el Arquitecto Principal.',
+      desc: language === 'fr' ? 'Rapport forensique complet de 20+ pages plus session stratégique 1-à-1 de 45 min avec l’Architecte Principal.' : language === 'en' ? 'Full 20+ page forensic report plus 45-min 1-on-1 strategic session with the Principal Architect.' : 'Informe forense completo de más de 20 páginas más sesión estratégica 1-a-1 de 45 min con el Arquitecto Principal.',
     }
   };
 
@@ -68,6 +68,7 @@ export const CheckoutSuccessModal: React.FC<CheckoutSuccessModalProps> = ({
         target: cleanTarget,
         tier: (tier as any) || 'pdf_5usd',
         customerEmail,
+        language: language || 'es',
       });
 
       if (success) {
@@ -82,7 +83,7 @@ export const CheckoutSuccessModal: React.FC<CheckoutSuccessModalProps> = ({
         );
       }
     } catch (err: any) {
-      setDownloadError(err?.message || 'Error al descargar el PDF.');
+      setDownloadError(err?.message || (language === 'fr' ? 'Erreur lors du téléchargement du PDF.' : language === 'en' ? 'Error downloading PDF.' : 'Error al descargar el PDF.'));
     } finally {
       setIsDownloading(false);
     }
@@ -139,7 +140,7 @@ export const CheckoutSuccessModal: React.FC<CheckoutSuccessModalProps> = ({
           <div className="p-4 rounded-xl bg-[#131B33] border border-[#1E293B] text-left space-y-2.5 text-xs text-gray-300 font-sans">
             <div className="flex items-center gap-2 text-white font-bold font-mono text-xs border-b border-gray-800 pb-1.5">
               <FileText className="w-4 h-4 text-[#38BDF8]" />
-              <span>Contenido del {currentTierInfo.name}:</span>
+              <span>{language === 'fr' ? `Contenu de l'offre ${currentTierInfo.name} :` : language === 'en' ? `Included in ${currentTierInfo.name}:` : `Contenido del ${currentTierInfo.name}:`}</span>
             </div>
             <div className="flex items-center gap-2 text-gray-300">
               <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -147,11 +148,11 @@ export const CheckoutSuccessModal: React.FC<CheckoutSuccessModalProps> = ({
             </div>
             <div className="flex items-center gap-2 text-gray-300">
               <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span>Scripts de configuración defensiva para Nginx, Apache y Cloudflare.</span>
+              <span>{language === 'fr' ? 'Scripts de configuration défensive pour Nginx, Apache et Cloudflare.' : language === 'en' ? 'Defensive configuration scripts for Nginx, Apache, and Cloudflare.' : 'Scripts de configuración defensiva para Nginx, Apache y Cloudflare.'}</span>
             </div>
             <div className="flex items-center gap-2 text-gray-300">
               <Mail className="w-4 h-4 text-[#F5A623] shrink-0" />
-              <span>Copia respaldada y archivada en los servidores seguros de Dexvoi.</span>
+              <span>{language === 'fr' ? 'Copie archivée et sauvegardée sur les serveurs sécurisés de Dexvoi.' : language === 'en' ? 'Backed-up copy archived on Dexvoi secure servers.' : 'Copia respaldada y archivada en los servidores seguros de Dexvoi.'}</span>
             </div>
           </div>
 
@@ -170,13 +171,15 @@ export const CheckoutSuccessModal: React.FC<CheckoutSuccessModalProps> = ({
               {isDownloading ? (
                 <>
                   <RefreshCw className="w-4 h-4 animate-spin text-[#0A0F1F]" />
-                  <span>Generando archivo PDF...</span>
+                  <span>{language === 'fr' ? 'Génération du fichier PDF...' : language === 'en' ? 'Generating PDF file...' : 'Generando archivo PDF...'}</span>
                 </>
               ) : (
                 <>
                   <Download className="w-4 h-4 text-[#0A0F1F]" strokeWidth={2.4} />
                   <span>
-                    {hasDownloaded ? `Volver a Descargar PDF (${currentTierInfo.price})` : `Descargar Informe PDF (${currentTierInfo.price})`}
+                    {hasDownloaded 
+                      ? (language === 'fr' ? `Télécharger à nouveau (${currentTierInfo.price})` : language === 'en' ? `Re-download PDF (${currentTierInfo.price})` : `Volver a Descargar PDF (${currentTierInfo.price})`)
+                      : (language === 'fr' ? `Télécharger Rapport PDF (${currentTierInfo.price})` : language === 'en' ? `Download PDF Report (${currentTierInfo.price})` : `Descargar Informe PDF (${currentTierInfo.price})`)}
                   </span>
                 </>
               )}
@@ -192,8 +195,8 @@ export const CheckoutSuccessModal: React.FC<CheckoutSuccessModalProps> = ({
 
           <p className="text-[11px] font-mono text-gray-400">
             {hasDownloaded
-              ? '✓ Archivo PDF guardado en la carpeta de descargas de tu navegador.'
-              : 'La descarga comenzará automáticamente en unos segundos.'}
+              ? (language === 'fr' ? '✓ Fichier PDF enregistré dans le dossier Téléchargements de votre navigateur.' : language === 'en' ? '✓ PDF file saved to your browser downloads folder.' : '✓ Archivo PDF guardado en la carpeta de descargas de tu navegador.')
+              : (language === 'fr' ? 'Le téléchargement démarre automatiquement dans quelques secondes.' : language === 'en' ? 'Download will begin automatically in a few seconds.' : 'La descarga comenzará automáticamente en unos segundos.')}
           </p>
         </div>
       </div>

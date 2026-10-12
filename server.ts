@@ -83,9 +83,9 @@ function generateFallbackResponse(userMessage: string, history?: Array<{ role: s
 3. En moins de 5 minutes, vous recevrez votre rapport détaillé par email.
 
 Tarifs :
-📄 Rapport basique (5 pages) : 19€
-📊 Rapport complet (20+ pages) : 49€ (Recommandé)
-🏆 Audit premium avec consultation stratégique 1-à-1 : 99€
+📄 Rapport basique (5 pages) : $19 USD
+📊 Rapport complet (20+ pages) : $49 USD (Recommandé)
+🏆 Audit premium avec consultation stratégique 1-à-1 : $99 USD
 
 🎯 Souhaitez-vous plutôt commencer par notre audit gratuit de 5 points sans aucun engagement ? Répondez OUI pour planifier votre diagnostic.`,
         detectedLanguage: 'fr'
@@ -99,9 +99,9 @@ Tarifs :
 3. In under 5 minutes, you will receive your detailed PDF report by email.
 
 Pricing options:
-📄 Basic report (5 pages): 19€
-📊 Complete report (20+ pages): 49€ (Most Popular)
-🏆 Premium audit with 1-on-1 strategic consulting: 99€
+📄 Basic report (5 pages): $19 USD
+📊 Complete report (20+ pages): $49 USD (Most Popular)
+🏆 Premium audit with 1-on-1 strategic consulting: $99 USD
 
 🎯 Would you rather start with our free 5-point audit without commitment? Reply YES to schedule your diagnostic.`,
         detectedLanguage: 'en'
@@ -115,9 +115,9 @@ Pricing options:
 3. En menos de 5 minutos recibirás tu informe detallado por email.
 
 Precios:
-📄 Informe básico (5 páginas): 19€
-📊 Informe completo (20+ páginas): 49€ (Más Popular)
-🏆 Auditoría premium con consultoría estratégica 1-a-1: 99€
+📄 Informe básico (5 páginas): $19 USD
+📊 Informe completo (20+ páginas): $49 USD (Más Popular)
+🏆 Auditoría premium con consultoría estratégica 1-a-1: $99 USD
 
 🎯 ¿Prefieres comenzar por nuestra auditoría gratuita de 5 puntos sin costo ni compromiso? Responde SÍ para agendar tu diagnóstico.`,
         detectedLanguage: 'es'
@@ -271,7 +271,7 @@ Nuestro equipo de Arquitectos Digitales analizará a fondo tu velocidad, arquite
 2. Déployer un système de réservation automatisé 24/7 pour capter des ${info.metricTypeFr} à tout moment.
 3. Optimiser la fiche Google Maps et la sécurité contre les intrusions malveillantes.
 
-📄 Si vous souhaitez un rapport complet en PDF avec analyse détaillée de sécurité, SEO et performance (plus de 20 pages), vous pouvez l'acquérir pour seulement 49€.
+📄 Si vous souhaitez un rapport complet en PDF avec analyse détaillée de sécurité, SEO et performance (plus de 20 pages), vous pouvez l'acquérir pour seulement $49 USD.
 
 🎯 Souhaitez-vous que notre équipe d'Architectes Digitaux réalise pour vous un audit gratuit et détaillé de 5 points ? Nous vous aidons à doubler vos ${info.metricTypeFr} en 30 jours.
 
@@ -322,7 +322,7 @@ Répondez OUI pour planifier votre diagnostic gratuit.`,
 2. Implement a 24/7 automated booking system to capture appointments while you sleep.
 3. Boost Google Maps optimization and web security defense against vulnerabilities.
 
-📄 If you want a full PDF report with in-depth security, SEO, and performance analysis (20+ pages), you can purchase it for only 49€.
+📄 If you want a full PDF report with in-depth security, SEO, and performance analysis (20+ pages), you can purchase it for only $49 USD.
 
 🎯 Would you like our Digital Architects team to perform a free, detailed 5-point audit for you? We help you double your ${info.metricTypeEn} in 30 days.
 
@@ -373,7 +373,7 @@ Reply YES to schedule your free diagnostic.`,
 2. Implementar un sistema de reservas online 24/7 (captura citas automáticamente mientras duermes).
 3. Mejorar tu ficha de Google Maps con optimización local y blindaje contra bots.
 
-📄 Si quieres un informe completo en PDF con análisis detallado de seguridad, SEO y rendimiento (más de 20 páginas), puedes adquirirlo por solo 49€.
+📄 Si quieres un informe completo en PDF con análisis detallado de seguridad, SEO y rendimiento (más de 20 páginas), puedes adquirirlo por solo $49 USD.
 
 🎯 ¿Te gustaría que nuestro equipo de Arquitectos Digitales te haga una auditoría gratuita y detallada de 5 puntos? Te ayudamos a duplicar tus ${info.metricTypeEs} en 30 días.
 
@@ -476,18 +476,18 @@ async function startServer() {
         }
       }
 
-      const amountTotal = session.amount_total ? `${session.amount_total / 100}€` : 'No especificado';
+      const amountTotal = session.amount_total ? `$${session.amount_total / 100} USD` : 'No especificado';
       const purchasedProduct =
         lineItems?.[0]?.description ||
         lineItems?.[0]?.price?.nickname ||
         (session.amount_total === 500
-          ? 'Informe Oficial en PDF (5€)'
+          ? 'Informe Oficial en PDF ($5 USD)'
           : session.amount_total === 1900
-          ? 'Informe Básico (19€)'
+          ? 'Informe Básico ($19 USD)'
           : session.amount_total === 4900
-          ? 'Informe Completo (49€)'
+          ? 'Informe Completo ($49 USD)'
           : session.amount_total === 9900
-          ? 'Auditoría Premium con Consultoría (99€)'
+          ? 'Auditoría Premium con Consultoría ($99 USD)'
           : `Plan Dexvoi (${amountTotal})`);
 
       console.log('📦 [Stripe Webhook] checkout.session.completed procesado con éxito:');
@@ -686,7 +686,7 @@ async function startServer() {
   // Create Stripe Checkout Session endpoint ($5 USD PDF, $49 USD Complete, $99 USD Premium)
   app.post('/api/create-checkout-session', async (req, res) => {
     try {
-      const { websiteUrl = 'dexvoi.com', customerEmail, planTier = 'pdf_5usd' } = req.body;
+      const { websiteUrl = 'dexvoi.com', customerEmail, planTier = 'pdf_5usd', language = 'es' } = req.body;
       const cleanUrl = String(websiteUrl).replace(/^https?:\/\//i, '').replace(/\/.*$/, '').trim() || 'dexvoi.com';
 
       const tierConfigs: Record<string, { amount: number; currency: string; name: string; description: string; fallbackUrl: string }> = {
@@ -755,7 +755,9 @@ async function startServer() {
             websiteUrl: cleanUrl,
             planTier,
             customerEmail: customerEmail || '',
+            language,
           },
+          locale: language === 'fr' ? 'fr' : language === 'en' ? 'en' : 'es',
           success_url: `${origin}/?session_id={CHECKOUT_SESSION_ID}&checkout_success=true&tier=${planTier}&target=${encodeURIComponent(cleanUrl)}`,
           cancel_url: `${origin}/#scanner`,
         });
@@ -955,7 +957,7 @@ Muestra el diagnóstico estructurado completo con métricas visuales:
 2. [Implementación de sistema de reservas online 24/7]
 3. [Optimización de ficha Google Maps y blindaje de seguridad]
 
-📄 Si quieres recibir un informe completo en PDF con análisis detallado de seguridad, SEO y rendimiento (más de 20 páginas), puedes adquirirlo por solo 49€ (opciones: Básico 5 páginas: 19€ | Completo 20+ páginas: 49€ | Auditoría premium con consultoría: 99€).
+📄 Si quieres recibir un informe completo en PDF con análisis detallado de seguridad, SEO y rendimiento (más de 20 páginas), puedes adquirirlo por solo $49 USD (opciones: Básico 5 páginas: $19 USD | Completo 20+ páginas: $49 USD | Auditoría premium con consultoría: $99 USD).
 
 🎯 ¿Te gustaría que nuestro equipo de Arquitectos Digitales te haga una auditoría gratuita y detallada de 5 puntos? Te ayudamos a duplicar tus clientes/pacientes/reservas en 30 días.
 
@@ -966,7 +968,7 @@ Responde SÍ para agendar tu diagnóstico sin costo.
 - Si el usuario responde "SÍ" / "OUI" / "YES" después del diagnóstico:
   Confirma que su diagnóstico gratuito de 5 puntos está pre-agendado e invítale a pulsar el botón "Audit Gratuit (5 points)" o escribir por WhatsApp (+212 600-000000).
 - Si el usuario pregunta por el PDF, precio, o pagar:
-  Explica los 3 pasos de pago seguro con Stripe (1. Clic en botón Stripe, 2. Pago con tarjeta, 3. Entrega en menos de 5 min) e indica los 3 planes (19€, 49€, 99€).`;
+  Explica los 3 pasos de pago seguro con Stripe (1. Clic en botón Stripe, 2. Pago con tarjeta, 3. Entrega en menos de 5 min) e indica los 3 planes ($19, $49, $99 USD).`;
 
         const contents: Array<{ role: string; parts: Array<{ text: string }> }> = [];
 

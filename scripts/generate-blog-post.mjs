@@ -413,15 +413,17 @@ function updateSitemap(slug) {
     if (!fs.existsSync(sitemapPath)) return;
     let sitemap = fs.readFileSync(sitemapPath, 'utf8');
     const newUrl = `  <url>
-    <loc>https://www.dexvoi.com/blog/${slug}</loc>
+    <loc>https://dexvoi.com/es/blog/${slug}</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/${slug}"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/${slug}"/>
     <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>`;
-    if (!sitemap.includes(`/blog/${slug}`)) {
+    if (!sitemap.includes(`/es/blog/${slug}`)) {
       sitemap = sitemap.replace('</urlset>', `${newUrl}\n</urlset>`);
       fs.writeFileSync(sitemapPath, sitemap, 'utf8');
-      console.log(`[Sitemap] ✅ Añadida ruta /blog/${slug} a public/sitemap.xml`);
+      console.log(`[Sitemap] ✅ Añadida ruta /es/blog/${slug} a public/sitemap.xml`);
     }
   } catch (err) {
     console.error('[Sitemap] Error actualizando sitemap.xml:', err.message);

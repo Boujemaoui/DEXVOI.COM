@@ -8,6 +8,7 @@ export interface GeneratePdfOptions {
   tier: AuditPlanTier;
   customerEmail: string;
   websiteUrl: string;
+  language?: 'es' | 'en' | 'fr';
 }
 
 // Brand Colors
@@ -24,12 +25,14 @@ const COLOR_SUCCESS = { r: 16, g: 185, b: 129 };
 
 /**
  * Genera el informe forense oficial en PDF de Dexvoi adaptado a la profundidad del plan:
- * - pdf_5eur / basic (19€): 5 páginas de diagnóstico técnico y remediación
- * - complete (49€): 21 páginas (20+ páginas forenses)
- * - premium (99€): 22 páginas (20+ páginas + Sesión Estratégica 1-a-1)
+ * - pdf_5usd / free: 5 páginas de diagnóstico técnico y remediación
+ * - basic ($19 USD): 10 páginas de diagnóstico técnico y hoja de ruta
+ * - complete ($49 USD): 21 páginas (20+ páginas forenses)
+ * - premium ($99 USD): 22 páginas (20+ páginas + Sesión Estratégica 1-a-1)
  */
 export function generateAuditPdf(options: GeneratePdfOptions): Buffer {
   const { auditResult, tier, customerEmail, websiteUrl } = options;
+  const lang: 'es' | 'en' | 'fr' = options.language === 'fr' ? 'fr' : options.language === 'en' ? 'en' : 'es';
 
   const doc = new jsPDF({
     orientation: 'portrait',
@@ -47,50 +50,51 @@ export function generateAuditPdf(options: GeneratePdfOptions): Buffer {
 
   const tierInfo = {
     free: {
-      name: 'Auditoría Exprés Dexvoi',
-      badge: 'DIAGNÓSTICO TÉCNICO OFICIAL DEXVOI (5 PÁGINAS)',
-      pages: '5 Páginas',
-      desc: 'Informe Oficial de Diagnóstico Perimetral: Velocidad Core Web Vitals, SSL/TLS, Cabeceras HTTP y Google Maps',
+      name: lang === 'fr' ? 'Audit Exprés Dexvoi' : lang === 'en' ? 'Express Audit Dexvoi' : 'Auditoría Exprés Dexvoi',
+      badge: lang === 'fr' ? 'DIAGNOSTIC TECHNIQUE OFFICIEL DEXVOI (5 PAGES)' : lang === 'en' ? 'OFFICIAL TECHNICAL DIAGNOSTIC DEXVOI (5 PAGES)' : 'DIAGNÓSTICO TÉCNICO OFICIAL DEXVOI (5 PÁGINAS)',
+      pages: lang === 'fr' ? '5 Pages' : lang === 'en' ? '5 Pages' : '5 Páginas',
+      desc: lang === 'fr' ? 'Rapport Officiel de Diagnostic Périmétrique : Vitesse Core Web Vitals, SSL/TLS, En-têtes HTTP et Google Maps' : lang === 'en' ? 'Official Perimeter Diagnostic Report: Core Web Vitals Speed, SSL/TLS, HTTP Headers and Local Presence' : 'Informe Oficial de Diagnóstico Perimetral: Velocidad Core Web Vitals, SSL/TLS, Cabeceras HTTP y Google Maps',
     },
     pdf_5usd: {
-      name: 'Informe Técnico Oficial en PDF ($5 USD)',
-      badge: 'INFORME FORENSE CERTIFICADO DEXVOI (5 PÁGINAS - $5 USD)',
-      pages: '5 Páginas',
-      desc: 'Auditoría Forense Perimetral: Velocidad Core Web Vitals, Suite Criptográfica SSL/TLS, Cabeceras HTTP y Remediación',
+      name: lang === 'fr' ? 'Rapport Technique Officiel ($5 USD)' : lang === 'en' ? 'Official Technical Report in PDF ($5 USD)' : 'Informe Técnico Oficial en PDF ($5 USD)',
+      badge: lang === 'fr' ? 'RAPPORT FORENSIQUE CERTIFIÉ DEXVOI (5 PAGES - $5 USD)' : lang === 'en' ? 'CERTIFIED FORENSIC REPORT DEXVOI (5 PAGES - $5 USD)' : 'INFORME FORENSE CERTIFICADO DEXVOI (5 PÁGINAS - $5 USD)',
+      pages: lang === 'fr' ? '5 Pages' : lang === 'en' ? '5 Pages' : '5 Páginas',
+      desc: lang === 'fr' ? 'Audit Forensique Périmétrique : Vitesse Core Web Vitals, Suite Cryptographique SSL/TLS, En-têtes HTTP et Remédiation' : lang === 'en' ? 'Perimeter Forensic Audit: Core Web Vitals Speed, SSL/TLS Cryptographic Suite, HTTP Headers and Remediation' : 'Auditoría Forense Perimetral: Velocidad Core Web Vitals, Suite Criptográfica SSL/TLS, Cabeceras HTTP y Remediación',
     },
     pdf_5eur: {
-      name: 'Informe Técnico Oficial en PDF ($5 USD)',
-      badge: 'INFORME FORENSE CERTIFICADO DEXVOI (5 PÁGINAS - $5 USD)',
-      pages: '5 Páginas',
-      desc: 'Auditoría Forense Perimetral: Velocidad Core Web Vitals, Suite Criptográfica SSL/TLS, Cabeceras HTTP y Remediación',
+      name: lang === 'fr' ? 'Rapport Technique Officiel ($5 USD)' : lang === 'en' ? 'Official Technical Report in PDF ($5 USD)' : 'Informe Técnico Oficial en PDF ($5 USD)',
+      badge: lang === 'fr' ? 'RAPPORT FORENSIQUE CERTIFIÉ DEXVOI (5 PAGES - $5 USD)' : lang === 'en' ? 'CERTIFIED FORENSIC REPORT DEXVOI (5 PAGES - $5 USD)' : 'INFORME FORENSE CERTIFICADO DEXVOI (5 PÁGINAS - $5 USD)',
+      pages: lang === 'fr' ? '5 Pages' : lang === 'en' ? '5 Pages' : '5 Páginas',
+      desc: lang === 'fr' ? 'Audit Forensique Périmétrique : Vitesse Core Web Vitals, Suite Cryptographique SSL/TLS, En-têtes HTTP et Remédiation' : lang === 'en' ? 'Perimeter Forensic Audit: Core Web Vitals Speed, SSL/TLS Cryptographic Suite, HTTP Headers and Remediation' : 'Auditoría Forense Perimetral: Velocidad Core Web Vitals, Suite Criptográfica SSL/TLS, Cabeceras HTTP y Remediación',
     },
     basic: {
-      name: 'Plan Básico Forense (19€)',
-      badge: 'STARTER FORENSE & HOJA DE RUTA (10 PÁGINAS)',
-      pages: '10 Páginas',
-      desc: 'Informe Starter Forense Ampliado: Diagnóstico Perimetral, Core Web Vitals, Criptografía, SEO, Checklist Paso a Paso de Implementación & Scripts de Blindaje',
+      name: lang === 'fr' ? 'Plan Starter Forensique ($19 USD)' : lang === 'en' ? 'Starter Forensic Plan ($19 USD)' : 'Plan Básico Forense ($19 USD)',
+      badge: lang === 'fr' ? 'STARTER FORENSIQUE & FEUILLE DE ROUTE (10 PAGES)' : lang === 'en' ? 'FORENSIC STARTER & ROADMAP (10 PAGES)' : 'STARTER FORENSE & HOJA DE RUTA (10 PÁGINAS)',
+      pages: lang === 'fr' ? '10 Pages' : lang === 'en' ? '10 Pages' : '10 Páginas',
+      desc: lang === 'fr' ? 'Rapport Starter Forensique Approfondi : Diagnostic Périmétrique, Core Web Vitals, Cryptographie, SEO, Checklist Technique & Scripts' : lang === 'en' ? 'Extended Starter Forensic Audit: Perimeter Diagnostic, Core Web Vitals, Cryptography, SEO, Step-by-Step Checklist & Hardening Scripts' : 'Informe Starter Forense Ampliado: Diagnóstico Perimetral, Core Web Vitals, Criptografía, SEO, Checklist Paso a Paso de Implementación & Scripts de Blindaje',
     },
     complete: {
-      name: 'Plan Completo (49€)',
-      badge: 'AUDITORÍA FORENSE EXHAUSTIVA (20+ PÁGINAS)',
-      pages: '20+ Páginas',
-      desc: 'Auditoría Forense Profunda, OWASP Top 10, Reconocimiento OSINT y Scripts Hardened',
+      name: lang === 'fr' ? 'Audit Technique Exhaustif ($49 USD)' : lang === 'en' ? 'Comprehensive Technical Audit ($49 USD)' : 'Plan Completo ($49 USD)',
+      badge: lang === 'fr' ? 'AUDIT FORENSIQUE EXHAUSTIF (20+ PAGES)' : lang === 'en' ? 'COMPREHENSIVE FORENSIC AUDIT (20+ PAGES)' : 'AUDITORÍA FORENSE EXHAUSTIVA (20+ PÁGINAS)',
+      pages: lang === 'fr' ? '20+ Pages' : lang === 'en' ? '20+ Pages' : '20+ Páginas',
+      desc: lang === 'fr' ? 'Audit Forensique Approfondi, OWASP Top 10, Reconnaissance OSINT et Scripts Sécurisés' : lang === 'en' ? 'Deep Forensic Audit, OWASP Top 10, OSINT Reconnaissance and Hardened Server Directives' : 'Auditoría Forense Profunda, OWASP Top 10, Reconocimiento OSINT y Scripts Hardened',
     },
     premium: {
-      name: 'Plan Premium VIP (99€)',
-      badge: 'VIP ELITE (20+ PÁGINAS + CONSULTORÍA 1-A-1)',
-      pages: '25+ Páginas + Sesión 1-a-1',
-      desc: 'Auditoría Forense + Sesión Estratégica 1-a-1 (45 min) + Soporte VIP WhatsApp 30 días',
+      name: lang === 'fr' ? 'Plan Premium VIP ($99 USD)' : lang === 'en' ? 'Premium VIP Plan ($99 USD)' : 'Plan Premium VIP ($99 USD)',
+      badge: lang === 'fr' ? 'VIP ÉLITE (20+ PAGES + CONSULTING 1-À-1)' : lang === 'en' ? 'VIP ELITE (20+ PAGES + 1-ON-1 CONSULTATION)' : 'VIP ELITE (20+ PÁGINAS + CONSULTORÍA 1-A-1)',
+      pages: lang === 'fr' ? '25+ Pages + Session 1-à-1' : lang === 'en' ? '25+ Pages + 1-on-1 Call' : '25+ Páginas + Sesión 1-a-1',
+      desc: lang === 'fr' ? 'Audit Forensique + Session Stratégique 1-à-1 (45 min) + Support VIP WhatsApp 30 jours' : lang === 'en' ? 'Forensic Audit + 1-on-1 Strategic Session (45 min) + 30-day VIP WhatsApp Priority Support' : 'Auditoría Forense + Sesión Estratégica 1-a-1 (45 min) + Soporte VIP WhatsApp 30 días',
     },
   }[tier] || {
-    name: 'Informe Técnico Oficial en PDF (5€)',
-    badge: 'INFORME CERTIFICADO DEXVOI (5 PÁGINAS)',
-    pages: '5 Páginas',
-    desc: 'Auditoría Forense Perimetral: Velocidad Core Web Vitals, Suite Criptográfica SSL/TLS, Cabeceras HTTP y Remedación',
+    name: lang === 'fr' ? 'Rapport Technique Officiel ($5 USD)' : lang === 'en' ? 'Official Technical PDF Report ($5 USD)' : 'Informe Técnico Oficial en PDF ($5 USD)',
+    badge: lang === 'fr' ? 'RAPPORT FORENSIQUE CERTIFIÉ DEXVOI (5 PAGES - $5 USD)' : lang === 'en' ? 'CERTIFIED FORENSIC AUDIT DEXVOI (5 PAGES - $5 USD)' : 'INFORME CERTIFICADO DEXVOI (5 PÁGINAS - $5 USD)',
+    pages: lang === 'fr' ? '5 Pages' : lang === 'en' ? '5 Pages' : '5 Páginas',
+    desc: lang === 'fr' ? 'Audit Forensique Périmétrique : Vitesse Core Web Vitals, Suite Cryptographique SSL/TLS, En-têtes HTTP et Remédiation' : lang === 'en' ? 'Perimeter Forensic Audit: Core Web Vitals Speed, SSL/TLS Cipher Suite, HTTP Security Headers and Remediation' : 'Auditoría Forense Perimetral: Velocidad Core Web Vitals, Suite Criptográfica SSL/TLS, Cabeceras HTTP y Remedación',
   };
 
   const reportId = `DXV-${Math.floor(100000 + Math.random() * 900000)}`;
-  const dateStr = new Date().toLocaleDateString('es-ES', {
+  const localeMap = { fr: 'fr-FR', en: 'en-US', es: 'es-ES' };
+  const dateStr = new Date().toLocaleDateString(localeMap[lang] || 'es-ES', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -126,7 +130,8 @@ export function generateAuditPdf(options: GeneratePdfOptions): Buffer {
     // Right Document Ref
     doc.setFontSize(7);
     doc.setTextColor(COLOR_MUTED.r, COLOR_MUTED.g, COLOR_MUTED.b);
-    doc.text(`CONFIDENCIAL | REF: ${reportId}`, pageWidth - margin, 9, { align: 'right' });
+    const confLabel = lang === 'fr' ? 'CONFIDENTIEL' : lang === 'en' ? 'CONFIDENTIAL' : 'CONFIDENCIAL';
+    doc.text(`${confLabel} | REF: ${reportId}`, pageWidth - margin, 9, { align: 'right' });
 
     // Section title
     doc.setFont('helvetica', 'bold');
@@ -152,12 +157,17 @@ export function generateAuditPdf(options: GeneratePdfOptions): Buffer {
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(7);
     doc.setTextColor(COLOR_MUTED.r, COLOR_MUTED.g, COLOR_MUTED.b);
-    doc.text('DEXVOI · contact@dexvoi.com · www.dexvoi.com · Madrid · Casablanca · Londres', margin, pageHeight - 5);
+    doc.text('DEXVOI · contact@dexvoi.com · www.dexvoi.com · Madrid · Casablanca · London', margin, pageHeight - 5);
 
     // Page indicator
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(COLOR_GOLD.r, COLOR_GOLD.g, COLOR_GOLD.b);
-    doc.text(`Página ${pageNum} de ${totalPages}`, pageWidth - margin, pageHeight - 5, { align: 'right' });
+    const pageText = lang === 'fr'
+      ? `Page ${pageNum} sur ${totalPages}`
+      : lang === 'en'
+      ? `Page ${pageNum} of ${totalPages}`
+      : `Página ${pageNum} de ${totalPages}`;
+    doc.text(pageText, pageWidth - margin, pageHeight - 5, { align: 'right' });
   }
 
   function drawCard(x: number, y: number, w: number, h: number, title?: string, borderColor?: { r: number; g: number; b: number }) {
@@ -240,7 +250,12 @@ export function generateAuditPdf(options: GeneratePdfOptions): Buffer {
 
   doc.setFontSize(8);
   doc.setTextColor(COLOR_GOLD.r, COLOR_GOLD.g, COLOR_GOLD.b);
-  doc.text('INGENIERÍA DIGITAL & CIBERSEGURIDAD PERIMETRAL', pageWidth / 2, 98, { align: 'center' });
+  const brandSub = lang === 'fr'
+    ? 'INGÉNIERIE DIGITALE & CYBERSÉCURITÉ PÉRIMÉTRIQUE'
+    : lang === 'en'
+    ? 'DIGITAL ARCHITECTURE & PERIMETER DEFENSE'
+    : 'INGENIERÍA DIGITAL & CIBERSEGURIDAD PERIMETRAL';
+  doc.text(brandSub, pageWidth / 2, 98, { align: 'center' });
 
   // Plan Badge
   doc.setFillColor(COLOR_BLUE.r, COLOR_BLUE.g, COLOR_BLUE.b);
@@ -254,7 +269,12 @@ export function generateAuditPdf(options: GeneratePdfOptions): Buffer {
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(18);
   doc.setTextColor(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b);
-  doc.text('INFORME FORENSE DE AUDITORÍA DIGITAL', pageWidth / 2, 130, { align: 'center' });
+  const docTitle = lang === 'fr'
+    ? 'RAPPORT FORENSIQUE D’AUDIT DIGITAL'
+    : lang === 'en'
+    ? 'OFFICIAL DIGITAL FORENSIC AUDIT REPORT'
+    : 'INFORME FORENSE DE AUDITORÍA DIGITAL';
+  doc.text(docTitle, pageWidth / 2, 130, { align: 'center' });
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
@@ -263,22 +283,31 @@ export function generateAuditPdf(options: GeneratePdfOptions): Buffer {
 
   // Metadata Card
   const metaY = 152;
-  drawCard(25, metaY, pageWidth - 50, 75, 'DATOS DE CERTIFICACIÓN TÉCNICA', COLOR_GOLD);
+  const certTitle = lang === 'fr' ? 'DONNÉES DE CERTIFICATION TECHNIQUE' : lang === 'en' ? 'TECHNICAL CERTIFICATION METRICS' : 'DATOS DE CERTIFICACIÓN TÉCNICA';
+  drawCard(25, metaY, pageWidth - 50, 75, certTitle, COLOR_GOLD);
+
+  const lblDomain = lang === 'fr' ? 'Domaine Audité :' : lang === 'en' ? 'Audited Domain:' : 'Dominio Auditado:';
+  const lblClient = lang === 'fr' ? 'Client / Titulaire :' : lang === 'en' ? 'Client / Holder:' : 'Cliente / Titular:';
+  const lblPlan = lang === 'fr' ? 'Formule Souscrite :' : lang === 'en' ? 'Service Package:' : 'Modalidad Contratada:';
+  const lblId = lang === 'fr' ? 'Identifiant d’Audit :' : lang === 'en' ? 'Audit Identifier:' : 'Identificador de Auditoría:';
+  const lblDate = lang === 'fr' ? 'Date d’Émission :' : lang === 'en' ? 'Issuance Date:' : 'Fecha de Emisión:';
+  const lblScore = lang === 'fr' ? 'Score Périmétrique :' : lang === 'en' ? 'Perimeter Score:' : 'Puntuación Perimetral:';
+  const lblGrade = lang === 'fr' ? 'Grade Forensique :' : lang === 'en' ? 'Forensic Grade:' : 'Grado Forense:';
 
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(9);
   doc.setTextColor(COLOR_MUTED.r, COLOR_MUTED.g, COLOR_MUTED.b);
-  doc.text('Dominio Auditado:', 32, metaY + 16);
-  doc.text('Cliente / Titular:', 32, metaY + 24);
-  doc.text('Modalidad Contratada:', 32, metaY + 32);
-  doc.text('Identificador de Auditoría:', 32, metaY + 40);
-  doc.text('Fecha de Emisión:', 32, metaY + 48);
-  doc.text('Puntuación Perimetral:', 32, metaY + 56);
-  doc.text('Grado Forense:', 32, metaY + 64);
+  doc.text(lblDomain, 32, metaY + 16);
+  doc.text(lblClient, 32, metaY + 24);
+  doc.text(lblPlan, 32, metaY + 32);
+  doc.text(lblId, 32, metaY + 40);
+  doc.text(lblDate, 32, metaY + 48);
+  doc.text(lblScore, 32, metaY + 56);
+  doc.text(lblGrade, 32, metaY + 64);
 
   doc.setTextColor(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b);
-  doc.text(websiteUrl || auditResult.target || 'Dominio del Cliente', 85, metaY + 16);
-  doc.text(customerEmail || 'Titular Verificado', 85, metaY + 24);
+  doc.text(websiteUrl || auditResult.target || 'dexvoi.com', 85, metaY + 16);
+  doc.text(customerEmail || (lang === 'fr' ? 'Titulaire Vérifié' : lang === 'en' ? 'Verified Account' : 'Titular Verificado'), 85, metaY + 24);
   doc.text(tierInfo.name, 85, metaY + 32);
   doc.text(reportId, 85, metaY + 40);
   doc.text(dateStr, 85, metaY + 48);
@@ -289,14 +318,29 @@ export function generateAuditPdf(options: GeneratePdfOptions): Buffer {
   const grade = auditResult.grade || 'B';
   const gradeColor = grade.startsWith('A') ? COLOR_SUCCESS : grade === 'B' ? COLOR_BLUE : grade === 'C' ? COLOR_WARNING : COLOR_CRITICAL;
   doc.setTextColor(gradeColor.r, gradeColor.g, gradeColor.b);
-  doc.text(`${grade} (${grade.startsWith('A') ? 'Excelente' : grade === 'B' ? 'Aceptable con Riesgos' : 'Riesgo Crítico Detectado'})`, 85, metaY + 64);
+  const gradeDesc = grade.startsWith('A')
+    ? (lang === 'fr' ? 'Excellent' : lang === 'en' ? 'Excellent' : 'Excelente')
+    : grade === 'B'
+    ? (lang === 'fr' ? 'Acceptable avec Risques' : lang === 'en' ? 'Acceptable with Risks' : 'Aceptable con Riesgos')
+    : (lang === 'fr' ? 'Risque Critique Détecté' : lang === 'en' ? 'Critical Risk Detected' : 'Riesgo Crítico Detectado');
+  doc.text(`${grade} (${gradeDesc})`, 85, metaY + 64);
 
   // Bottom Notice
   doc.setFont('helvetica', 'italic');
   doc.setFontSize(7.5);
   doc.setTextColor(COLOR_MUTED.r, COLOR_MUTED.g, COLOR_MUTED.b);
-  doc.text('Documento estrictamente confidencial emitido por DEXVOI bajo secreto profesional.', pageWidth / 2, 245, { align: 'center' });
-  doc.text('Prohibida su reproducción o divulgación no autorizada.', pageWidth / 2, 250, { align: 'center' });
+  const notice1 = lang === 'fr'
+    ? 'Document strictement confidentiel émis par DEXVOI sous secret professionnel.'
+    : lang === 'en'
+    ? 'Strictly confidential deliverable issued by DEXVOI under non-disclosure protocols.'
+    : 'Documento estrictamente confidencial emitido por DEXVOI bajo secreto profesional.';
+  const notice2 = lang === 'fr'
+    ? 'Reproduction ou diffusion non autorisée interdite.'
+    : lang === 'en'
+    ? 'Unauthorized reproduction or dissemination is strictly prohibited.'
+    : 'Prohibida su reproducción o divulgación no autorizada.';
+  doc.text(notice1, pageWidth / 2, 245, { align: 'center' });
+  doc.text(notice2, pageWidth / 2, 250, { align: 'center' });
 
   drawFooter(1);
 

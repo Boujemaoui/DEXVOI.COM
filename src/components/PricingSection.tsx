@@ -55,7 +55,6 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
       subtitle: t.pricing.tierBasicSubtitle,
       price: '$19',
       currency: 'USD',
-      altPrice: '(19€)',
       period: language === 'fr' ? 'paiement unique' : language === 'en' ? 'one-time fee' : 'pago único',
       pages: t.pricing.tierBasicPages,
       badge: null,
@@ -92,7 +91,6 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
       subtitle: t.pricing.tierCompleteSubtitle,
       price: '$49',
       currency: 'USD',
-      altPrice: '(49€)',
       period: language === 'fr' ? 'paiement unique' : language === 'en' ? 'one-time fee' : 'pago único',
       pages: t.pricing.tierCompletePages,
       badge: t.pricing.popularBadge,
@@ -132,7 +130,6 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
       subtitle: t.pricing.tierPremiumSubtitle,
       price: '$99',
       currency: 'USD',
-      altPrice: '(99€)',
       period: language === 'fr' ? 'paiement unique' : language === 'en' ? 'one-time fee' : 'pago único',
       pages: t.pricing.tierPremiumPages,
       badge: language === 'fr' ? 'AUDIT + SESSION 1-À-1' : language === 'en' ? 'AUDIT + 1-ON-1 SESSION' : 'AUDITORÍA + SESIÓN 1-A-1',
@@ -231,11 +228,6 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
                     <span className="text-xl font-bold text-[#F5A623] font-mono">
                       {plan.currency}
                     </span>
-                    {(plan as any).altPrice && (
-                      <span className="text-xs text-gray-400 font-mono ml-1">
-                        {(plan as any).altPrice}
-                      </span>
-                    )}
                   </div>
                   <div className="text-right">
                     <span className="block text-[11px] font-mono uppercase text-emerald-400 font-bold">

@@ -1,7 +1,7 @@
 /**
  * DEXVOI · Modo de Pago Stripe Oficial (Producción Conectada)
  * 
- * Sistema de pagos oficial activo (19€ Starter, 49€ Forense, 99€ Premium, 5€ Escáner).
+ * Sistema de pagos oficial activo ($19 USD Starter, $49 USD Forense, $99 USD Premium, $5 USD Escáner).
  * Conecta directamente con las sesiones seguras de Stripe Checkout oficial.
  */
 export const STRIPE_TEST_MODE_DEFAULT = false;

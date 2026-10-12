@@ -54,7 +54,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
 
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight">
             {t.aboutSection.title}{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0066FF] via-sky-400 to-[#F5A623]">
+            <span className="text-[#38BDF8] inline-block">
               {t.aboutSection.titleHighlight}
             </span>
           </h2>

@@ -24,6 +24,7 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
     const target = body?.target || body?.websiteUrl || 'dexvoi.com';
     const tier = body?.tier || 'free';
     const email = body?.email || body?.customerEmail || 'info@dexvoi.com';
+    const language: 'es' | 'en' | 'fr' = body?.language === 'fr' ? 'fr' : body?.language === 'en' ? 'en' : 'es';
 
     let auditResult = body?.auditResult;
     if (!auditResult || auditResult.score === undefined) {
@@ -36,10 +37,15 @@ export async function onRequestPost(context: { request: Request; env: Cloudflare
       tier,
       customerEmail: email,
       websiteUrl: target,
+      language,
     });
 
     const cleanTarget = target.replace(/^https?:\/\//i, '').replace(/\/.*$/, '').trim();
-    const filename = `DEXVOI-Auditoria-Oficial-${cleanTarget}.pdf`;
+    const filename = language === 'fr' 
+      ? `DEXVOI-Rapport-Officiel-${cleanTarget}.pdf`
+      : language === 'en'
+      ? `DEXVOI-Official-Audit-${cleanTarget}.pdf`
+      : `DEXVOI-Auditoria-Oficial-${cleanTarget}.pdf`;
 
     return new Response(pdfBuffer, {
       status: 200,
