@@ -3,6 +3,28 @@ import { BLOG_POST_SLUGS, BLOG_POST_TRANSLATIONS } from './blogTranslations';
 
 export const INITIAL_BLOG_POSTS: BlogPost[] = [
   {
+    id: 'post-auto-1791904953822',
+    slug: 'tiempo-de-respuesta-ttfb-bajo-100ms-en-edge-global-la-c',
+    title: "Tiempo de Respuesta TTFB bajo 100ms en Edge Global: La Clave Oculta del SEO Técnico",
+    excerpt: "Análisis técnico del Time to First Byte (TTFB) y cómo la computación en el Edge elimina la latencia geográfica para maximizar el rastreo de Googlebot.",
+    category: 'arquitectura-web',
+    categoryLabel: 'Arquitectura Web & Rendimiento',
+    tags: ["TTFB","Edge Computing","Cloudflare Workers","SEO Técnico"],
+    author: {
+      name: 'Dexvoi Intelligence Team',
+      role: 'Especialistas en Blindaje & Rendimiento Digital',
+      badge: 'Verified Lead'
+    },
+    publishedAt: '2026-10-13T15:22:33.822Z',
+    readingTimeMinutes: 6,
+    featuredImage: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&q=80',
+    metaDescription: "Análisis técnico del Time to First Byte (TTFB) y cómo la computación en el Edge elimina la latencia geográfica para maximizar el rastreo de Googlebot.",
+    keywords: ["TTFB","Edge Computing","Cloudflare Workers","SEO Técnico"],
+    targetServiceUrl: '/auditoria-seguridad',
+    targetServiceLabel: 'Solicitar Diagnóstico Especializado',
+    content: "\n## Qué es el TTFB y por qué Googlebot abandona las webs lentas\n\nEl Time to First Byte mide el tiempo que transcurre desde que el cliente solicita una página hasta que recibe el primer byte de datos del servidor. Un TTFB superior a 600ms frena en seco el presupuesto de rastreo (*crawl budget*).\n\n---\n\n### Soluciones de arquitectura perimetral Dexvoi\n\n- **Caché en Edge Anycast:** Los contenidos se almacenan en más de 300 puntos de presencia globales, respondiendo al usuario desde el centro de datos más próximo.\n- **Compresión Brotli nivel 11:** Reducción de tamaño de carga superior a gzip convencional sin sobrecargar la CPU del servidor.\n- **Cero consultas bloqueantes a bases de datos relacionales:** Precompilación estática de assets y aislamiento de funciones dinámicas en microservicios serverless.\n    "
+  },
+  {
     id: 'post-auto-1791824772126',
     slug: 'hardening-infraestructuras-web-blindaje-inyecciones-sql',
     title: "Hardening de Infraestructuras Web: Blindaje contra Inyecciones SQL",
