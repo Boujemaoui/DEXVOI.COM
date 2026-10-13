@@ -3,6 +3,28 @@ import { BLOG_POST_SLUGS, BLOG_POST_TRANSLATIONS } from './blogTranslations';
 
 export const INITIAL_BLOG_POSTS: BlogPost[] = [
   {
+    id: 'post-auto-1791924758621',
+    slug: 'arquitectura-datos-estructurados-seo-local-dominio-local-pac',
+    title: "Arquitectura de Datos Estructurados para SEO Local: Dominio en el Local Pack",
+    excerpt: "Eleva la visibilidad de tu negocio premium mediante Schema Markup avanzado y arquitectura de datos semánticos para conquistar el Local Pack de Google.",
+    category: 'seo-local',
+    categoryLabel: 'SEO Local & Google Maps',
+    tags: ["SEO Local","Schema Markup","Google Maps","Datos Estructurados","Local Pack"],
+    author: {
+      name: 'Dexvoi Intelligence Team',
+      role: 'Especialistas en Blindaje & Rendimiento Digital',
+      badge: 'Verified Lead'
+    },
+    publishedAt: '2026-10-13T20:52:38.621Z',
+    readingTimeMinutes: 7,
+    featuredImage: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80',
+    metaDescription: "Domina el Local Pack con estrategias avanzadas de datos estructurados. Optimiza tu arquitectura semántica para clínicas y restaurantes de élite con Dexvoi.",
+    keywords: ["SEO Local","Schema Markup","Google Maps","Datos Estructurados","Local Pack"],
+    targetServiceUrl: '/auditoria-seguridad',
+    targetServiceLabel: 'Solicitar Diagnóstico Especializado',
+    content: "## Introducción: La batalla por la visibilidad en la proximidad\n\nEn el ecosistema digital de 2026, el SEO local ha dejado de ser una simple cuestión de completar una ficha en Google Business Profile. Para clínicas privadas y restaurantes gastronómicos premium, la visibilidad en el Local Pack depende de una arquitectura de datos estructurados que permita a los algoritmos de Google interpretar la relevancia, autoridad y cercanía de un negocio con precisión quirúrgica.\n\n## La semántica como pilar del posicionamiento\n\nLos buscadores no \"leen\" sitios web; procesan grafos de conocimiento. Implementar `LocalBusiness`, `MedicalBusiness` o `Restaurant` mediante JSON-LD es el estándar técnico, pero la verdadera ventaja competitiva reside en la profundidad de la ontología aplicada.\n\n### Implementación técnica de Schema Markup avanzado\n\nNo basta con definir el nombre y la dirección. Para escalar posiciones, debemos integrar:\n- **GeoCoordinates:** Precisión milimétrica para evitar ambigüedades en áreas metropolitanas.\n- **AggregateRating:** Integración de opiniones verificadas que alimentan el CTR del Local Pack.\n- **OpeningHoursSpecification:** Configuración detallada para evitar fricciones en el customer journey.\n- **SameAs:** Vinculación con redes sociales y registros oficiales para consolidar la E-E-A-T.\n\n## Tabla comparativa: Impacto en la visibilidad local\n\n| Estrategia | Impacto en Ranking | Esfuerzo Técnico | Estabilidad\n| :--- | :--- | :--- | :--- |\n| Ficha GBP Básica | Bajo | Mínimo | Baja |\n| Schema LocalBusiness | Medio | Medio | Media |\n| Arquitectura Semántica Avanzada | Muy Alto | Elevado | Alta |\n| Datos Estructurados + API de Maps | Crítico | Experto | Muy Alta |\n\n## Checklist: Auditoría de datos para SEO Local\n\n- [ ] Validación de consistencia NAP (Name, Address, Phone) en todo el grafo de conocimiento.\n- [ ] Implementación de JSON-LD sin errores de sintaxis en el renderizado del lado del servidor.\n- [ ] Uso de `sameAs` para conectar el sitio web con perfiles autoritativos.\n- [ ] Marcado de servicios o menús con `Offer` y `PriceRange` para enriquecer snippets.\n- [ ] Monitorización de errores en Google Search Console bajo la pestaña de 'Elementos mejorados'.\n\n## La importancia de la arquitectura técnica\n\nLa velocidad de indexación de estos datos es tan crítica como su correcta implementación. En Dexvoi, desplegamos infraestructuras que garantizan que Googlebot acceda a esta información sin latencia, permitiendo que cualquier cambio en tus servicios o disponibilidad se refleje en los resultados de búsqueda casi en tiempo real.\n\n## Conclusión: ¿Está tu infraestructura preparada para liderar?\n\nEl SEO local de élite es una disciplina técnica que requiere precisión. Si tu negocio premium no está dominando las primeras posiciones del mapa, es probable que tu arquitectura de datos esté fragmentada o subutilizada.\n\n**¿Quieres asegurar tu presencia en el Local Pack?** Solicita hoy mismo una auditoría técnica gratuita con nuestro equipo de expertos en Dexvoi y descubre cómo optimizar tu arquitectura digital para maximizar tu captación de pacientes y comensales."
+  },
+  {
     id: 'post-auto-1791904953822',
     slug: 'tiempo-de-respuesta-ttfb-bajo-100ms-en-edge-global-la-c',
     title: "Tiempo de Respuesta TTFB bajo 100ms en Edge Global: La Clave Oculta del SEO Técnico",
