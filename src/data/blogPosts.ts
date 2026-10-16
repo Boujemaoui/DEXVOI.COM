@@ -3,6 +3,28 @@ import { BLOG_POST_SLUGS, BLOG_POST_TRANSLATIONS } from './blogTranslations';
 
 export const INITIAL_BLOG_POSTS: BlogPost[] = [
   {
+    id: 'post-auto-1792154869792',
+    slug: 'auditoria-de-ciberseguridad-owasp-top-10-para-negocios',
+    title: "Auditoría de Ciberseguridad OWASP Top 10 para Negocios con Pasarelas de Pago Online",
+    excerpt: "Cómo blindar los procesos de checkout online frente a ataques de skimming digital, inyecciones SQL y robo de credenciales bancarias.",
+    category: 'ciberseguridad',
+    categoryLabel: 'Ciberseguridad & Compliance',
+    tags: ["OWASP Top 10","Pasarelas de Pago","Stripe","Seguridad PCI-DSS"],
+    author: {
+      name: 'Dexvoi Intelligence Team',
+      role: 'Especialistas en Blindaje & Rendimiento Digital',
+      badge: 'Verified Lead'
+    },
+    publishedAt: '2026-10-16T12:47:49.792Z',
+    readingTimeMinutes: 8,
+    featuredImage: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80',
+    metaDescription: "Cómo blindar los procesos de checkout online frente a ataques de skimming digital, inyecciones SQL y robo de credenciales bancarias.",
+    keywords: ["OWASP Top 10","Pasarelas de Pago","Stripe","Seguridad PCI-DSS"],
+    targetServiceUrl: '/auditoria-seguridad',
+    targetServiceLabel: 'Solicitar Diagnóstico Especializado',
+    content: "\n## El riesgo de Magecart y el robo de credenciales en el checkout\n\nEl secuestro de formularios digitales (*formjacking*) permite a ciberdelincuentes interceptar números de tarjeta de crédito en el momento exacto en que el cliente pulsa \"Pagar\".\n\n---\n\n### Medidas de blindaje perimetral implementadas en Dexvoi\n\n1. **Tokens de un solo uso:** Jamás procesar datos bancarios directamente en los servidores propios; uso exclusivo de SDKs certificados PCI-DSS Nivel 1.\n2. **Subresource Integrity (SRI):** Firma criptográfica de scripts externos para detectar manipulaciones en librerías de terceros en tiempo real.\n3. **Políticas CSP restrictivas:** Bloqueo absoluto de cualquier conexión saliente no autorizada desde la pantalla de pago.\n    "
+  },
+  {
     id: 'post-auto-1792092744677',
     slug: 'arquitectura-serverless-edge-computing-negocios-vip',
     title: "Arquitectura Serverless y Edge Computing: Escalabilidad en Negocios VIP",
