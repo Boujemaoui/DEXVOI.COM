@@ -3,6 +3,28 @@ import { BLOG_POST_SLUGS, BLOG_POST_TRANSLATIONS } from './blogTranslations';
 
 export const INITIAL_BLOG_POSTS: BlogPost[] = [
   {
+    id: 'post-auto-1792347602949',
+    slug: 'arquitectura-proximidad-seo-local-latencia-local-pack',
+    title: "Arquitectura de Proximidad: SEO Local y Latencia en el Local Pack",
+    excerpt: "Descubre cómo la arquitectura web de alto rendimiento influye en el posicionamiento en Google Maps mediante la optimización de latencia y datos estructurados.",
+    category: 'seo-local',
+    categoryLabel: 'SEO Local & Google Maps',
+    tags: ["SEO Local","Arquitectura Web","Google Maps","Core Web Vitals","Latencia"],
+    author: {
+      name: 'Dexvoi Intelligence Team',
+      role: 'Especialistas en Blindaje & Rendimiento Digital',
+      badge: 'Verified Lead'
+    },
+    publishedAt: '2026-10-18T18:20:02.949Z',
+    readingTimeMinutes: 7,
+    featuredImage: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80',
+    metaDescription: "Domina el Local Pack con estrategias avanzadas de arquitectura web, optimización de latencia y señales de proximidad para negocios premium.",
+    keywords: ["SEO Local","Arquitectura Web","Google Maps","Core Web Vitals","Latencia"],
+    targetServiceUrl: '/auditoria-seguridad',
+    targetServiceLabel: 'Solicitar Diagnóstico Especializado',
+    content: "## La convergencia entre infraestructura y visibilidad local\n\nEn el ecosistema digital de 2026, el SEO local ha dejado de ser una simple cuestión de palabras clave y reseñas. Google utiliza señales de rendimiento técnico y proximidad de red para determinar la autoridad de un negocio en su área geográfica. Como consultores en Dexvoi, observamos que la latencia de respuesta del servidor es un factor determinante en la inclusión dentro del 'Local Pack'.\n\n## El impacto de la latencia en el ranking de proximidad\n\nLa velocidad de carga no solo afecta la experiencia de usuario, sino que es una métrica de calidad que los algoritmos de Google correlacionan con la fiabilidad de un negocio físico. Un sitio web que tarda más de 300ms en responder a una solicitud desde una IP local es penalizado en la jerarquía de resultados de Maps.\n\n### Factores críticos de arquitectura para SEO Local:\n- **Edge Caching:** Distribución del contenido estático en nodos cercanos al usuario para reducir el TTFB (Time to First Byte).\n- **Implementación de Schema.org:** Uso riguroso de `LocalBusiness` con marcado JSON-LD para geolocalización precisa.\n- **Optimización de Carga Asíncrona:** Priorización de recursos críticos para dispositivos móviles en áreas de baja conectividad.\n\n## Tabla: Impacto de la infraestructura en el SEO Local\n\n| Variable Técnica | Impacto en Ranking | Prioridad |\n| :--- | :--- | :--- |\n| TTFB < 100ms | Alto (Factor de posicionamiento) | Crítica |\n| Schema LocalBusiness | Muy Alto (Rich Snippets) | Crítica |\n| Latencia de red | Medio (UX/Core Web Vitals) | Alta |\n| Densidad de keywords | Bajo (Contextual) | Media |\n\n## Checklist de optimización para negocios premium\n\n- [ ] Implementar marcado `SameAs` para unificar la identidad digital en redes y mapas.\n- [ ] Configurar encabezados HTTP `Cache-Control` para maximizar el almacenamiento en caché del navegador.\n- [ ] Auditar la consistencia de NAP (Name, Address, Phone) en todo el ecosistema de APIs de terceros.\n- [ ] Integrar WebP y formatos de imagen de última generación para reducir el payload del DOM.\n- [ ] Asegurar que el certificado SSL/TLS cumpla con los estándares de seguridad de grado bancario.\n\n## Conclusión: El camino hacia la autoridad local\n\nLa optimización técnica es el cimiento sobre el cual se construye la autoridad local. Si su clínica o restaurante premium no está dominando el Local Pack, es probable que su arquitectura técnica esté enviando señales de baja calidad a los crawlers de Google.\n\n**¿Su infraestructura web está frenando su crecimiento local?** Solicite hoy una auditoría de rendimiento y SEO técnico con los especialistas de Dexvoi y asegure su posición en la cima de los resultados de búsqueda."
+  },
+  {
     id: 'post-auto-1792325732852',
     slug: 'seguridad-y-rendimiento-ciberseguridad-gqgk',
     title: "Cifrado de Extremo a Extremo y Protocolos de Acceso RGPD para Clínicas Privadas y Centros Médicos [Informe 2026-GQGK]",
