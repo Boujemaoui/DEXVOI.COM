@@ -3,6 +3,28 @@ import { BLOG_POST_SLUGS, BLOG_POST_TRANSLATIONS } from './blogTranslations';
 
 export const INITIAL_BLOG_POSTS: BlogPost[] = [
   {
+    id: 'post-auto-1792588682274',
+    slug: 'arquitectura-entidades-proximidad-semantica-seo-local-2026',
+    title: "Arquitectura de Entidades y Proximidad Semántica: El SEO Local 2026",
+    excerpt: "Domina el algoritmo de búsqueda local mediante la arquitectura de entidades, señales de proximidad y optimización técnica avanzada para negocios premium.",
+    category: 'seo-local',
+    categoryLabel: 'SEO Local & Google Maps',
+    tags: ["SEO Local","Arquitectura Web","Google Maps","Semántica","Algoritmo"],
+    author: {
+      name: 'Dexvoi Intelligence Team',
+      role: 'Especialistas en Blindaje & Rendimiento Digital',
+      badge: 'Verified Lead'
+    },
+    publishedAt: '2026-10-21T13:18:02.274Z',
+    readingTimeMinutes: 7,
+    featuredImage: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80',
+    metaDescription: "Descubre cómo la arquitectura de entidades y la semántica local definen tu posicionamiento en Google Maps. Guía técnica para negocios de alta gama.",
+    keywords: ["SEO Local","Arquitectura Web","Google Maps","Semántica","Algoritmo"],
+    targetServiceUrl: '/auditoria-seguridad',
+    targetServiceLabel: 'Solicitar Diagnóstico Especializado',
+    content: "## La Evolución del Local SEO: Más allá de las Fichas de Google\n\nEn el ecosistema digital de 2026, el SEO local ha dejado de ser una cuestión de densidad de palabras clave para convertirse en un ejercicio de **arquitectura de entidades**. Google ya no solo busca negocios cercanos; busca comprender la autoridad, la relevancia y la veracidad de la entidad en un contexto geográfico específico.\n\n## Arquitectura de Entidades y Grafo de Conocimiento Local\n\nPara que una clínica o restaurante de alta gama domine su sector, debe estructurar su presencia digital como una entidad única y coherente. Esto implica:\n\n* **Implementación de Schema.org avanzado:** Uso de `LocalBusiness`, `MedicalBusiness` o `Restaurant` con propiedades `sameAs` conectadas a perfiles sociales y registros oficiales.\n* **Consistencia en el NAP (Name, Address, Phone):** Eliminación de discrepancias en el grafo de conocimiento para evitar la fragmentación de la autoridad.\n* **Vínculos de proximidad:** Uso de datos estructurados de tipo `GeoCoordinates` y `areaServed` para definir el radio de influencia semántica.\n\n## La importancia de la Latencia y la Experiencia de Usuario Local\n\nEl algoritmo de Google integra ahora señales de Core Web Vitals específicas para dispositivos móviles en su evaluación de proximidad. Si tu infraestructura web presenta latencias superiores a 300ms, el motor de búsqueda penalizará tu relevancia local, asumiendo una experiencia de usuario deficiente.\n\n### Tabla: Impacto de la Optimización Técnica en el Ranking Local\n\n| Factor Técnico | Impacto en Ranking | Esfuerzo de Implementación |\n| :--- | :--- | :--- |\n| Schema Markup (JSON-LD) | Crítico | Medio |\n| Velocidad de Carga (LCP < 1.2s) | Alto | Alto |\n| Consistencia de NAP | Crítico | Bajo |\n| Interlinking Semántico Local | Medio | Medio |\n| Autoridad de Backlinks Geográficos | Alto | Alto |\n\n## Checklist de Auditoría para Negocios Premium\n\nPara asegurar que tu negocio esté posicionado correctamente, revisa los siguientes puntos críticos:\n\n* [ ] Implementación de marcado `LocalBusiness` con `priceRange` y `servesCuisine` o `medicalSpecialty`.\n* [ ] Optimización de imágenes con etiquetas `GeoTagging` y metadatos EXIF limpios.\n* [ ] Sincronización de datos mediante API de Google Business Profile para actualizaciones en tiempo real.\n* [ ] Arquitectura de silos geográficos para páginas de servicios específicos.\n\n## Conclusión\n\nEl dominio en las búsquedas locales no es un accidente, es el resultado de una arquitectura técnica impecable y una estrategia de entidades robusta. En Dexvoi, nos especializamos en transformar la infraestructura digital de clínicas y negocios de lujo para que sean invisibles para la competencia y omnipresentes para sus clientes.\n\n### ¿Tu negocio está perdiendo visibilidad frente a la competencia?\n\nSolicita hoy una **auditoría técnica de SEO Local gratuita** con nuestro equipo de ingenieros en Dexvoi. Analizaremos tu arquitectura, tus señales de proximidad y tu estado en el Local Pack para desbloquear tu verdadero potencial de crecimiento."
+  },
+  {
     id: 'post-auto-1792525321751',
     slug: 'ia-predictiva-en-reservas-optimizacion-conversion-cro',
     title: "IA Predictiva en Reservas: Optimización de Tasa de Conversión (CRO)",
