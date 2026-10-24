@@ -3,6 +3,28 @@ import { BLOG_POST_SLUGS, BLOG_POST_TRANSLATIONS } from './blogTranslations';
 
 export const INITIAL_BLOG_POSTS: BlogPost[] = [
   {
+    id: 'post-auto-1792844304109',
+    slug: 'blindaje-infraestructura-digital-ciberseguridad-clinicas-luj',
+    title: "Blindaje de Infraestructura Digital: Ciberseguridad para Clínicas y Lujo",
+    excerpt: "Protege los datos sensibles de tus pacientes y clientes VIP. Estrategias avanzadas de ciberseguridad y resiliencia para el sector premium.",
+    category: 'ciberseguridad',
+    categoryLabel: 'Ciberseguridad & Compliance',
+    tags: ["Ciberseguridad","Compliance","Privacidad","Infraestructura Segura","Protección de Datos"],
+    author: {
+      name: 'Dexvoi Intelligence Team',
+      role: 'Especialistas en Blindaje & Rendimiento Digital',
+      badge: 'Verified Lead'
+    },
+    publishedAt: '2026-10-24T12:18:24.109Z',
+    readingTimeMinutes: 7,
+    featuredImage: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80',
+    metaDescription: "Asegura la continuidad de tu clínica o negocio premium con protocolos de ciberseguridad de élite. Evita brechas de datos y protege tu reputación digital.",
+    keywords: ["Ciberseguridad","Compliance","Privacidad","Infraestructura Segura","Protección de Datos"],
+    targetServiceUrl: '/auditoria-seguridad',
+    targetServiceLabel: 'Solicitar Diagnóstico Especializado',
+    content: "## La Fragilidad de los Activos Digitales en el Sector Premium\n\nEn un entorno donde la confianza es el activo más valioso, cualquier brecha de seguridad no solo implica una sanción bajo el RGPD, sino una pérdida irreparable de reputación. Para clínicas privadas y marcas de lujo, la superficie de ataque se ha expandido debido a la integración de sistemas IoT, motores de reservas conectados y bases de datos de clientes de alto perfil.\n\n## Arquitectura de Defensa en Profundidad (Defense-in-Depth)\n\nLa seguridad moderna no depende de un único firewall. Implementamos una estrategia de capas basada en:\n\n### 1. Zero Trust Architecture (ZTA)\nEliminamos la confianza implícita dentro de la red. Cada solicitud de acceso es autenticada, autorizada y cifrada, independientemente de su origen.\n\n### 2. Segmentación de Red y Micro-perimetraje\nSeparamos los sistemas de gestión de pacientes (HIS/CRM) de la red pública de acceso a Internet, evitando movimientos laterales en caso de intrusión.\n\n## Tabla Comparativa: Impacto de las Vulnerabilidades\n\n| Amenaza | Riesgo para Clínicas | Riesgo para Hostelería | Nivel de Severidad |\n| :--- | :--- | :--- | :--- |\n| Ransomware | Crítico (Datos médicos) | Alto (Reservas) | Muy Alto |\n| Phishing Dirigido | Fuga de historial | Robo de datos VIP | Alto |\n| Ataques DDoS | Interrupción cita | Caída de reservas | Medio |\n\n## Checklist de Blindaje Técnico\n\n- [ ] **Implementación de MFA (Multi-Factor Authentication):** Obligatorio en todos los niveles de acceso administrativo.\n- [ ] **Cifrado AES-256 en reposo:** Asegura que los datos en discos y backups sean ilegibles sin la clave maestra.\n- [ ] **WAF (Web Application Firewall):** Filtrado en el Edge para bloquear bots maliciosos antes de que toquen el servidor.\n- [ ] **Monitoreo SIEM 24/7:** Análisis de logs en tiempo real mediante IA para detectar anomalías de comportamiento.\n\n## El Coste del Silencio: Por qué la prevención es rentable\n\nLa mayoría de las empresas premium esperan a sufrir un incidente para actualizar sus protocolos. El coste de remediación, incluyendo auditorías forenses y notificaciones legales, supera en un 400% la inversión en una arquitectura preventiva de Dexvoi.\n\n### ¿Está tu infraestructura preparada para una auditoría de seguridad?\n\nNo dejes que una vulnerabilidad silenciosa ponga en riesgo años de prestigio. En **Dexvoi**, realizamos diagnósticos técnicos de alta precisión para identificar brechas antes de que sean explotadas. **[Solicita tu Auditoría de Ciberseguridad Gratuita aquí](https://dexvoi.com/auditoria-seguridad)** y asegura la resiliencia de tu ecosistema digital."
+  },
+  {
     id: 'post-auto-1792784222203',
     slug: 'estrategias-geolocalizacion-google-maps-2026',
     title: "Estrategias de Geolocalización y Visibilidad en Google Maps 2026",
