@@ -836,4 +836,12 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://dexvoi.com/es/blog/hardening-infraestructura-ciberseguridad-negocios-premium-20</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dexvoi.com/es/blog/hardening-infraestructura-ciberseguridad-negocios-premium-20"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dexvoi.com/es/blog/hardening-infraestructura-ciberseguridad-negocios-premium-20"/>
+    <lastmod>2026-10-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
