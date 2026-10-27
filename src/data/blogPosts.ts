@@ -3,6 +3,28 @@ import { BLOG_POST_SLUGS, BLOG_POST_TRANSLATIONS } from './blogTranslations';
 
 export const INITIAL_BLOG_POSTS: BlogPost[] = [
   {
+    id: 'post-auto-1793108587059',
+    slug: 'arquitectura-autoridad-local-ecosistemas-visibilidad-2026',
+    title: "Arquitectura de Autoridad Local: Ecosistemas de Visibilidad 2026",
+    excerpt: "Descubre cómo la arquitectura de entidades y la señalización técnica elevan a tu marca al Top 3 de Google Maps. Estrategia avanzada para negocios premium.",
+    category: 'seo-local',
+    categoryLabel: 'SEO Local & Google Maps',
+    tags: ["SEO Local","Arquitectura de Entidades","Google Business Profile","Marketing de Proximidad"],
+    author: {
+      name: 'Dexvoi Intelligence Team',
+      role: 'Especialistas en Blindaje & Rendimiento Digital',
+      badge: 'Verified Lead'
+    },
+    publishedAt: '2026-10-27T13:43:07.059Z',
+    readingTimeMinutes: 7,
+    featuredImage: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80',
+    metaDescription: "Domina el SEO local en 2026. Optimizamos tu arquitectura de entidades y autoridad digital para asegurar tu presencia en el Top 3 de Google Maps. ¡Lee más!",
+    keywords: ["SEO Local","Arquitectura de Entidades","Google Business Profile","Marketing de Proximidad"],
+    targetServiceUrl: '/auditoria-seguridad',
+    targetServiceLabel: 'Solicitar Diagnóstico Especializado',
+    content: "## Introducción: La Nueva Era de la Autoridad Geográfica\n\nEn un mercado saturado, la visibilidad local ya no depende únicamente de las reseñas. En 2026, el algoritmo de Google prioriza la **coherencia semántica** y la **arquitectura de entidades**. Como consultores en Dexvoi, entendemos que para clínicas y alta restauración, el SEO local es una extensión de su infraestructura digital y reputacional.\n\n## La Arquitectura de Entidades como Pilar Fundamental\n\nPara posicionar en el Local Pack, Google debe comprender qué es tu negocio, dónde opera y quién lo respalda. Esto se logra mediante:\n\n* **Schema Markup Avanzado:** Implementación de `LocalBusiness` con anidamiento de `SameAs` hacia perfiles sociales y bases de conocimiento.\n* **Grafos de Conocimiento:** Conexión de tu entidad con entidades locales relevantes para fortalecer la autoridad semántica.\n* **Consistencia NAP+W:** Auditoría estricta de Nombre, Dirección, Teléfono y Website en todo el ecosistema web.\n\n## Tabla de Impacto: Factores de Posicionamiento 2026\n\n| Factor | Peso en Ranking | Complejidad Técnica |\n| :--- | :--- | :--- |\n| Proximidad Semántica | Alta | Media |\n| Autoridad del Dominio Local | Muy Alta | Alta |\n| Señales de Usuario (CTR/CERC) | Alta | Baja |\n| Datos Estructurados (JSON-LD) | Crítica | Media |\n\n## Optimización Técnica del Google Business Profile (GBP)\n\nEl perfil de negocio no es una ficha estática; es un nodo activo. Debemos tratarlo con la misma rigurosidad técnica que un servidor de producción:\n\n### Checklist de Hardening para GBP:\n- [ ] Auditoría de categorías secundarias para maximizar el alcance de búsqueda.\n- [ ] Integración de UTMs dinámicas en los CTA para trazabilidad total de conversiones.\n- [ ] Actualización de atributos de accesibilidad y servicios mediante la API de Google Business.\n- [ ] Implementación de contenido visual optimizado (WebP) con metadatos EXIF geolocalizados.\n\n## La Sinergia entre SEO Local y CRO\n\nNo basta con aparecer; hay que convertir. La arquitectura web debe estar diseñada para que, tras el clic desde Google Maps, el usuario encuentre una experiencia sin fricciones, rápida y con una propuesta de valor premium claramente definida.\n\n## ¿Está tu infraestructura digital lista para el mercado de élite?\n\nLa visibilidad local es una carrera técnica. En Dexvoi, analizamos cada punto de contacto de tu ecosistema digital para garantizar que tu marca no solo sea vista, sino elegida. \n\n**[Solicita una Auditoría Técnica Gratuita de Dexvoi aquí](#)** y recibe un informe exhaustivo sobre el estado de tu autoridad local y oportunidades de dominio en tu sector."
+  },
+  {
     id: 'post-auto-1793047720277',
     slug: 'seguridad-y-rendimiento-seo-local-bfit',
     title: "Dominancia en el Local 3-Pack de Google Maps y Fichas Verificadas para Empresas de Servicios Profesionales B2B [Informe 2026-BFIT]",
